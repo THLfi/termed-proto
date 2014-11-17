@@ -21,11 +21,16 @@ App.factory('Config', function() {
 
 App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
 
+  $scope.query = ($location.search()).q || "";
+
   $scope.searchConcepts = function(query) {
     ConceptList.query({
       query: query
     }, function(concepts) {
       $scope.concepts = concepts;
+      $location.search({
+        q: $scope.query
+      }).replace();
     });
   }
 
@@ -41,7 +46,8 @@ App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
     });
   }
 
-  $scope.searchConcepts();
+  $scope.searchConcepts(($location.search()).q || "");
+
 });
 
 App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
@@ -119,12 +125,21 @@ App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
 
   $scope.langPriority = Config.langPriority;
 
+  $scope.prefLabelFi = function(value) {
+    return value.properties.prefLabel.filter(function(value) {
+      return value.lang == 'fi';
+    }).map(function(value) {
+      return value.value;
+    }).join(', ');
+  }
+
 });
 
 App.config(function($routeProvider) {
   $routeProvider.when('/concepts', {
     templateUrl: 'partials/concept-list.html',
     controller: 'ConceptListCtrl',
+    reloadOnSearch: false
   }).when('/concepts/:id', {
     templateUrl: 'partials/concept.html',
     controller: 'ConceptCtrl'

@@ -55,11 +55,11 @@
     </dd>
     <dt>Alakäsitteet</dt>
     <dd>
-        <span ng-repeat="child in concept.children | orderBy:prefLabelOrder">
+        <span ng-repeat="child in concept.children | orderBy:prefLabelFi">
             <a ng-href="#/concepts/{{child.id}}">
                 <thl-concept-values values="child.properties.prefLabel"
-                                    lang="fi"></thl-concept-values>
-            </a><span ng-show="!$last" class="text-muted">, </span>
+                                    lang="fi"></thl-concept-values></a><span
+                ng-show="!$last" class="text-muted">, </span>
         </span>
         <span ng-show="!concept.children || concept.children.length == 0">
             -
@@ -67,11 +67,11 @@
     </dd>
     <dt>Assosiatiiviset käsitteet</dt>
     <dd>
-        <span ng-repeat="r in concept.related | orderBy:prefLabelOrder">
+        <span ng-repeat="r in concept.related | orderBy:prefLabelFi">
             <a ng-href="#/concepts/{{r.id}}">
                 <thl-concept-values values="r.properties.prefLabel"
-                                    lang="fi"></thl-concept-values>
-            </a><span ng-show="!$last" class="text-muted">,</span>
+                                    lang="fi"></thl-concept-values></a><span
+                ng-show="!$last" class="text-muted">, </span>
         </span>
         <span ng-show="!concept.related || concept.related.length == 0">
             -
