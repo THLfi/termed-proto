@@ -1,5 +1,6 @@
 package fi.thl.termed.controller;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
@@ -111,7 +112,7 @@ public class RdfImporter {
   @Transactional
   public void importTurtle(@RequestBody String input) {
     Model model = ModelFactory.createDefaultModel();
-    model.read(new ByteArrayInputStream(input.getBytes()), null, "TTL");
+    model.read(new ByteArrayInputStream(input.getBytes(Charsets.UTF_8)), null, "TTL");
 
     log.info("read {} statements", model.size());
 
