@@ -24,7 +24,7 @@
                 <span ng-if="!$last">
                     <a ng-href="#/concepts/{{parent.id}}"
                        ng-if="!$last">{{parent.properties.label.fi}}</a>
-                    &gt;
+                    <span class="text-muted">&gt;</span>
                 </span>
                 <span ng-if="$last">
                     {{parent.properties.label.fi}}
@@ -37,9 +37,9 @@
     </dd>
     <dt>Alakäsitteet</dt>
     <dd>
-        <span ng-repeat="child in concept.children">
+        <span ng-repeat="child in concept.children | orderBy:'properties.label.fi'">
             <a ng-href="#/concepts/{{child.id}}">{{child.properties.label.fi}}</a><span
-                ng-show="!$last">,</span>
+                ng-show="!$last" class="text-muted">,</span>
         </span>
         <span ng-show="!concept.children || concept.children.length == 0">
             -
@@ -47,9 +47,9 @@
     </dd>
     <dt>Assosiatiiviset käsitteet</dt>
     <dd>
-        <span ng-repeat="r in concept.related">
+        <span ng-repeat="r in concept.related | orderBy:'properties.label.fi'">
             <a ng-href="#/concepts/{{r.id}}">{{r.properties.label.fi}}</a><span
-                ng-show="!$last">,</span>
+                ng-show="!$last" class="text-muted">,</span>
         </span>
         <span ng-show="!concept.related || concept.related.length == 0">
             -

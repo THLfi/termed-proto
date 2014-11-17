@@ -38,6 +38,16 @@ public class Concept extends Resource {
     this.properties = properties;
   }
 
+  public void addProperty(String propertyId, String lang, String value) {
+    if (properties == null) {
+      properties = Maps.newHashMap();
+    }
+    if (!properties.containsKey(propertyId)) {
+      properties.put(propertyId, Maps.<String, String>newHashMap());
+    }
+    properties.get(propertyId).put(lang, value);
+  }
+
   public Concept getType() {
     return type;
   }
@@ -76,6 +86,13 @@ public class Concept extends Resource {
 
   public void setRelated(List<Concept> related) {
     this.related = related;
+  }
+
+  public void addRelated(Concept c) {
+    if (related == null) {
+      related = Lists.newArrayList();
+    }
+    related.add(c);
   }
 
   public Objects.ToStringHelper toStringHelper() {
