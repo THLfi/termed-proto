@@ -105,23 +105,23 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
 App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
         ConceptList, Config) {
 
-  function collectParents(concept) {
-    var parents = [concept];
-    function recursiveCollectParents(concept) {
-      if (concept.parent) {
-        parents.unshift(concept.parent);
-        recursiveCollectParents(concept.parent);
+  function collectBroader(concept) {
+    var broader = [concept];
+    function recursiveCollectBroader(concept) {
+      if (concept.broader) {
+        broader.unshift(concept.broader);
+        recursiveCollectBroader(concept.broader);
       }
     }
-    recursiveCollectParents(concept);
-    return parents;
+    recursiveCollectBroader(concept);
+    return broader;
   }
 
   Concept.get({
     id: $routeParams.id
   }, function(concept) {
     $scope.concept = concept;
-    $scope.parents = collectParents(concept);
+    $scope.broader = collectBroader(concept);
   });
 
   $scope.langPriority = Config.langPriority;

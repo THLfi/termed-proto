@@ -33,9 +33,8 @@ public class JdbcConceptDao implements ConceptDao {
     public Concept mapRow(ResultSet resultSet, int i) throws SQLException {
       Concept concept = new Concept();
       concept.setId(resultSet.getString("id"));
-      concept.setParent(get(resultSet.getString("parent_id")));
-      concept.setType(findSimpleOne(resultSet.getString("type_id")));
-      concept.setChildren(findSimpleChildren(resultSet.getString("id")));
+      concept.setBroader(get(resultSet.getString("broader_id")));
+      concept.setNarrower(findSimpleNarrower(resultSet.getString("id")));
       concept.setRelated(relatedDao.getRelated(resultSet.getString("id")));
       concept.setProperties(propertyDao.getProperties(resultSet.getString("id")));
       return concept;
@@ -74,16 +73,16 @@ public class JdbcConceptDao implements ConceptDao {
   private void insert(Concept concept) {
     concept.ensureId();
     jdbcTemplate.update(
-        sqlQueries.getProperty("concept-insert-id-type_id-parent_id"),
-        concept.getId(), concept.getTypeId(), concept.getParentId());
+        sqlQueries.getProperty("concept-insert-id-broader_id"),
+        concept.getId(), concept.getBroaderId());
     propertyDao.saveProperties(concept.getId(), concept.getProperties());
     relatedDao.saveRelated(concept.getId(), concept.getRelated());
   }
 
   private void update(Concept old, Concept concept) {
     jdbcTemplate.update(
-        sqlQueries.getProperty("concept-update-type_id-parent_id-by-id"),
-        concept.getTypeId(), concept.getParentId(), concept.getId());
+        sqlQueries.getProperty("concept-update-broader_id-by-id"), concept.getBroaderId(),
+        concept.getId());
     propertyDao.saveProperties(concept.getId(), old.getProperties(), concept.getProperties());
     relatedDao.saveRelated(concept.getId(), old.getRelated(), concept.getRelated());
   }
@@ -93,9 +92,9 @@ public class JdbcConceptDao implements ConceptDao {
                                                     simpleConceptRowMapper, id) : null;
   }
 
-  private List<Concept> findSimpleChildren(String parentId) {
-    return jdbcTemplate.query(sqlQueries.getProperty("concept-find-by-parent_id"),
-                              simpleConceptRowMapper, parentId);
+  private List<Concept> findSimpleNarrower(String broaderId) {
+    return jdbcTemplate.query(sqlQueries.getProperty("concept-find-by-broader_id"),
+                              simpleConceptRowMapper, broaderId);
   }
 
   @Override
@@ -133,8 +132,8 @@ public class JdbcConceptDao implements ConceptDao {
       return;
     }
 
-    for (Resource child : concept.getChildren()) {
-      remove(child.getId());
+    for (Resource narrower : concept.getNarrower()) {
+      remove(narrower.getId());
     }
 
     relatedDao.removeRelated(concept.getId());

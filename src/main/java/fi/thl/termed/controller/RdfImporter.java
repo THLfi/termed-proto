@@ -72,10 +72,10 @@ public class RdfImporter {
 
     for (Resource r : model.listResourcesWithProperty(RDF.type, SKOS.Concept).toList()) {
       Concept c = concepts.get(sha1Hex(r.getURI()));
-      for (String parentUri : getObjectValues(model, r, SKOS.broader)) {
-        String parentId = sha1Hex(parentUri);
-        if (concepts.containsKey(parentId)) {
-          c.setParent(new Concept(sha1Hex(parentUri)));
+      for (String broaderUri : getObjectValues(model, r, SKOS.broader)) {
+        String broaderId = sha1Hex(broaderUri);
+        if (concepts.containsKey(broaderId)) {
+          c.setBroader(new Concept(sha1Hex(broaderUri)));
         }
       }
       for (String relatedUri : getObjectValues(model, r, SKOS.related)) {

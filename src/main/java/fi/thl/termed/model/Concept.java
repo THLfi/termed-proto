@@ -13,10 +13,9 @@ public class Concept extends Resource {
 
   private Map<String, Set<PropertyValue>> properties;
 
-  private Concept type;
-  private Concept parent;
+  private Concept broader;
+  private List<Concept> narrower;
 
-  private List<Concept> children;
   private List<Concept> related;
 
   public Concept() {
@@ -26,9 +25,8 @@ public class Concept extends Resource {
   public Concept(String id) {
     super(id);
     this.properties = Maps.newHashMap();
-    this.type = null;
-    this.parent = null;
-    this.children = Lists.newArrayList();
+    this.broader = null;
+    this.narrower = Lists.newArrayList();
     this.related = Lists.newArrayList();
   }
 
@@ -47,36 +45,24 @@ public class Concept extends Resource {
     properties.get(propertyId).add(new PropertyValue(lang, value));
   }
 
-  public Concept getType() {
-    return type;
+  public Concept getBroader() {
+    return broader;
   }
 
-  public String getTypeId() {
-    return type != null ? type.getId() : null;
+  public String getBroaderId() {
+    return broader != null ? broader.getId() : null;
   }
 
-  public void setType(Concept type) {
-    this.type = type;
+  public void setBroader(Concept broader) {
+    this.broader = broader;
   }
 
-  public Concept getParent() {
-    return parent;
+  public List<Concept> getNarrower() {
+    return narrower;
   }
 
-  public String getParentId() {
-    return parent != null ? parent.getId() : null;
-  }
-
-  public void setParent(Concept parent) {
-    this.parent = parent;
-  }
-
-  public List<Concept> getChildren() {
-    return children;
-  }
-
-  public void setChildren(List<Concept> children) {
-    this.children = children;
+  public void setNarrower(List<Concept> narrower) {
+    this.narrower = narrower;
   }
 
   public List<Concept> getRelated() {
@@ -90,8 +76,7 @@ public class Concept extends Resource {
   public Objects.ToStringHelper toStringHelper() {
     return super.toStringHelper()
         .add("properties", properties)
-        .add("parent", parent)
-        .add("type", type)
+        .add("broader", broader)
         .add("related", related);
   }
 
@@ -108,14 +93,13 @@ public class Concept extends Resource {
 
     return Objects.equal(getId(), that.getId()) &&
            Objects.equal(properties, that.properties) &&
-           Objects.equal(type, that.type) &&
-           Objects.equal(parent, that.parent) &&
+           Objects.equal(broader, that.broader) &&
            Objects.equal(related, that.related);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(getId(), properties, type, parent, related);
+    return Objects.hashCode(getId(), properties, broader, related);
   }
 
 }
