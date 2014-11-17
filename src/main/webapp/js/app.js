@@ -111,7 +111,8 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
   $scope.searchConcepts = function(query) {
     ConceptList.query({
       schemeId: $routeParams.schemeId,
-      query: query
+      query: query,
+      orderBy: 'prefLabel.fi.sortable'
     }, function(concepts) {
       $scope.concepts = concepts;
       $location.search({

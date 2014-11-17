@@ -69,10 +69,9 @@ public class ConceptIndex {
   }
 
   @SuppressWarnings("unchecked")
-  public List<Concept> query(String schemeId, String query, int first, int max,
-                             List<String> orderBy) {
+  public List<Concept> query(String query, int first, int max, List<String> orderBy) {
     FullTextQuery fullTextQuery =
-        getFullTextEntityManager().createFullTextQuery(parseQuery(schemeId, query), Concept.class);
+        getFullTextEntityManager().createFullTextQuery(parseQuery(query), Concept.class);
     return fullTextQuery.setSort(buildSort(orderBy)).setFirstResult(first).setMaxResults(max)
         .getResultList();
   }
@@ -86,7 +85,7 @@ public class ConceptIndex {
     return size() == 0;
   }
 
-  private Query parseQuery(String schemeId, String query) {
+  private Query parseQuery(String query) {
     if (Strings.isNullOrEmpty(query)) {
       return new MatchAllDocsQuery();
     }

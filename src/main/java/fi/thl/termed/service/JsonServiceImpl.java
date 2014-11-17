@@ -27,6 +27,7 @@ import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
 import fi.thl.termed.util.ConceptTransformer;
 import fi.thl.termed.util.HibernateProxyTypeAdapterFactory;
+import fi.thl.termed.util.LuceneQueryUtils;
 import fi.thl.termed.util.PropertyValueListTransformer;
 
 @Service
@@ -138,8 +139,13 @@ public class JsonServiceImpl implements JsonService {
   @Override
   public JsonArray queryConcepts(String schemeId, String query, int first, int max,
                                  List<String> orderBy) {
-    return truncatedGson.toJsonTree(conceptIndex.query(schemeId, query, first, max, orderBy))
+    return truncatedGson.toJsonTree(
+        conceptIndex.query(addSchemeIdToQuery(schemeId, query), first, max, orderBy))
         .getAsJsonArray();
+  }
+
+  private String addSchemeIdToQuery(String schemeId, String query) {
+    return LuceneQueryUtils.and(LuceneQueryUtils.termQuery("scheme.id", schemeId), query);
   }
 
   @Override

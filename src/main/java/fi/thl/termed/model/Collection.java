@@ -1,16 +1,18 @@
 package fi.thl.termed.model;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Iterators;
 
 import org.hibernate.search.annotations.Indexed;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+
+import fi.thl.termed.util.ResourceIdMatches;
 
 @Indexed
 @Entity
@@ -42,14 +44,7 @@ public class Collection extends SchemePropertyResource {
     if (members == null) {
       return;
     }
-
-    Iterator<Concept> i = members.iterator();
-
-    while (i.hasNext()) {
-      if (concept.getId().equals(i.next().getId())) {
-        i.remove();
-      }
-    }
+    Iterators.removeIf(members.iterator(), new ResourceIdMatches(concept.getId()));
   }
 
   public Objects.ToStringHelper toStringHelper() {

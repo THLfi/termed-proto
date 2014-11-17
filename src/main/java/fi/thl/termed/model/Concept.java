@@ -1,12 +1,12 @@
 package fi.thl.termed.model;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -16,11 +16,14 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import fi.thl.termed.util.LuceneConstants;
+import fi.thl.termed.util.ResourceIdMatches;
+
 @Indexed
 @Entity
 public class Concept extends SchemePropertyResource {
 
-  @IndexedEmbedded(includePaths = {"id"})
+  @IndexedEmbedded(includePaths = {"id"}, indexNullAs = LuceneConstants.NULL)
   @ManyToOne
   private Concept broader;
 
@@ -75,18 +78,11 @@ public class Concept extends SchemePropertyResource {
     related.add(r);
   }
 
-  public void removeRelated(Concept concept) {
+  public void removeRelated(final Concept concept) {
     if (related == null) {
       return;
     }
-
-    Iterator<Concept> i = related.iterator();
-
-    while (i.hasNext()) {
-      if (concept.getId().equals(i.next().getId())) {
-        i.remove();
-      }
-    }
+    Iterators.removeIf(related.iterator(), new ResourceIdMatches(concept.getId()));
   }
 
   public List<Collection> getCollections() {
