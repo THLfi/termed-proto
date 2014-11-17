@@ -50,55 +50,6 @@ App.controller('SchemeListCtrl', function($scope, $location, SchemeList) {
 
 });
 
-App.controller('CollectionCtrl', function($scope, $routeParams, Collection,
-        ConceptList, PropertyUtils) {
-
-  Collection.get({
-    schemeId: $routeParams.schemeId,
-    id: $routeParams.id
-  }, function(collection) {
-    $scope.collection = collection;
-  });
-
-  $scope.langPriority = PropertyUtils.langPriority;
-  $scope.prefLabelFi = PropertyUtils.prefLabelFi;
-
-});
-
-App.controller('CollectionEditCtrl', function($scope, $routeParams, $location,
-        Collection, CollectionList, PropertyUtils) {
-
-  Collection.get({
-    schemeId: $routeParams.schemeId,
-    id: $routeParams.id
-  }, function(collection) {
-    PropertyUtils.ensurePropertiesFiValue(collection.properties, ['prefLabel',
-        'altLabel']);
-    $scope.collection = collection;
-  });
-
-  $scope.save = function() {
-    $scope.collection.$save({
-      schemeId: $routeParams.schemeId
-    }, function(collection) {
-      $location.path('/schemes/' + $routeParams.schemeId + '/collections/'
-              + collection.id);
-    }, function(error) {
-      $scope.error = error;
-    });
-  }
-
-  $scope.remove = function() {
-    $scope.collection.$delete({
-      schemeId: $routeParams.schemeId,
-      id: $routeParams.id
-    }, function() {
-      $location.path('/schemes/' + $routeParams.schemeId + '/concepts');
-    });
-  }
-
-});
-
 App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
         Scheme, Concept, ConceptList) {
 
@@ -146,6 +97,34 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
 
 });
 
+App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
+        ConceptList, PropertyUtils) {
+
+  function collectBroader(concept) {
+    var broader = [concept];
+    function recursiveCollectBroader(concept) {
+      if (concept.broader) {
+        broader.unshift(concept.broader);
+        recursiveCollectBroader(concept.broader);
+      }
+    }
+    recursiveCollectBroader(concept);
+    return broader;
+  }
+
+  Concept.get({
+    schemeId: $routeParams.schemeId,
+    id: $routeParams.id
+  }, function(concept) {
+    $scope.concept = concept;
+    $scope.broader = collectBroader(concept);
+  });
+
+  $scope.langPriority = PropertyUtils.langPriority;
+  $scope.prefLabelFi = PropertyUtils.prefLabelFi;
+
+});
+
 App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
         Concept, ConceptList, PropertyUtils) {
 
@@ -181,32 +160,52 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
 
 });
 
-App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
+App.controller('CollectionCtrl', function($scope, $routeParams, Collection,
         ConceptList, PropertyUtils) {
 
-  function collectBroader(concept) {
-    var broader = [concept];
-    function recursiveCollectBroader(concept) {
-      if (concept.broader) {
-        broader.unshift(concept.broader);
-        recursiveCollectBroader(concept.broader);
-      }
-    }
-    recursiveCollectBroader(concept);
-    return broader;
-  }
-
-  Concept.get({
+  Collection.get({
     schemeId: $routeParams.schemeId,
     id: $routeParams.id
-  }, function(concept) {
-    $scope.concept = concept;
-    $scope.broader = collectBroader(concept);
+  }, function(collection) {
+    $scope.collection = collection;
   });
 
   $scope.langPriority = PropertyUtils.langPriority;
   $scope.prefLabelFi = PropertyUtils.prefLabelFi;
 
+});
+
+App.controller('CollectionEditCtrl', function($scope, $routeParams, $location,
+        Collection, CollectionList, PropertyUtils) {
+
+  Collection.get({
+    schemeId: $routeParams.schemeId,
+    id: $routeParams.id
+  }, function(collection) {
+    PropertyUtils.ensurePropertiesFiValue(collection.properties, ['prefLabel',
+        'altLabel']);
+    $scope.collection = collection;
+  });
+
+  $scope.save = function() {
+    $scope.collection.$save({
+      schemeId: $routeParams.schemeId
+    }, function(collection) {
+      $location.path('/schemes/' + $routeParams.schemeId + '/collections/'
+              + collection.id);
+    }, function(error) {
+      $scope.error = error;
+    });
+  }
+
+  $scope.remove = function() {
+    $scope.collection.$delete({
+      schemeId: $routeParams.schemeId,
+      id: $routeParams.id
+    }, function() {
+      $location.path('/schemes/' + $routeParams.schemeId + '/concepts');
+    });
+  }
 });
 
 App.config(function($routeProvider) {

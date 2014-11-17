@@ -12,7 +12,6 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -61,7 +60,6 @@ public class RdfImporter {
   private CollectionRepository collectionRepository;
 
   private Map<Property, String> propertyMap = ImmutableMap.<Property, String>builder()
-      .put(DC.title, "prefLabel")
       .put(RDFS.label, "prefLabel")
       .put(SKOS.prefLabel, "prefLabel")
       .put(SKOS.altLabel, "altLabel")
