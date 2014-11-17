@@ -4,6 +4,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 
 import java.util.List;
 
@@ -16,11 +17,9 @@ import javax.persistence.OneToMany;
 
 @Indexed
 @Entity
-public class Concept extends PropertyResource {
+public class Concept extends SchemePropertyResource {
 
-  @ManyToOne
-  private Scheme scheme;
-
+  @IndexedEmbedded(includePaths = {"id"})
   @ManyToOne
   private Concept broader;
 
@@ -46,10 +45,6 @@ public class Concept extends PropertyResource {
 
   public Concept getBroader() {
     return broader;
-  }
-
-  public String getBroaderId() {
-    return broader != null ? broader.getId() : null;
   }
 
   public void setBroader(Concept broader) {
@@ -87,24 +82,11 @@ public class Concept extends PropertyResource {
     this.collections = collections;
   }
 
-  public Scheme getScheme() {
-    return scheme;
-  }
-
-  public String getSchemeId() {
-    return scheme != null ? scheme.getId() : null;
-  }
-
-  public void setScheme(Scheme scheme) {
-    this.scheme = scheme;
-  }
-
   public Objects.ToStringHelper toStringHelper() {
     return super.toStringHelper()
         .add("broader", broader)
         .add("related", related)
-        .add("collections", collections)
-        .add("scheme", scheme);
+        .add("collections", collections);
   }
 
 }

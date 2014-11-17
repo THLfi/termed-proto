@@ -1,24 +1,24 @@
-App.directive('thlConceptValues', function() {
+App.directive('thlPropertyValues', function() {
   return {
     restrict: 'E',
     scope: {
       values: '=',
       lang: '@'
     },
-    templateUrl: 'partials/concept-values.html',
+    templateUrl: 'partials/property-values.html',
     controller: function($scope, Config) {
       $scope.langPriority = Config.langPriority;
     }
   };
 });
 
-App.directive('thlConceptValuesEdit', function() {
+App.directive('thlPropertyValuesEdit', function() {
   return {
     restrict: 'E',
     scope: {
       values: '='
     },
-    templateUrl: 'partials/concept-values-edit.html',
+    templateUrl: 'partials/property-values-edit.html',
     controller: function($scope, Config) {
       $scope.addPropertyValue = function(values) {
         values.push({
@@ -43,6 +43,7 @@ App.directive('thlConceptValuesEdit', function() {
 App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
   return {
     scope: {
+      'schemeId': '=',
       'ngModel': "="
     },
     link: function(scope, elem, attrs) {
@@ -51,6 +52,7 @@ App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
         multiple: !!attrs.multiple,
         query: function(query) {
           ConceptList.query({
+            schemeId: scope.schemeId,
             query: query.term
           }, function(results) {
             query.callback({
@@ -82,7 +84,7 @@ App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
             if (attrs.multiple) {
               var data = elem.select2('data');
               var idObjects = [];
-              for ( var i = 0; i < data.length; i++) {
+              for (var i = 0; i < data.length; i++) {
                 idObjects.push({
                   id: data[i].id
                 });
@@ -112,6 +114,7 @@ App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
           var promiseGet = function(idObject) {
             var d = $q.defer();
             Concept.get({
+              schemeId: scope.schemeId,
               id: idObject.id
             }, function(result) {
               d.resolve(result);
@@ -120,7 +123,7 @@ App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
           }
 
           var promises = [];
-          for ( var i = 0; i < ngModel.length; i++) {
+          for (var i = 0; i < ngModel.length; i++) {
             promises.push(promiseGet(ngModel[i]));
           }
 
@@ -130,6 +133,7 @@ App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
           });
         } else {
           Concept.get({
+            schemeId: scope.schemeId,
             id: ngModel.id
           }, function(resource) {
             elem.select2('data', resource);

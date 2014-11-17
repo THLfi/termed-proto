@@ -63,6 +63,7 @@ public class RdfImporter {
     log.info("read {} statements", model.size());
 
     Scheme scheme = new Scheme("tero");
+    scheme.addProperty("prefLabel", "fi", "TERO - Terveyden ja hyvinvoinnin ontologia");
     schemeRepository.save(scheme);
 
     Map<String, Concept> concepts = Maps.newHashMap();

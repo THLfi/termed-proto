@@ -3,7 +3,10 @@ package fi.thl.termed.model;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 
 import java.util.List;
 
@@ -12,10 +15,15 @@ import javax.persistence.ElementCollection;
 import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 
+import fi.thl.termed.util.PropertyValueListBridge;
+
 @Indexed
 @MappedSuperclass
 public class PropertyResource extends Resource {
 
+  @Field
+  @FieldBridge(impl = PropertyValueListBridge.class)
+  @IndexedEmbedded
   @ElementCollection
   @CollectionTable(joinColumns = @JoinColumn(name = "subject_id"))
   private List<PropertyValue> properties;

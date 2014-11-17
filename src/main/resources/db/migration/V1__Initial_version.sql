@@ -37,7 +37,8 @@ CREATE TABLE ${schema}.concept_properties (
 );
 
 CREATE TABLE ${schema}.collection (
-    id varchar(255) PRIMARY KEY NOT NULL
+    id varchar(255) PRIMARY KEY NOT NULL,
+    scheme_id varchar(255) NOT NULL REFERENCES ${schema}.scheme(id)
 );
 
 CREATE TABLE ${schema}.collection_concept (

@@ -1,19 +1,14 @@
 <ol class="breadcrumb">
-    <li><a ng-href="#">Termipankki</a></li>
-    <li class="active">
-        <thl-property-values values="scheme.properties.prefLabel"
-                             lang="fi"></thl-property-values>
-    </li>
+    <li class="active">Termipankki</li>
 </ol>
 
 <h1 class="page-header">
-    <thl-property-values values="scheme.properties.prefLabel"
-                         lang="fi"></thl-property-values>
+    Termipankki
 </h1>
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">Käsitteet</h3>
+        <h3 class="panel-title">Sanastot</h3>
     </div>
     <div class="panel-body">
         <div class="row">
@@ -22,15 +17,13 @@
                     <div class="input-group-addon">
                         <span class="glyphicon glyphicon-search"></span>
                     </div>
-                    <input class="form-control" ng-model="query"
-                           ng-change="searchConcepts(query)" ng-model-options="{debounce: 250}"
-                           type="text">
+                    <input class="form-control" ng-model="query" type="text">
                 </div>
             </div>
             <div class="col-xs-5 text-right">
-                <button class="btn btn-default btn-sm" ng-click="newConcept()">
+                <button class="btn btn-default btn-sm" ng-click="newScheme()">
                     <span class="glyphicon glyphicon-plus"></span>
-                    Lisää uusi käsite
+                    Lisää uusi sanasto
                 </button>
             </div>
         </div>
@@ -38,14 +31,14 @@
         <table class="table">
             <thead>
             <tr>
-                <th>Käsite</th>
+                <th>Sanasto</th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="concept in concepts">
+            <tr ng-repeat="scheme in schemes">
                 <td>
-                    <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}">
-                        <thl-property-values values="concept.properties.prefLabel"
+                    <a ng-href="#/schemes/{{scheme.id}}/concepts">
+                        <thl-property-values values="scheme.properties.prefLabel"
                                              lang="fi"></thl-property-values>
                     </a>
                 </td>

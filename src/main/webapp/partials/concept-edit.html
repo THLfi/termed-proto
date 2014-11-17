@@ -1,9 +1,13 @@
 <ol class="breadcrumb">
     <li><a ng-href="#">Termipankki</a></li>
+    <li><a ng-href="#/schemes/{{concept.scheme.id}}/concepts">
+        <thl-property-values values="concept.scheme.properties.prefLabel"
+                             lang="fi"></thl-property-values>
+    </a></li>
     <li>
-        <a ng-href="#/concepts/{{concept.id}}">
-            <thl-concept-values values="concept.properties.prefLabel"
-                                lang="fi"></thl-concept-values>
+        <a ng-href="#/schemes/{{concept.scheme.id}}/concepts/{{concept.id}}">
+            <thl-property-values values="concept.properties.prefLabel"
+                                 lang="fi"></thl-property-values>
 
         </a>
     </li>
@@ -29,21 +33,21 @@
 </div>
 
 <h1 class="page-header">
-    <thl-concept-values values="concept.properties.prefLabel" lang="fi"></thl-concept-values>
+    <thl-property-values values="concept.properties.prefLabel" lang="fi"></thl-property-values>
     <small>
-        <thl-concept-values values="concept.properties.altLabel" lang="fi"></thl-concept-values>
+        <thl-property-values values="concept.properties.altLabel" lang="fi"></thl-property-values>
     </small>
 </h1>
 
 <form role="form">
     <div class="form-group">
         <label>Ensisijainen termi</label>
-        <thl-concept-values-edit values="concept.properties.prefLabel"></thl-concept-values-edit>
+        <thl-property-values-edit values="concept.properties.prefLabel"></thl-property-values-edit>
 
     </div>
     <div class="form-group">
         <label>Vaihtoehtoiset termit</label>
-        <thl-concept-values-edit values="concept.properties.altLabel"></thl-concept-values-edit>
+        <thl-property-values-edit values="concept.properties.altLabel"></thl-property-values-edit>
     </div>
 
     <br>
@@ -53,7 +57,8 @@
 
         <div class="row">
             <div class="col-sm-10">
-                <div thl-select-concept class="form-control" ng-model="concept.broader"></div>
+                <div thl-select-concept class="form-control" scheme-id="concept.scheme.id"
+                     ng-model="concept.broader"></div>
             </div>
         </div>
 
@@ -63,8 +68,8 @@
 
         <div class="row">
             <div class="col-sm-10">
-                <div thl-select-concept class="form-control" ng-model="concept.related"
-                     multiple="true"></div>
+                <div thl-select-concept class="form-control" scheme-id="concept.scheme.id"
+                     ng-model="concept.related" multiple="true"></div>
             </div>
         </div>
     </div>
@@ -73,27 +78,28 @@
 
     <div class="form-group">
         <label>Määritelmä</label>
-        <thl-concept-values-edit values="concept.properties.definition"></thl-concept-values-edit>
+        <thl-property-values-edit values="concept.properties.definition"></thl-property-values-edit>
     </div>
     <div class="form-group">
         <label>Huomautus</label>
-        <thl-concept-values-edit values="concept.properties.note"></thl-concept-values-edit>
+        <thl-property-values-edit values="concept.properties.note"></thl-property-values-edit>
     </div>
     <div class="form-group">
         <label>Esimerkki</label>
-        <thl-concept-values-edit values="concept.properties.example"></thl-concept-values-edit>
+        <thl-property-values-edit values="concept.properties.example"></thl-property-values-edit>
     </div>
 
     <br>
 
     <div class="form-group">
         <label>Piilotetut termit</label>
-        <thl-concept-values-edit values="concept.properties.hiddenLabel"></thl-concept-values-edit>
+        <thl-property-values-edit
+                values="concept.properties.hiddenLabel"></thl-property-values-edit>
     </div>
     <div class="form-group">
         <label>Korvatut termit</label>
-        <thl-concept-values-edit
-                values="concept.properties.deprecatedLabel"></thl-concept-values-edit>
+        <thl-property-values-edit
+                values="concept.properties.deprecatedLabel"></thl-property-values-edit>
     </div>
 </form>
 

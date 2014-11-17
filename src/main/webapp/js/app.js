@@ -2,10 +2,14 @@
 
 var App = angular.module('termed', ['ngResource', 'ngRoute']);
 
-App.factory('ConceptList', function($resource) {
-  return $resource('api/concepts');
+App.factory('SchemeList', function($resource) {
+  return $resource('api/schemes');
+}).factory('Scheme', function($resource) {
+  return $resource('api/schemes/:schemeId');
+}).factory('ConceptList', function($resource) {
+  return $resource('api/schemes/:schemeId/concepts');
 }).factory('Concept', function($resource) {
-  return $resource('api/concepts/:id');
+  return $resource('api/schemes/:schemeId/concepts/:id');
 });
 
 App.factory('Config', function() {
@@ -19,12 +23,24 @@ App.factory('Config', function() {
   }
 });
 
-App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
+App.controller('SchemeListCtrl', function($scope, $location, SchemeList) {
+
+  $scope.schemes = SchemeList.query();
+
+});
+
+App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
+        Scheme, Concept, ConceptList) {
 
   $scope.query = ($location.search()).q || "";
 
+  $scope.scheme = Scheme.get({
+    schemeId: $routeParams.schemeId
+  });
+
   $scope.searchConcepts = function(query) {
     ConceptList.query({
+      schemeId: $routeParams.schemeId,
       query: query
     }, function(concepts) {
       $scope.concepts = concepts;
@@ -35,15 +51,23 @@ App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
   }
 
   $scope.newConcept = function() {
-    ConceptList.save({
+    var concept = new Concept({
+      scheme: $scope.scheme,
       properties: {
         prefLabel: [{
           lang: 'fi',
           value: 'Uusi käsite'
         }]
       }
+    });
+
+    concept.$save({
+      schemeId: $routeParams.schemeId
     }, function(concept) {
-      $location.path('/concepts/' + concept.id + '/edit');
+      $location.path('/schemes/' + $routeParams.schemeId + '/concepts/'
+              + concept.id + '/edit');
+    }, function(error) {
+      $scope.error = error;
     });
   }
 
@@ -54,11 +78,13 @@ App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
 App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
         Concept, ConceptList, Config) {
 
-  function ensureProperty(properties, property) {
-    if (!properties[property]) {
-      var values = []
-      properties[property] = values;
-      ensureValue(values);
+  function ensureProperties(properties, propertyIds) {
+    for (var i = 0; i < propertyIds.length; i++) {
+      if (!properties[propertyIds[i]]) {
+        var values = []
+        properties[propertyIds[i]] = values;
+        ensureValue(values);
+      }
     }
   }
 
@@ -72,21 +98,20 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
   }
 
   Concept.get({
+    schemeId: $routeParams.schemeId,
     id: $routeParams.id
   }, function(concept) {
-    ensureProperty(concept.properties, 'prefLabel');
-    ensureProperty(concept.properties, 'altLabel');
-    ensureProperty(concept.properties, 'definition');
-    ensureProperty(concept.properties, 'note');
-    ensureProperty(concept.properties, 'example');
-    ensureProperty(concept.properties, 'hiddenLabel');
-    ensureProperty(concept.properties, 'deprecatedLabel');
+    ensureProperties(concept.properties, ['prefLabel', 'altLabel',
+        'definition', 'note', 'example', 'hiddenLabel', 'deprecatedLabel']);
     $scope.concept = concept;
   });
 
   $scope.save = function() {
-    $scope.concept.$save(function(concept) {
-      $location.path('/concepts/' + concept.id);
+    $scope.concept.$save({
+      schemeId: $routeParams.schemeId
+    }, function(concept) {
+      $location.path('/schemes/' + $routeParams.schemeId + '/concepts/'
+              + concept.id);
     }, function(error) {
       $scope.error = error;
     });
@@ -94,9 +119,10 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
 
   $scope.remove = function() {
     $scope.concept.$delete({
+      schemeId: $routeParams.schemeId,
       id: $routeParams.id
     }, function() {
-      $location.path('/');
+      $location.path('/schemes/' + $routeParams.schemeId + '/concepts');
     });
   }
 
@@ -118,6 +144,7 @@ App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
   }
 
   Concept.get({
+    schemeId: $routeParams.schemeId,
     id: $routeParams.id
   }, function(concept) {
     $scope.concept = concept;
@@ -137,17 +164,20 @@ App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
 });
 
 App.config(function($routeProvider) {
-  $routeProvider.when('/concepts', {
+  $routeProvider.when('/schemes/', {
+    templateUrl: 'partials/scheme-list.html',
+    controller: 'SchemeListCtrl'
+  }).when('/schemes/:schemeId/concepts', {
     templateUrl: 'partials/concept-list.html',
     controller: 'ConceptListCtrl',
     reloadOnSearch: false
-  }).when('/concepts/:id', {
+  }).when('/schemes/:schemeId/concepts/:id', {
     templateUrl: 'partials/concept.html',
     controller: 'ConceptCtrl'
-  }).when('/concepts/:id/edit', {
+  }).when('/schemes/:schemeId/concepts/:id/edit', {
     templateUrl: 'partials/concept-edit.html',
     controller: 'ConceptEditCtrl'
   }).otherwise({
-    redirectTo: '/concepts'
+    redirectTo: '/schemes'
   });
 });

@@ -11,30 +11,23 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.PropertyResource;
-import fi.thl.termed.model.Scheme;
+import fi.thl.termed.model.SchemePropertyResource;
 
 public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerializer<Concept> {
 
-  private class SerializedConcept extends PropertyResource {
+  private class SerializedConcept extends SchemePropertyResource {
 
-    private Scheme scheme;
     private Concept broader;
-    private List<PropertyResource> narrower;
-    private List<PropertyResource> related;
-
-    public Scheme getScheme() {
-      return scheme;
-    }
-
-    public void setScheme(Scheme scheme) {
-      this.scheme = scheme;
-    }
+    private List<SchemePropertyResource> narrower;
+    private List<SchemePropertyResource> related;
+    private List<Collection> collections;
 
     public Concept getBroader() {
       return broader;
@@ -44,48 +37,62 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
       this.broader = broader;
     }
 
-    public List<PropertyResource> getNarrower() {
-      return narrower;
+    public List<SchemePropertyResource> getNarrower() {
+      return narrower != null ? narrower : Collections.<SchemePropertyResource>emptyList();
     }
 
-    public void setNarrower(List<PropertyResource> narrower) {
+    public void setNarrower(List<SchemePropertyResource> narrower) {
       this.narrower = narrower;
     }
 
-    public List<PropertyResource> getRelated() {
-      return related;
+    public List<SchemePropertyResource> getRelated() {
+      return related != null ? related : Collections.<SchemePropertyResource>emptyList();
     }
 
-    public void setRelated(List<PropertyResource> related) {
+    public void setRelated(List<SchemePropertyResource> related) {
       this.related = related;
+    }
+
+    public List<Collection> getCollections() {
+      return collections != null ? collections : Collections.<Collection>emptyList();
+    }
+
+    public void setCollections(List<Collection> collections) {
+      this.collections = collections;
     }
 
   }
 
-  private final Function<Concept, PropertyResource> conceptToPropertyResource =
-      new Function<Concept, PropertyResource>() {
+  private final Function<Concept, SchemePropertyResource> conceptToPropertyResource =
+      new Function<Concept, SchemePropertyResource>() {
         @Override
-        public PropertyResource apply(Concept concept) {
-          return new PropertyResource(concept);
+        public SchemePropertyResource apply(Concept concept) {
+          return new SchemePropertyResource(concept);
         }
       };
 
-  private final Function<PropertyResource, Concept> propertyResourceToConcept =
-      new Function<PropertyResource, Concept>() {
+  private final Function<SchemePropertyResource, Concept> propertyResourceToConcept =
+      new Function<SchemePropertyResource, Concept>() {
         @Override
-        public Concept apply(PropertyResource propertyResource) {
+        public Concept apply(SchemePropertyResource propertyResource) {
           return find(propertyResource);
         }
       };
 
   private final EntityManager em;
+  private final boolean truncated;
 
   public ConceptTransformer(EntityManager em) {
-    Preconditions.checkNotNull(em);
-    this.em = em;
+    this(em, false);
   }
 
-  private Concept find(PropertyResource propertyResource) {
+  public ConceptTransformer(EntityManager em, boolean truncated) {
+    Preconditions.checkNotNull(em);
+    this.em = em;
+    this.truncated = truncated;
+  }
+
+  private Concept find(SchemePropertyResource propertyResource) {
     return propertyResource != null && propertyResource.getId() != null ?
            em.find(Concept.class, propertyResource.getId()) : null;
   }
@@ -94,6 +101,9 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
   public Concept deserialize(JsonElement jsonElement, Type type,
                              JsonDeserializationContext jsonDeserializationContext)
       throws JsonParseException {
+
+    Preconditions.checkState(!truncated,
+                             "truncated ConceptTransformer can't deserialize Concepts.");
 
     SerializedConcept serializedConcept =
         jsonDeserializationContext.deserialize(jsonElement, SerializedConcept.class);
@@ -106,6 +116,7 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
     concept.setBroader(serializedConcept.getBroader());
     concept.setNarrower(transform(serializedConcept.getNarrower(), propertyResourceToConcept));
     concept.setRelated(transform(serializedConcept.getRelated(), propertyResourceToConcept));
+    concept.setCollections(serializedConcept.getCollections());
 
     return concept;
   }
@@ -118,10 +129,14 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
 
     serializedConcept.setId(concept.getId());
     serializedConcept.setProperties(concept.getProperties());
-    serializedConcept.setScheme(concept.getScheme());
-    serializedConcept.setBroader(concept.getBroader());
-    serializedConcept.setNarrower(transform(concept.getNarrower(), conceptToPropertyResource));
-    serializedConcept.setRelated(transform(concept.getRelated(), conceptToPropertyResource));
+
+    if (!truncated) {
+      serializedConcept.setScheme(concept.getScheme());
+      serializedConcept.setBroader(concept.getBroader());
+      serializedConcept.setNarrower(transform(concept.getNarrower(), conceptToPropertyResource));
+      serializedConcept.setRelated(transform(concept.getRelated(), conceptToPropertyResource));
+      serializedConcept.setCollections(concept.getCollections());
+    }
 
     return jsonSerializationContext.serialize(serializedConcept, SerializedConcept.class);
   }

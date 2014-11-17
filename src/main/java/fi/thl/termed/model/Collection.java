@@ -3,6 +3,7 @@ package fi.thl.termed.model;
 import com.google.common.base.Objects;
 
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 
 import java.util.List;
 
@@ -10,14 +11,14 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 @Indexed
 @Entity
-public class Collection extends PropertyResource {
+public class Collection extends SchemePropertyResource {
 
   @ManyToMany
   @JoinTable(
-      name = "collection_concept",
       joinColumns = {@JoinColumn(name = "collection_id")},
       inverseJoinColumns = {@JoinColumn(name = "concept_id")})
   private List<Concept> members;
