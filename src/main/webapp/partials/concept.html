@@ -1,0 +1,25 @@
+<ol class="breadcrumb">
+    <li><a ng-href="#">Termed</a></li>
+    <li class="active">{{concept.properties.label.fi}}</li>
+</ol>
+
+<div class="row">
+    <div class="col-xs-8">
+        <a class="btn btn-sm btn-default" ng-href="#/concepts/{{concept.id}}/edit">
+            Muokkaa
+        </a>
+    </div>
+</div>
+
+<h1 class="page-header">
+    {{concept.properties.label.fi}}
+</h1>
+
+<hr>
+
+<span class="label label-default" ng-click="showJson = !showJson">json</span>
+
+<div ng-show="showJson">
+    <pre>{{concept | json}}</pre>
+</div>
+

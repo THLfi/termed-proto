@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import fi.thl.termed.model.Concept;
+import fi.thl.termed.model.Resource;
 
 public class ConceptRowMapper implements RowMapper<Concept> {
 
@@ -26,8 +27,8 @@ public class ConceptRowMapper implements RowMapper<Concept> {
     Concept concept = new Concept();
 
     concept.setId(resultSet.getString("id"));
-    concept.setType(conceptDao.findOne(resultSet.getString("type_id")));
-    concept.setParent(conceptDao.findOne(resultSet.getString("parent_id")));
+    concept.setType(new Resource(resultSet.getString("type_id")));
+    concept.setParent(new Resource((resultSet.getString("parent_id"))));
     concept.setProperties(propertyDao.getProperties(resultSet.getString("id")));
     concept.setChildren(conceptDao.getChildren(resultSet.getString("id")));
     concept.setRelated(relatedDao.getRelated(resultSet.getString("id")));

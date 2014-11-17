@@ -11,8 +11,8 @@ public class Concept extends Resource {
 
   private Map<String, Map<String, String>> properties;
 
-  private Concept type;
-  private Concept parent;
+  private Resource type;
+  private Resource parent;
 
   private List<Resource> children;
   private List<Resource> related;
@@ -38,7 +38,7 @@ public class Concept extends Resource {
     this.properties = properties;
   }
 
-  public Concept getType() {
+  public Resource getType() {
     return type;
   }
 
@@ -46,11 +46,11 @@ public class Concept extends Resource {
     return type != null ? type.getId() : null;
   }
 
-  public void setType(Concept type) {
+  public void setType(Resource type) {
     this.type = type;
   }
 
-  public Concept getParent() {
+  public Resource getParent() {
     return parent;
   }
 
@@ -58,7 +58,7 @@ public class Concept extends Resource {
     return parent != null ? parent.getId() : null;
   }
 
-  public void setParent(Concept parent) {
+  public void setParent(Resource parent) {
     this.parent = parent;
   }
 

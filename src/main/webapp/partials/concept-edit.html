@@ -1,0 +1,71 @@
+<ol class="breadcrumb">
+    <li><a ng-href="#">Termed</a></li>
+    <li><a ng-href="#/concepts/{{concept.id}}">{{concept.properties.label.fi}}</a></li>
+    <li class="active">muokkaus</li>
+</ol>
+
+<div class="row">
+    <div class="col-xs-8">
+        <button class="btn btn-sm btn-success" ng-click="save()">
+            Tallenna
+        </button>
+    </div>
+
+    <div class="col-xs-4 text-right">
+        <button class="btn btn-sm btn-danger" ng-click="remove()">
+            Poista
+        </button>
+    </div>
+</div>
+
+<div class="alert alert-danger" role="alert" ng-show="error">
+    <span class="glyphicon glyphicon-alert"></span> {{error}}
+</div>
+
+<h1 class="page-header">
+    {{concept.properties.label.fi}}
+</h1>
+
+<form role="form">
+    <div class="form-group">
+        <label for="label">Nimike</label>
+        <input type="text" class="form-control" id="label" ng-model="concept.properties.label.fi">
+    </div>
+    <div class="form-group">
+        <label for="altLabel">Vaihtoehtoiset nimikkeet</label>
+        <input type="text" class="form-control" id="altLabel"
+               ng-model="concept.properties.altLabel.fi">
+    </div>
+    <div class="form-group">
+        <label for="hiddenLabel">Piilotetut nimikkeet</label>
+        <input type="text" class="form-control" id="hiddenLabel"
+               ng-model="concept.properties.hiddenLabel.fi">
+    </div>
+    <div class="form-group">
+        <label for="definition">Määritelmä</label>
+        <textarea rows="3" class="form-control" id="definition"
+                  ng-model="concept.properties.definition.fi">
+        </textarea>
+    </div>
+    <div class="form-group">
+        <label for="note">Huomatukset</label>
+        <textarea rows="2" class="form-control" id="note"
+                  ng-model="concept.properties.note.fi">
+        </textarea>
+    </div>
+    <div class="form-group">
+        <label for="example">Esimerkki</label>
+        <textarea rows="2" class="form-control" id="example"
+                  ng-model="concept.properties.example.fi">
+        </textarea>
+    </div>
+</form>
+
+<hr>
+
+<span class="label label-default" ng-click="showJson = !showJson">json</span>
+
+<div ng-show="showJson">
+    <pre>{{concept | json}}</pre>
+</div>
+
