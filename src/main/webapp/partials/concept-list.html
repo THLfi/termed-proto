@@ -20,7 +20,7 @@
             </div>
             <div class="col-xs-7">
                 <div class="input-group input-group-sm">
-                    <input class="form-control" ng-model="searchConcept.properties.label.fi"
+                    <input class="form-control" ng-model="searchConcept.properties"
                            type="text">
 
                     <div class="input-group-addon">
@@ -33,8 +33,7 @@
         <table class="table">
             <thead>
             <tr>
-                <th>Nimi</th>
-                <th class="text-right">Päivitetty</th>
+                <th>Termi</th>
             </tr>
             </thead>
             <tbody>
@@ -42,7 +41,6 @@
                 <td>
                     <a ng-href="#/concepts/{{::concept.id}}">{{::concept.properties.label.fi}}</a>
                 </td>
-                <td class="text-right"></td>
             </tr>
             </tbody>
         </table>
@@ -54,5 +52,3 @@
 <div ng-show="showJson">
     <pre>{{concepts | json}}</pre>
 </div>
-
-<br>

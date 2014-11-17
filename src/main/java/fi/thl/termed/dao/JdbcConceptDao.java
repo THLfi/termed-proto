@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
@@ -25,17 +27,40 @@ public class JdbcConceptDao implements ConceptDao {
   private final Properties sqlQueries;
   private final JdbcConceptPropertyDao propertyDao;
   private final JdbcConceptRelatedDao relatedDao;
-  private final RowMapper<Concept> conceptRowMapper;
-  private final RowMapper<Resource> resourceRowMapper;
+
+  private final RowMapper<Concept> conceptRowMapper = new RowMapper<Concept>() {
+    @Override
+    public Concept mapRow(ResultSet resultSet, int i) throws SQLException {
+      Concept concept = new Concept();
+
+      concept.setId(resultSet.getString("id"));
+      concept.setType(findSimpleOne(resultSet.getString("type_id")));
+      concept.setParent(findOne(resultSet.getString("parent_id")));
+      concept.setChildren(findSimpleChildren(resultSet.getString("id")));
+      concept.setRelated(relatedDao.getRelated(resultSet.getString("id")));
+      concept.setProperties(propertyDao.getProperties(resultSet.getString("id")));
+
+      return concept;
+    }
+  };
+
+  private final RowMapper<Concept> simpleConceptRowMapper = new RowMapper<Concept>() {
+    @Override
+    public Concept mapRow(ResultSet resultSet, int i) throws SQLException {
+      Concept concept = new Concept();
+      concept.setId(resultSet.getString("id"));
+      concept.setProperties(propertyDao.getProperties(resultSet.getString("id")));
+      return concept;
+    }
+  };
+
 
   @Autowired
   public JdbcConceptDao(DataSource dataSource, Properties sqlQueries) {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
     this.sqlQueries = sqlQueries;
-    this.relatedDao = new JdbcConceptRelatedDao(dataSource, sqlQueries);
+    this.relatedDao = new JdbcConceptRelatedDao(dataSource, sqlQueries, simpleConceptRowMapper);
     this.propertyDao = new JdbcConceptPropertyDao(dataSource, sqlQueries);
-    this.conceptRowMapper = new ConceptRowMapper(this, propertyDao, relatedDao);
-    this.resourceRowMapper = new ResourceRowMapper();
   }
 
   @Override
@@ -65,9 +90,14 @@ public class JdbcConceptDao implements ConceptDao {
     relatedDao.saveRelated(concept.getId(), old.getRelated(), concept.getRelated());
   }
 
-  public List<Resource> getChildren(String parentId) {
+  private Concept findSimpleOne(String id) {
+    return exists(id) ? jdbcTemplate.queryForObject(sqlQueries.getProperty("concept-find-by-id"),
+                                                    simpleConceptRowMapper, id) : null;
+  }
+
+  private List<Concept> findSimpleChildren(String parentId) {
     return jdbcTemplate.query(sqlQueries.getProperty("concept-find-by-parent_id"),
-                              resourceRowMapper, parentId);
+                              simpleConceptRowMapper, parentId);
   }
 
   @Override
@@ -78,7 +108,7 @@ public class JdbcConceptDao implements ConceptDao {
 
   @Override
   public List<Concept> findAll() {
-    return jdbcTemplate.query(sqlQueries.getProperty("concept-find-all"), conceptRowMapper);
+    return jdbcTemplate.query(sqlQueries.getProperty("concept-find-all"), simpleConceptRowMapper);
   }
 
   @Override

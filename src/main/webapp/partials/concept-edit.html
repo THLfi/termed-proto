@@ -28,27 +28,40 @@
 
 <form role="form">
     <div class="form-group">
-        <label for="label">Nimike</label>
-        <input type="text" class="form-control" id="label" ng-model="concept.properties.label.fi">
+        <label for="label">Termi</label>
+        <input type="text" class="form-control" id="label"
+               ng-model="concept.properties.label.fi">
     </div>
     <div class="form-group">
-        <label for="altLabel">Vaihtoehtoiset nimikkeet</label>
+        <label for="altLabel">Vaihtoehtoiset termit</label>
         <input type="text" class="form-control" id="altLabel"
                ng-model="concept.properties.altLabel.fi">
     </div>
+
+    <br>
+
     <div class="form-group">
-        <label for="hiddenLabel">Piilotetut nimikkeet</label>
-        <input type="text" class="form-control" id="hiddenLabel"
-               ng-model="concept.properties.hiddenLabel.fi">
+        <label>Yläkäsite</label>
+
+        <div thl-select-concept class="form-control" ng-model="concept.parent"></div>
     </div>
     <div class="form-group">
+        <label>Assosiatiiviset käsitteet</label>
+
+        <div thl-select-concept class="form-control" ng-model="concept.related"
+             multiple="true"></div>
+    </div>
+
+    <br>
+
+    <div class="form-group">
         <label for="definition">Määritelmä</label>
-        <textarea rows="3" class="form-control" id="definition"
+        <textarea rows="2" class="form-control" id="definition"
                   ng-model="concept.properties.definition.fi">
         </textarea>
     </div>
     <div class="form-group">
-        <label for="note">Huomatukset</label>
+        <label for="note">Huomautus</label>
         <textarea rows="2" class="form-control" id="note"
                   ng-model="concept.properties.note.fi">
         </textarea>
@@ -59,6 +72,19 @@
                   ng-model="concept.properties.example.fi">
         </textarea>
     </div>
+
+    <br>
+
+    <div class="form-group">
+        <label for="hiddenLabel">Piilotetut termit</label>
+        <input type="text" class="form-control" id="hiddenLabel"
+               ng-model="concept.properties.hiddenLabel.fi">
+    </div>
+    <div class="form-group">
+        <label for="deprecatedLabel">Korvatut termit</label>
+        <input type="text" class="form-control" id="deprecatedLabel"
+               ng-model="concept.properties.deprecatedLabel.fi">
+    </div>
 </form>
 
 <hr>
@@ -68,4 +94,3 @@
 <div ng-show="showJson">
     <pre>{{concept | json}}</pre>
 </div>
-

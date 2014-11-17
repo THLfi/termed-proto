@@ -13,7 +13,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import fi.thl.termed.model.Resource;
+import fi.thl.termed.model.Concept;
 
 public class JdbcConceptRelatedDao {
 
@@ -22,31 +22,32 @@ public class JdbcConceptRelatedDao {
 
   private final JdbcTemplate jdbcTemplate;
   private final Properties sqlQueries;
-  private final RowMapper<Resource> resourceRowMapper;
+  private final RowMapper<Concept> conceptRowMapper;
 
 
-  public JdbcConceptRelatedDao(DataSource dataSource, Properties sqlQueries) {
+  public JdbcConceptRelatedDao(DataSource dataSource, Properties sqlQueries,
+                               RowMapper<Concept> conceptRowMapper) {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
     this.sqlQueries = sqlQueries;
-    this.resourceRowMapper = new ResourceRowMapper();
+    this.conceptRowMapper = conceptRowMapper;
   }
 
-  public void saveRelated(String conceptId, List<Resource> related) {
+  public void saveRelated(String conceptId, List<Concept> related) {
     saveRelated(conceptId, getRelated(conceptId), related);
   }
 
   public void saveRelated(String conceptId,
-                          List<Resource> oldRelatedResources,
-                          List<Resource> newRelatedResources) {
+                          List<Concept> oldRelatedConcepts,
+                          List<Concept> newRelatedConcepts) {
 
-    Set<Resource> oldRelated = Sets.newHashSet(oldRelatedResources);
-    Set<Resource> newRelated = Sets.newHashSet(newRelatedResources);
+    Set<Concept> oldRelated = Sets.newHashSet(oldRelatedConcepts);
+    Set<Concept> newRelated = Sets.newHashSet(newRelatedConcepts);
 
-    for (Resource removed : Sets.difference(oldRelated, newRelated)) {
+    for (Concept removed : Sets.difference(oldRelated, newRelated)) {
       removeRelated(conceptId, removed.getId());
     }
 
-    for (Resource added : Sets.difference(newRelated, oldRelated)) {
+    for (Concept added : Sets.difference(newRelated, oldRelated)) {
       insertRelated(conceptId, added.getId());
     }
   }
@@ -68,9 +69,9 @@ public class JdbcConceptRelatedDao {
   }
 
 
-  public List<Resource> getRelated(String conceptId) {
+  public List<Concept> getRelated(String conceptId) {
     return jdbcTemplate.query(sqlQueries.getProperty("concept-find-related"),
-                              resourceRowMapper, conceptId);
+                              conceptRowMapper, conceptId);
   }
 
   public void removeRelated(String conceptId) {

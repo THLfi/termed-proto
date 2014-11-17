@@ -13,7 +13,69 @@
 
 <h1 class="page-header">
     {{concept.properties.label.fi}}
+    <small>{{concept.properties.altLabel.fi}}</small>
 </h1>
+
+<dl>
+    <dt>Yläkäsitteet</dt>
+    <dd>
+        <span ng-show="concept.parent">
+            <span ng-repeat="parent in parents">
+                <span ng-if="!$last">
+                    <a ng-href="#/concepts/{{parent.id}}"
+                       ng-if="!$last">{{parent.properties.label.fi}}</a>
+                    &gt;
+                </span>
+                <span ng-if="$last">
+                    {{parent.properties.label.fi}}
+                </span>
+            </span>
+        </span>
+        <span ng-show="!concept.parent">
+            -
+        </span>
+    </dd>
+    <dt>Alakäsitteet</dt>
+    <dd>
+        <span ng-repeat="child in concept.children">
+            <a ng-href="#/concepts/{{child.id}}">{{child.properties.label.fi}}</a><span
+                ng-show="!$last">,</span>
+        </span>
+        <span ng-show="!concept.children || concept.children.length == 0">
+            -
+        </span>
+    </dd>
+    <dt>Assosiatiiviset käsitteet</dt>
+    <dd>
+        <span ng-repeat="r in concept.related">
+            <a ng-href="#/concepts/{{r.id}}">{{r.properties.label.fi}}</a><span
+                ng-show="!$last">,</span>
+        </span>
+        <span ng-show="!concept.related || concept.related.length == 0">
+            -
+        </span>
+    </dd>
+</dl>
+
+<br>
+
+<dl>
+    <dt>Määritelmä</dt>
+    <dd>{{concept.properties.definition.fi || '-'}}</dd>
+    <dt>Huomautus</dt>
+    <dd>{{concept.properties.note.fi || '-'}}</dd>
+    <dt>Esimerkki</dt>
+    <dd>{{concept.properties.example.fi || '-'}}</dd>
+</dl>
+
+<br>
+
+<dl>
+    <dt>Piilotetut termit</dt>
+    <dd>{{concept.properties.hiddenLabel.fi || '-'}}</dd>
+    <dt>Korvatut termit</dt>
+    <dd>{{concept.properties.deprecatedLabel.fi || '-'}}</dd>
+</dl>
 
 <hr>
 

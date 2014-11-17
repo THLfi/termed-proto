@@ -25,7 +25,8 @@ App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
   }
 });
 
-App.controller('ConceptEditCtrl', function($scope, $routeParams, $location, Concept, ConceptList) {
+App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
+        Concept, ConceptList) {
 
   Concept.get({
     id: $routeParams.id
@@ -42,22 +43,36 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location, Conc
   }
 
   $scope.remove = function() {
-   $scope.concept.$delete({
-     id: $routeParams.id
-   }, function() {
-     $location.path('/');
-   });
+    $scope.concept.$delete({
+      id: $routeParams.id
+    }, function() {
+      $location.path('/');
+    });
   }
 
 });
 
-App.controller('ConceptCtrl', function($scope, $routeParams, Concept, ConceptList) {
+App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
+        ConceptList) {
+
+  function collectParents(concept) {
+    var parents = [concept];
+    function recursiveCollectParents(concept) {
+      if (concept.parent) {
+        parents.unshift(concept.parent);
+        recursiveCollectParents(concept.parent);
+      }
+    }
+    recursiveCollectParents(concept);
+    return parents;
+  }
 
   Concept.get({
-      id: $routeParams.id
-    }, function(concept) {
-      $scope.concept = concept;
-    });
+    id: $routeParams.id
+  }, function(concept) {
+    $scope.concept = concept;
+    $scope.parents = collectParents(concept);
+  });
 });
 
 App.config(function($routeProvider) {
