@@ -35,7 +35,7 @@ CREATE TABLE ${schema}.concept_properties (
     property_id varchar(255) NOT NULL REFERENCES ${schema}.property(id),
     lang varchar(2) NOT NULL REFERENCES ${schema}.lang(id),
     value varchar(10000) NOT NULL,
-    CONSTRAINT concept_propertie_uniques UNIQUE(subject_id, property_id, lang, value)
+    CONSTRAINT concept_properties_unique UNIQUE(subject_id, property_id, lang, value)
 );
 
 CREATE TABLE ${schema}.collection (
@@ -53,5 +53,5 @@ CREATE TABLE ${schema}.collection_properties (
     property_id varchar(255) NOT NULL REFERENCES ${schema}.property(id),
     lang varchar(2) NOT NULL REFERENCES ${schema}.lang(id),
     value varchar(10000) NOT NULL,
-    CONSTRAINT collection_proper_uniqueties UNIQUE(subject_id, property_id, lang, value)
+    CONSTRAINT collection_properties_unique UNIQUE(subject_id, property_id, lang, value)
 );
