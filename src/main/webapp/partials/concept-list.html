@@ -1,9 +1,9 @@
 <ol class="breadcrumb">
-    <li class="active">Termed</li>
+    <li class="active">Termipankki</li>
 </ol>
 
 <h1 class="page-header">
-    Termed
+    Termipankki
 </h1>
 
 <div class="panel panel-default">
@@ -20,8 +20,8 @@
             </div>
             <div class="col-xs-7">
                 <div class="input-group input-group-sm">
-                    <input class="form-control" ng-model="searchConcept.properties"
-                           type="text">
+                    <input class="form-control" ng-model="query"
+                           ng-change="searchConcepts(query)" type="text">
 
                     <div class="input-group-addon">
                         <span class="glyphicon glyphicon-search"></span>
@@ -37,9 +37,9 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="concept in concepts | filter:searchConcept | orderBy:'properties.label.fi'">
+            <tr ng-repeat="concept in concepts">
                 <td>
-                    <a ng-href="#/concepts/{{::concept.id}}">{{::concept.properties.label.fi}}</a>
+                    <a ng-href="#/concepts/{{concept.id}}">{{concept.properties.label.fi}}</a>
                 </td>
             </tr>
             </tbody>

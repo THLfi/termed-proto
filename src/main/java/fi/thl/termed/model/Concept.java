@@ -1,6 +1,7 @@
 package fi.thl.termed.model;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -39,6 +40,9 @@ public class Concept extends Resource {
   }
 
   public void addProperty(String propertyId, String lang, String value) {
+    if (Strings.isNullOrEmpty(value)) {
+      return;
+    }
     if (properties == null) {
       properties = Maps.newHashMap();
     }

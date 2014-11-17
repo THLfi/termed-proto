@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 import fi.thl.termed.dao.ConceptDao;
 import fi.thl.termed.model.Concept;
 
@@ -49,13 +47,23 @@ public class ConceptJsonServiceImpl implements ConceptJsonService {
 
   @Override
   public JsonObject get(String id) {
-    return conceptDao.exists(id) ? gson.toJsonTree(conceptDao.findOne(id)).getAsJsonObject()
+    return conceptDao.exists(id) ? gson.toJsonTree(conceptDao.get(id)).getAsJsonObject()
                                  : new JsonObject();
   }
 
   @Override
-  public JsonArray query(String query, int first, int max, List<String> order) {
-    return gson.toJsonTree(conceptDao.findAll()).getAsJsonArray();
+  public JsonArray query() {
+    return gson.toJsonTree(conceptDao.query()).getAsJsonArray();
+  }
+
+  @Override
+  public JsonArray query(int max) {
+    return gson.toJsonTree(conceptDao.query(max)).getAsJsonArray();
+  }
+
+  @Override
+  public JsonArray query(String query, int max) {
+    return gson.toJsonTree(conceptDao.query(query, max)).getAsJsonArray();
   }
 
   @Override

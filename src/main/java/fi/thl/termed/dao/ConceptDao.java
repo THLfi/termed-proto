@@ -8,9 +8,13 @@ public interface ConceptDao {
 
   Concept save(Concept concept);
 
-  Concept findOne(String id);
+  Concept get(String id);
 
-  List<Concept> findAll();
+  List<Concept> query();
+
+  List<Concept> query(int max);
+
+  List<Concept> query(String query, int max);
 
   boolean exists(String id);
 

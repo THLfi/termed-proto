@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.List;
-
 import fi.thl.termed.service.ConceptJsonService;
 
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
@@ -38,10 +36,8 @@ public class ConceptJsonRestController {
   @ResponseBody
   public JsonArray query(
       @RequestParam(value = "query", required = false, defaultValue = "") String query,
-      @RequestParam(value = "first", required = false, defaultValue = "0") int first,
-      @RequestParam(value = "max", required = false, defaultValue = "-1") int max,
-      @RequestParam(value = "order", required = false, defaultValue = "") List<String> order) {
-    return service.query(query, first, max, order);
+      @RequestParam(value = "max", required = false, defaultValue = "100") int max) {
+    return query.isEmpty() ? service.query(max) : service.query(query, max);
   }
 
   @RequestMapping(method = GET, value = "concepts/{id}")

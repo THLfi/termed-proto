@@ -10,7 +10,13 @@ App.factory('ConceptList', function($resource) {
 
 App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
 
-  $scope.concepts = ConceptList.query();
+  $scope.searchConcepts = function(query) {
+    ConceptList.query({
+      query: query
+    }, function(concepts) {
+      $scope.concepts = concepts;
+    });
+  }
 
   $scope.newConcept = function() {
     ConceptList.save({
@@ -23,6 +29,8 @@ App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
       $location.path('/concepts/' + concept.id + '/edit');
     });
   }
+
+  $scope.searchConcepts();
 });
 
 App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,

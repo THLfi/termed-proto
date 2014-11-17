@@ -32,14 +32,12 @@ public class JdbcConceptDao implements ConceptDao {
     @Override
     public Concept mapRow(ResultSet resultSet, int i) throws SQLException {
       Concept concept = new Concept();
-
       concept.setId(resultSet.getString("id"));
+      concept.setParent(get(resultSet.getString("parent_id")));
       concept.setType(findSimpleOne(resultSet.getString("type_id")));
-      concept.setParent(findOne(resultSet.getString("parent_id")));
       concept.setChildren(findSimpleChildren(resultSet.getString("id")));
       concept.setRelated(relatedDao.getRelated(resultSet.getString("id")));
       concept.setProperties(propertyDao.getProperties(resultSet.getString("id")));
-
       return concept;
     }
   };
@@ -66,7 +64,7 @@ public class JdbcConceptDao implements ConceptDao {
   @Override
   public Concept save(Concept concept) {
     if (concept.hasId() && exists(concept.getId())) {
-      update(findOne(concept.getId()), concept);
+      update(get(concept.getId()), concept);
     } else {
       insert(concept);
     }
@@ -101,19 +99,32 @@ public class JdbcConceptDao implements ConceptDao {
   }
 
   @Override
-  public Concept findOne(String id) {
+  public Concept get(String id) {
     return exists(id) ? jdbcTemplate.queryForObject(sqlQueries.getProperty("concept-find-by-id"),
                                                     conceptRowMapper, id) : null;
   }
 
   @Override
-  public List<Concept> findAll() {
-    return jdbcTemplate.query(sqlQueries.getProperty("concept-find-all"), simpleConceptRowMapper);
+  public List<Concept> query() {
+    return jdbcTemplate.query(sqlQueries.getProperty("concept-find-all"),
+                              simpleConceptRowMapper);
+  }
+
+  @Override
+  public List<Concept> query(int max) {
+    return jdbcTemplate.query(sqlQueries.getProperty("concept-find-top-n"),
+                              simpleConceptRowMapper, max);
+  }
+
+  @Override
+  public List<Concept> query(String query, int max) {
+    return jdbcTemplate.query(sqlQueries.getProperty("concept-find-top-n-by-property-value"),
+                              simpleConceptRowMapper, query, max);
   }
 
   @Override
   public void remove(String id) {
-    remove(findOne(id));
+    remove(get(id));
   }
 
   private void remove(Concept concept) {

@@ -17,25 +17,19 @@ App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
           });
         },
         formatResult: function(result) {
-          console.log("formatResult", result);
-          return result.properties ? result.properties.label.fi : result.id;
+          return result.properties.label.fi;
         },
         formatSelection: function(result) {
-          console.log("formatSelection", result);
-          return  result.properties ? result.properties.label.fi : result.id;
+          return  result.properties.label.fi;
         }
       });
 
       elem.on('change', function(event) {
         scope.$apply(function() {
           if (!elem.select2('data')) {
-            console.log("clear");
-
             scope.ngModel = "";
           } else {
             if (attrs.multiple) {
-              console.log("set many");
-
               var data = elem.select2('data');
               var idObjects = [];
               for ( var i = 0; i < data.length; i++) {
@@ -45,8 +39,6 @@ App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
               }
               scope.ngModel = idObjects;
             } else {
-              console.log("set one");
-
               scope.ngModel = {
                 id: elem.select2('data').id
               };
@@ -56,8 +48,6 @@ App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
       });
 
       scope.$watch('ngModel', function(ngModel) {
-        console.log("model changed: ", ngModel);
-
         if (!ngModel) {
           if (elem.select2('data')) {
             // defer clean to avoid element change inside $watch

@@ -16,11 +16,12 @@
     <entry key="concept-find-by-parent_id-is-null">
         select * from termed.concept where parent_id is null
     </entry>
-    <entry key="concept-find-by-label">
-        select *
+    <entry key="concept-find-top-n-by-property-value">
+        select distinct id, type_id, parent_id
         from termed.concept
         join termed.concept_property on id = concept_id
-        where property_id = 'label' and lower(value) like lower(? || '%')
+        where lower(value) like lower(? || '%')
+        limit ?
     </entry>
     <entry key="concept-find-by-parent_id-is-null">
         select * from termed.concept where parent_id is null
@@ -33,6 +34,9 @@
     </entry>
     <entry key="concept-find-all">
         select * from termed.concept
+    </entry>
+    <entry key="concept-find-top-n">
+        select * from termed.concept limit ?
     </entry>
     <entry key="concept-count-all">
         select count(*) from termed.concept

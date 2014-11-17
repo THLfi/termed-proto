@@ -4,8 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import java.util.List;
-
 public interface ConceptJsonService {
 
   JsonObject save(JsonObject concept);
@@ -14,7 +12,11 @@ public interface ConceptJsonService {
 
   JsonObject get(String id);
 
-  JsonArray query(String query, int first, int max, List<String> order);
+  JsonArray query();
+
+  JsonArray query(int max);
+
+  JsonArray query(String query, int max);
 
   void remove(String id);
 
