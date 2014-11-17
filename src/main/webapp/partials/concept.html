@@ -61,10 +61,8 @@
     <dt>Alakäsitteet</dt>
     <dd>
         <span ng-repeat="n in concept.narrower | orderBy:prefLabelFi">
-            <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
-                <thl-property-values values="n.properties.prefLabel"
-                                     lang="fi"></thl-property-values>
-            </a><span
+            <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}"><thl-property-values
+                    values="n.properties.prefLabel" lang="fi"></thl-property-values></a><span
                 ng-show="!$last" class="text-muted">, </span>
         </span>
         <span ng-show="!concept.narrower || concept.narrower.length == 0">
@@ -74,10 +72,8 @@
     <dt>Assosiatiiviset käsitteet</dt>
     <dd>
         <span ng-repeat="r in concept.related | orderBy:prefLabelFi">
-            <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}">
-                <thl-property-values values="r.properties.prefLabel"
-                                     lang="fi"></thl-property-values>
-            </a><span
+            <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}"><thl-property-values
+                    values="r.properties.prefLabel" lang="fi"></thl-property-values></a><span
                 ng-show="!$last" class="text-muted">, </span>
         </span>
         <span ng-show="!concept.related || concept.related.length == 0">
