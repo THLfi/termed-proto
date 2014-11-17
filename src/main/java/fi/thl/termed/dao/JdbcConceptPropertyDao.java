@@ -85,9 +85,8 @@ public class JdbcConceptPropertyDao {
               properties.put(propertyId, Sets.<PropertyValue>newHashSet());
             }
 
-            properties.get(resultSet.getString("property_id")).add(
-                new PropertyValue(resultSet.getString("lang"),
-                                  resultSet.getString("value")));
+            properties.get(propertyId).add(new PropertyValue(resultSet.getString("lang"),
+                                                             resultSet.getString("value")));
           }
         }, conceptId);
 
