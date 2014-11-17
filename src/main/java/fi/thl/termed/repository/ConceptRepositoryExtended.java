@@ -6,6 +6,6 @@ public interface ConceptRepositoryExtended {
 
   Concept saveAndUpdateRelated(Concept concept);
 
-  void deleteAndUpdateRelated(Concept concept);
+  void deleteAndUpdateRelatedAndCollections(Concept concept);
 
 }

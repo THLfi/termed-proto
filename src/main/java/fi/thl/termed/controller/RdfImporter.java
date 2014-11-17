@@ -2,6 +2,7 @@ package fi.thl.termed.controller;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -11,7 +12,9 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,12 +60,16 @@ public class RdfImporter {
   private ConceptRepository conceptRepository;
   private CollectionRepository collectionRepository;
 
-  private Set<Property> acceptedProperties = Sets.newHashSet(SKOS.prefLabel,
-                                                             SKOS.altLabel,
-                                                             SKOS.hiddenLabel,
-                                                             SKOS.note,
-                                                             SKOS.definition,
-                                                             SKOS.example);
+  private Map<Property, String> propertyMap = ImmutableMap.<Property, String>builder()
+      .put(DC.title, "prefLabel")
+      .put(RDFS.label, "prefLabel")
+      .put(SKOS.prefLabel, "prefLabel")
+      .put(SKOS.altLabel, "altLabel")
+      .put(SKOS.hiddenLabel, "hiddenLabel")
+      .put(SKOS.note, "note")
+      .put(SKOS.definition, "definition")
+      .put(SKOS.example, "example")
+      .build();
 
   private Set<String> acceptedLanguages = Sets.newHashSet("", "fi", "en", "sv");
 
@@ -78,7 +85,7 @@ public class RdfImporter {
       new Function<Statement, PropertyValue>() {
         @Override
         public PropertyValue apply(Statement s) {
-          return new PropertyValue(localName(s.getPredicate()),
+          return new PropertyValue(propertyMap.get(s.getPredicate()),
                                    s.getLanguage(),
                                    s.getLiteral().getString());
         }
@@ -88,7 +95,7 @@ public class RdfImporter {
     @Override
     public boolean apply(Statement s) {
       RDFNode object = s.getObject();
-      return acceptedProperties.contains(s.getPredicate()) && object.isLiteral()
+      return propertyMap.containsKey(s.getPredicate()) && object.isLiteral()
              && acceptedLanguages.contains(object.asLiteral().getLanguage());
     }
   };
@@ -219,13 +226,6 @@ public class RdfImporter {
   private List<PropertyValue> readProperties(Model model, Resource r) {
     return newArrayList(transform(filter(model.listStatements(r, null, (RDFNode) null).toList(),
                                          isAcceptedLiteralStatement), statementsToPropertyValues));
-  }
-
-  private String localName(Resource resource) {
-    String uri = resource.getURI();
-    int idx = uri.lastIndexOf('#');
-    idx = idx == -1 ? uri.lastIndexOf('/') : idx;
-    return uri.substring(idx + 1);
   }
 
 }

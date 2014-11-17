@@ -3,6 +3,7 @@ package fi.thl.termed.util;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -13,6 +14,7 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 
@@ -29,9 +31,18 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
 
     public SerializedBroaderConcept(Concept concept) {
       super(concept);
-      // recursive constructor to build whole ancestor path
+      // recursive constructor, with cycle check, to build the whole ancestor path
       if (concept.getBroader() != null) {
-        this.broader = new SerializedBroaderConcept(concept.getBroader());
+        this.broader =
+            new SerializedBroaderConcept(concept.getBroader(), Sets.newHashSet(concept.getId()));
+      }
+    }
+
+    private SerializedBroaderConcept(Concept concept, Set<String> processed) {
+      super(concept);
+      if (concept.getBroader() != null && !processed.contains(concept.getBroader().getId())) {
+        processed.add(concept.getId());
+        this.broader = new SerializedBroaderConcept(concept.getBroader(), processed);
       }
     }
 
