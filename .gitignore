@@ -1,0 +1,12 @@
+jdbc.*.properties
+!jdbc.test.properties
+bin
+target
+index
+.classpath
+.project
+.settings
+.DS_Store
+.idea
+*.iml
+*.log

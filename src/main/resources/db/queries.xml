@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="concept-insert-id-index-type_id-parent_id">
+        insert into termed.concept (id, index, type_id, parent_id)
+        values (?, ?, ?, ?)
+    </entry>
+    <entry key="concept-update-index-type_id-parent_id-by-id">
+        update termed.concept
+        set index = ?, type_id = ?, parent_id = ?
+        where id = ?
+    </entry>
+    <entry key="concept-find-by-id">
+        select * from termed.concept where id = ?
+    </entry>
+    <entry key="concept-find-by-parent_id">
+        select * from termed.concept where parent_id = ?
+    </entry>
+    <entry key="concept-find-by-parent_id-is-null">
+        select * from termed.concept where parent_id is null
+    </entry>
+    <entry key="concept-find-by-label">
+        select *
+        from termed.concept
+        join termed.concept_properties on id = concept_id
+        where property_id = 'label' and lower(value) like lower(? || '%')
+    </entry>
+    <entry key="concept-find-by-parent_id-is-null">
+        select * from termed.concept where parent_id is null
+    </entry>
+    <entry key="concept-find-all">
+        select * from termed.concept
+    </entry>
+    <entry key="concept-count-all">
+        select count(*) from termed.concept
+    </entry>
+    <entry key="concept-count-by-id">
+        select count(*) from termed.concept where id = ?
+    </entry>
+    <entry key="concept-delete-by-id">
+        delete from termed.concept where id = ?
+    </entry>
+    <entry key="find-property-by-concept_id">
+        select * from termed.concept_properties where concept_id = ?
+    </entry>
+    <entry key="property-insert-concept_id-property_id-lang-value">
+        insert into termed.concept_properties (concept_id, property_id, lang, value)
+        values (?, ?, ?, ?)
+    </entry>
+    <entry key="property-update-value-by-concept_id-and-property_id-and-lang">
+        update termed.concept_properties
+        set value = ?
+        where concept_id = ? and property_id = ? and lang = ?
+    </entry>
+    <entry key="property-delete-by-concept_id-and-property_id-and-lang-and-value">
+        delete from termed.concept_properties where
+        concept_id = ? and property_id = ? and lang = ? and value = ?
+    </entry>
+    <entry key="property-delete-by-concept_id">
+        delete from termed.concept_properties where concept_id = ?
+    </entry>
+</properties>
