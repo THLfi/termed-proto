@@ -40,9 +40,8 @@
             <tr ng-repeat="concept in concepts">
                 <td>
                     <a ng-href="#/concepts/{{concept.id}}">
-                        <span ng-repeat="prefLabel in concept.properties.prefLabel | filter:lang='fi'">
-                            {{prefLabel.value}}<span ng-show="!$last">, </span>
-                        </span>
+                        <thl-concept-values values="concept.properties.prefLabel"
+                                            lang="fi"></thl-concept-values>
                     </a>
                 </td>
             </tr>

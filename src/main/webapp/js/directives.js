@@ -1,3 +1,45 @@
+App.directive('thlConceptValues', function() {
+  return {
+    restrict: 'E',
+    scope: {
+      values: '=',
+      lang: '@'
+    },
+    templateUrl: 'partials/concept-values.html',
+    controller: function($scope, Config) {
+      $scope.langPriority = Config.langPriority;
+    }
+  };
+});
+
+App.directive('thlConceptValuesEdit', function() {
+  return {
+    restrict: 'E',
+    scope: {
+      values: '='
+    },
+    templateUrl: 'partials/concept-values-edit.html',
+    controller: function($scope, Config) {
+      $scope.addPropertyValue = function(values) {
+        values.push({
+          lang: 'fi',
+          value: ''
+        });
+      }
+      $scope.removePropertyValue = function(values, value) {
+        values.splice(values.indexOf(value), 1);
+        if (values.length == 0) {
+          values.push({
+            lang: 'fi',
+            value: ''
+          });
+        }
+      }
+      $scope.langPriority = Config.langPriority;
+    }
+  };
+});
+
 App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
   return {
     scope: {

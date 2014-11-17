@@ -1,5 +1,6 @@
 package fi.thl.termed.dao;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -56,7 +57,9 @@ public class JdbcConceptPropertyDao {
 
     for (Map.Entry<String, PropertyValue> added : Sets.difference(newProperties, oldProperties)) {
       PropertyValue value = added.getValue();
-      insertPropertyValue(conceptId, added.getKey(), value.getLang(), value.getValue());
+      if (!Strings.isNullOrEmpty(value.getValue())) {
+        insertPropertyValue(conceptId, added.getKey(), value.getLang(), value.getValue());
+      }
     }
   }
 

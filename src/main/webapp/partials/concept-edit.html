@@ -2,9 +2,9 @@
     <li><a ng-href="#">Termipankki</a></li>
     <li>
         <a ng-href="#/concepts/{{concept.id}}">
-            <span ng-repeat="prefLabel in concept.properties.prefLabel | filter:lang='fi'">
-                {{prefLabel.value}}<span ng-show="!$last">, </span>
-            </span>
+            <thl-concept-values values="concept.properties.prefLabel"
+                                lang="fi"></thl-concept-values>
+
         </a>
     </li>
     <li class="active">muokkaus</li>
@@ -29,56 +29,21 @@
 </div>
 
 <h1 class="page-header">
-    <span ng-repeat="prefLabel in concept.properties.prefLabel | filter:lang='fi'">
-        {{prefLabel.value}}<span ng-show="!$last">, </span>
-    </span>
+    <thl-concept-values values="concept.properties.prefLabel" lang="fi"></thl-concept-values>
     <small>
-        <span ng-repeat="altLabel in concept.properties.altLabel | filter:lang='fi'">
-            {{altLabel.value}}<span ng-show="!$last">, </span>
-        </span>
+        <thl-concept-values values="concept.properties.altLabel" lang="fi"></thl-concept-values>
     </small>
 </h1>
 
 <form role="form">
     <div class="form-group">
         <label>Ensisijainen termi</label>
+        <thl-concept-values-edit values="concept.properties.prefLabel"></thl-concept-values-edit>
 
-        <div class="input-group"
-             ng-repeat="prefLabel in concept.properties.prefLabel | orderBy:langPriority">
-            <div class="input-group-btn">
-                <button type="button" class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown">
-                    <code class="text-muted">{{prefLabel.lang}}</code>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                    <li><a ng-click="prefLabel.lang = 'fi'">fi</a></li>
-                    <li><a ng-click="prefLabel.lang = 'sv'">sv</a></li>
-                    <li><a ng-click="prefLabel.lang = 'en'">en</a></li>
-                </ul>
-            </div>
-            <input type="text" class="form-control" ng-model="prefLabel.value">
-        </div>
     </div>
     <div class="form-group">
         <label>Vaihtoehtoiset termit</label>
-
-        <div class="input-group"
-             ng-repeat="altLabel in concept.properties.altLabel | orderBy:langPriority">
-            <div class="input-group-btn">
-                <button type="button" class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown">
-                    <code class="text-muted">{{altLabel.lang}}</code>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                    <li><a ng-click="altLabel.lang = 'fi'">fi</a></li>
-                    <li><a ng-click="altLabel.lang = 'sv'">sv</a></li>
-                    <li><a ng-click="altLabel.lang = 'en'">en</a></li>
-                </ul>
-            </div>
-            <input type="text" class="form-control" ng-model="altLabel.value">
-        </div>
+        <thl-concept-values-edit values="concept.properties.altLabel"></thl-concept-values-edit>
     </div>
 
     <br>
@@ -86,47 +51,49 @@
     <div class="form-group">
         <label>Yläkäsite</label>
 
-        <div thl-select-concept class="form-control" ng-model="concept.parent"></div>
+        <div class="row">
+            <div class="col-sm-10">
+                <div thl-select-concept class="form-control" ng-model="concept.parent"></div>
+            </div>
+        </div>
+
     </div>
     <div class="form-group">
         <label>Assosiatiiviset käsitteet</label>
 
-        <div thl-select-concept class="form-control" ng-model="concept.related"
-             multiple="true"></div>
+        <div class="row">
+            <div class="col-sm-10">
+                <div thl-select-concept class="form-control" ng-model="concept.related"
+                     multiple="true"></div>
+            </div>
+        </div>
     </div>
 
     <br>
 
     <div class="form-group">
-        <label for="definition">Määritelmä</label>
-        <textarea rows="2" class="form-control" id="definition"
-                  ng-model="concept.properties.definition.fi">
-        </textarea>
+        <label>Määritelmä</label>
+        <thl-concept-values-edit values="concept.properties.definition"></thl-concept-values-edit>
     </div>
     <div class="form-group">
-        <label for="note">Huomautus</label>
-        <textarea rows="2" class="form-control" id="note"
-                  ng-model="concept.properties.note.fi">
-        </textarea>
+        <label>Huomautus</label>
+        <thl-concept-values-edit values="concept.properties.note"></thl-concept-values-edit>
     </div>
     <div class="form-group">
-        <label for="example">Esimerkki</label>
-        <textarea rows="2" class="form-control" id="example"
-                  ng-model="concept.properties.example.fi">
-        </textarea>
+        <label>Esimerkki</label>
+        <thl-concept-values-edit values="concept.properties.example"></thl-concept-values-edit>
     </div>
 
     <br>
 
     <div class="form-group">
-        <label for="hiddenLabel">Piilotetut termit</label>
-        <input type="text" class="form-control" id="hiddenLabel"
-               ng-model="concept.properties.hiddenLabel.fi">
+        <label>Piilotetut termit</label>
+        <thl-concept-values-edit values="concept.properties.hiddenLabel"></thl-concept-values-edit>
     </div>
     <div class="form-group">
-        <label for="deprecatedLabel">Korvatut termit</label>
-        <input type="text" class="form-control" id="deprecatedLabel"
-               ng-model="concept.properties.deprecatedLabel.fi">
+        <label>Korvatut termit</label>
+        <thl-concept-values-edit
+                values="concept.properties.deprecatedLabel"></thl-concept-values-edit>
     </div>
 </form>
 

@@ -9,14 +9,12 @@ App.factory('ConceptList', function($resource) {
 });
 
 App.factory('Config', function() {
-  var langPriority = {
-    fi: 0,
-    sv: 1,
-    en: 2
-  }
   return {
     langPriority: function(value) {
-      return langPriority[value.lang]
+      if (value.lang == 'fi') return 0;
+      if (value.lang == 'sv') return 1;
+      if (value.lang == 'en') return 2;
+      return value.lang;
     }
   }
 });
@@ -49,9 +47,33 @@ App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
 App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
         Concept, ConceptList, Config) {
 
+  function ensureProperty(properties, property) {
+    if (!properties[property]) {
+      var values = []
+      properties[property] = values;
+      ensureValue(values);
+    }
+  }
+
+  function ensureValue(values) {
+    if (values.length == 0) {
+      values.push({
+        lang: 'fi',
+        value: ''
+      });
+    }
+  }
+
   Concept.get({
     id: $routeParams.id
   }, function(concept) {
+    ensureProperty(concept.properties, 'prefLabel');
+    ensureProperty(concept.properties, 'altLabel');
+    ensureProperty(concept.properties, 'definition');
+    ensureProperty(concept.properties, 'note');
+    ensureProperty(concept.properties, 'example');
+    ensureProperty(concept.properties, 'hiddenLabel');
+    ensureProperty(concept.properties, 'deprecatedLabel');
     $scope.concept = concept;
   });
 
@@ -70,8 +92,6 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
       $location.path('/');
     });
   }
-
-  $scope.langPriority = Config.langPriority;
 
 });
 

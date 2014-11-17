@@ -1,0 +1,31 @@
+<div class="row" ng-repeat="value in values | orderBy:langPriority">
+    <div class="col-sm-10">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default dropdown-toggle"
+                        data-toggle="dropdown">
+                    <code class="text-muted">{{value.lang}}</code>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li><a ng-click="value.lang = 'fi'">fi</a></li>
+                    <li><a ng-click="value.lang = 'sv'">sv</a></li>
+                    <li><a ng-click="value.lang = 'en'">en</a></li>
+                </ul>
+            </div>
+            <input type="text" class="form-control" ng-model="value.value">
+        </div>
+    </div>
+    <div class="col-sm-1">
+    </div>
+    <div class="col-sm-1 text-right">
+        <button class="btn btn-default"
+                ng-click="removePropertyValue(values, value)">
+            <span class="glyphicon glyphicon-remove"></span>
+        </button>
+    </div>
+</div>
+<button class="btn btn-success btn-xs" style="margin:10px 0 5px 0"
+        ng-click="addPropertyValue(values)">
+    <span class="glyphicon glyphicon-plus"></span> Lisää
+</button>

@@ -1,9 +1,7 @@
 <ol class="breadcrumb">
     <li><a ng-href="#">Termipankki</a></li>
     <li class="active">
-        <span ng-repeat="prefLabel in concept.properties.prefLabel | filter:lang='fi'">
-            {{prefLabel.value}}<span ng-show="!$last">, </span>
-        </span>
+        <thl-concept-values values="concept.properties.prefLabel" lang="fi"></thl-concept-values>
     </li>
 </ol>
 
@@ -16,28 +14,20 @@
 </div>
 
 <h1 class="page-header">
-    <span ng-repeat="prefLabel in concept.properties.prefLabel | filter:lang='fi'">
-        {{prefLabel.value}}<span ng-show="!$last">, </span>
-    </span>
+    <thl-concept-values values="concept.properties.prefLabel" lang="fi"></thl-concept-values>
     <small>
-        <span ng-repeat="altLabel in concept.properties.altLabel | filter:lang='fi'">
-            {{altLabel.value}}<span ng-show="!$last">, </span>
-        </span>
+        <thl-concept-values values="concept.properties.altLabel" lang="fi"></thl-concept-values>
     </small>
 </h1>
 
 <dl>
     <dt>Käytettävä termi</dt>
     <dd>
-        <div ng-repeat="prefLabel in concept.properties.prefLabel | orderBy:langPriority">
-            <code class="text-muted">{{prefLabel.lang}}</code> {{prefLabel.value}}
-        </div>
+        <thl-concept-values values="concept.properties.prefLabel"></thl-concept-values>
     </dd>
     <dt>Vaihtoehtoiset termit</dt>
     <dd>
-        <div ng-repeat="altLabel in concept.properties.altLabel | orderBy:orderBy:langPriority">
-            <code class="text-muted">{{altLabel.lang}}</code> {{altLabel.value}}
-        </div>
+        <thl-concept-values values="concept.properties.altLabel"></thl-concept-values>
     </dd>
 </dl>
 
@@ -47,12 +37,15 @@
         <span ng-show="concept.parent">
             <span ng-repeat="parent in parents">
                 <span ng-if="!$last">
-                    <a ng-href="#/concepts/{{parent.id}}"
-                       ng-if="!$last">{{parent.properties.label.fi}}</a>
+                    <a ng-href="#/concepts/{{parent.id}}" ng-if="!$last">
+                        <thl-concept-values values="parent.properties.prefLabel"
+                                            lang="fi"></thl-concept-values>
+                    </a>
                     <span class="text-muted">&gt;</span>
                 </span>
                 <span ng-if="$last">
-                    {{parent.properties.label.fi}}
+                    <thl-concept-values values="parent.properties.prefLabel"
+                                        lang="fi"></thl-concept-values>
                 </span>
             </span>
         </span>
@@ -62,9 +55,11 @@
     </dd>
     <dt>Alakäsitteet</dt>
     <dd>
-        <span ng-repeat="child in concept.children | orderBy:'properties.label.fi'">
-            <a ng-href="#/concepts/{{child.id}}">{{child.properties.label.fi}}</a><span
-                ng-show="!$last" class="text-muted">,</span>
+        <span ng-repeat="child in concept.children | orderBy:prefLabelOrder">
+            <a ng-href="#/concepts/{{child.id}}">
+                <thl-concept-values values="child.properties.prefLabel"
+                                    lang="fi"></thl-concept-values>
+            </a><span ng-show="!$last" class="text-muted">, </span>
         </span>
         <span ng-show="!concept.children || concept.children.length == 0">
             -
@@ -72,9 +67,11 @@
     </dd>
     <dt>Assosiatiiviset käsitteet</dt>
     <dd>
-        <span ng-repeat="r in concept.related | orderBy:'properties.label.fi'">
-            <a ng-href="#/concepts/{{r.id}}">{{r.properties.label.fi}}</a><span
-                ng-show="!$last" class="text-muted">,</span>
+        <span ng-repeat="r in concept.related | orderBy:prefLabelOrder">
+            <a ng-href="#/concepts/{{r.id}}">
+                <thl-concept-values values="r.properties.prefLabel"
+                                    lang="fi"></thl-concept-values>
+            </a><span ng-show="!$last" class="text-muted">,</span>
         </span>
         <span ng-show="!concept.related || concept.related.length == 0">
             -
@@ -86,20 +83,30 @@
 
 <dl>
     <dt>Määritelmä</dt>
-    <dd>{{concept.properties.definition.fi || '-'}}</dd>
+    <dd>
+        <thl-concept-values values="concept.properties.definition"></thl-concept-values>
+    </dd>
     <dt>Huomautus</dt>
-    <dd>{{concept.properties.note.fi || '-'}}</dd>
+    <dd>
+        <thl-concept-values values="concept.properties.note"></thl-concept-values>
+    </dd>
     <dt>Esimerkki</dt>
-    <dd>{{concept.properties.example.fi || '-'}}</dd>
+    <dd>
+        <thl-concept-values values="concept.properties.example"></thl-concept-values>
+    </dd>
 </dl>
 
 <br>
 
 <dl>
     <dt>Piilotetut termit</dt>
-    <dd>{{concept.properties.hiddenLabel.fi || '-'}}</dd>
+    <dd>
+        <thl-concept-values values="concept.properties.hiddenLabel"></thl-concept-values>
+    </dd>
     <dt>Korvatut termit</dt>
-    <dd>{{concept.properties.deprecatedLabel.fi || '-'}}</dd>
+    <dd>
+        <thl-concept-values values="concept.properties.deprecatedLabel"></thl-concept-values>
+    </dd>
 </dl>
 
 <hr>

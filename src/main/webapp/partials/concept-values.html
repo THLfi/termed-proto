@@ -1,0 +1,7 @@
+<div ng-repeat="value in values | orderBy:langPriority" ng-if="!lang">
+    <code class="text-muted">{{value.lang}}</code> {{value.value}}
+</div>
+<span ng-repeat="value in values | filter:lang=lang" ng-if="lang">
+    {{value.value}}<span ng-if="!$last">, </span>
+</span>
+<span ng-show="!values">-</span>
