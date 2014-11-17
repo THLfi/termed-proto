@@ -17,10 +17,18 @@ App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
           });
         },
         formatResult: function(result) {
-          return result.properties.label.fi;
+          return result.properties.prefLabel.filter(function(value) {
+            return value.lang == 'fi'
+          }).map(function(value) {
+            return value.value;
+          }).join(', ');
         },
         formatSelection: function(result) {
-          return  result.properties.label.fi;
+          return result.properties.prefLabel.filter(function(value) {
+            return value.lang == 'fi'
+          }).map(function(value) {
+            return value.value;
+          }).join(', ');
         }
       });
 

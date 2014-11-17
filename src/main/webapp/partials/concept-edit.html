@@ -1,6 +1,12 @@
 <ol class="breadcrumb">
     <li><a ng-href="#">Termipankki</a></li>
-    <li><a ng-href="#/concepts/{{concept.id}}">{{concept.properties.label.fi}}</a></li>
+    <li>
+        <a ng-href="#/concepts/{{concept.id}}">
+            <span ng-repeat="prefLabel in concept.properties.prefLabel | filter:lang='fi'">
+                {{prefLabel.value}}<span ng-show="!$last">, </span>
+            </span>
+        </a>
+    </li>
     <li class="active">muokkaus</li>
 </ol>
 
@@ -23,19 +29,56 @@
 </div>
 
 <h1 class="page-header">
-    {{concept.properties.label.fi}}
+    <span ng-repeat="prefLabel in concept.properties.prefLabel | filter:lang='fi'">
+        {{prefLabel.value}}<span ng-show="!$last">, </span>
+    </span>
+    <small>
+        <span ng-repeat="altLabel in concept.properties.altLabel | filter:lang='fi'">
+            {{altLabel.value}}<span ng-show="!$last">, </span>
+        </span>
+    </small>
 </h1>
 
 <form role="form">
     <div class="form-group">
-        <label for="label">Termi</label>
-        <input type="text" class="form-control" id="label"
-               ng-model="concept.properties.label.fi">
+        <label>Ensisijainen termi</label>
+
+        <div class="input-group"
+             ng-repeat="prefLabel in concept.properties.prefLabel | orderBy:langPriority">
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default dropdown-toggle"
+                        data-toggle="dropdown">
+                    <code class="text-muted">{{prefLabel.lang}}</code>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li><a ng-click="prefLabel.lang = 'fi'">fi</a></li>
+                    <li><a ng-click="prefLabel.lang = 'sv'">sv</a></li>
+                    <li><a ng-click="prefLabel.lang = 'en'">en</a></li>
+                </ul>
+            </div>
+            <input type="text" class="form-control" ng-model="prefLabel.value">
+        </div>
     </div>
     <div class="form-group">
-        <label for="altLabel">Vaihtoehtoiset termit</label>
-        <input type="text" class="form-control" id="altLabel"
-               ng-model="concept.properties.altLabel.fi">
+        <label>Vaihtoehtoiset termit</label>
+
+        <div class="input-group"
+             ng-repeat="altLabel in concept.properties.altLabel | orderBy:langPriority">
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default dropdown-toggle"
+                        data-toggle="dropdown">
+                    <code class="text-muted">{{altLabel.lang}}</code>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li><a ng-click="altLabel.lang = 'fi'">fi</a></li>
+                    <li><a ng-click="altLabel.lang = 'sv'">sv</a></li>
+                    <li><a ng-click="altLabel.lang = 'en'">en</a></li>
+                </ul>
+            </div>
+            <input type="text" class="form-control" ng-model="altLabel.value">
+        </div>
     </div>
 
     <br>

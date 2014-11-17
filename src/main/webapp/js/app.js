@@ -8,6 +8,19 @@ App.factory('ConceptList', function($resource) {
   return $resource('api/concepts/:id');
 });
 
+App.factory('Config', function() {
+  var langPriority = {
+    fi: 0,
+    sv: 1,
+    en: 2
+  }
+  return {
+    langPriority: function(value) {
+      return langPriority[value.lang]
+    }
+  }
+});
+
 App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
 
   $scope.searchConcepts = function(query) {
@@ -34,7 +47,7 @@ App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
 });
 
 App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
-        Concept, ConceptList) {
+        Concept, ConceptList, Config) {
 
   Concept.get({
     id: $routeParams.id
@@ -58,10 +71,12 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
     });
   }
 
+  $scope.langPriority = Config.langPriority;
+
 });
 
 App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
-        ConceptList) {
+        ConceptList, Config) {
 
   function collectParents(concept) {
     var parents = [concept];
@@ -81,6 +96,9 @@ App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
     $scope.concept = concept;
     $scope.parents = collectParents(concept);
   });
+
+  $scope.langPriority = Config.langPriority;
+
 });
 
 App.config(function($routeProvider) {

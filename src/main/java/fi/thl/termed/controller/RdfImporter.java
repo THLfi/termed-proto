@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.PropertyValue;
 import fi.thl.termed.service.ConceptJsonService;
 import fi.thl.termed.util.SKOS;
 
@@ -41,10 +40,10 @@ public class RdfImporter {
 
   @SuppressWarnings("all")
   private Logger log = LoggerFactory.getLogger(getClass());
-  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-  private List<String> langs = Lists.newArrayList("fi", "en", "sv");
 
-  private final ConceptJsonService service;
+  private ConceptJsonService service;
+  private List<String> langs=Lists.newArrayList("fi", "en", "sv");
+  private Gson gson=new GsonBuilder().setPrettyPrinting().create();
 
   @Autowired
   public RdfImporter(ConceptJsonService service) {
@@ -63,9 +62,9 @@ public class RdfImporter {
 
     for (Resource r : model.listResourcesWithProperty(RDF.type, SKOS.Concept).toList()) {
       Concept c = new Concept(sha1Hex(r.getURI()));
-      addProperty(c, "label", model, r, SKOS.prefLabel);
-      addProperties(c, "altLabel", model, r, SKOS.prefLabel);
-      addProperties(c, "hiddenLabel", model, r, SKOS.prefLabel);
+      addProperty(c, "prefLabel", model, r, SKOS.prefLabel);
+      addProperties(c, "altLabel", model, r, SKOS.altLabel);
+      addProperties(c, "hiddenLabel", model, r, SKOS.hiddenLabel);
       concepts.put(c.getId(), c);
     }
 
@@ -96,7 +95,7 @@ public class RdfImporter {
     for (String lang : langs) {
       String propertyValue = getLiteralValue(model, r, p, lang);
       if (!propertyValue.isEmpty()) {
-        c.getProperties().add(new PropertyValue(propertyId, lang, propertyValue));
+        c.addProperty(propertyId, lang, propertyValue);
       }
     }
   }
@@ -104,7 +103,7 @@ public class RdfImporter {
   private void addProperties(Concept c, String propertyId, Model model, Resource r, Property p) {
     for (String lang : langs) {
       for (String propertyValue : getLiteralValues(model, r, p, lang)) {
-        c.getProperties().add(new PropertyValue(propertyId, lang, propertyValue));
+        c.addProperty(propertyId, lang, propertyValue);
       }
     }
   }

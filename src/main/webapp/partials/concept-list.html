@@ -39,7 +39,11 @@
             <tbody>
             <tr ng-repeat="concept in concepts">
                 <td>
-                    <a ng-href="#/concepts/{{concept.id}}">{{concept.properties.label.fi}}</a>
+                    <a ng-href="#/concepts/{{concept.id}}">
+                        <span ng-repeat="prefLabel in concept.properties.prefLabel | filter:lang='fi'">
+                            {{prefLabel.value}}<span ng-show="!$last">, </span>
+                        </span>
+                    </a>
                 </td>
             </tr>
             </tbody>

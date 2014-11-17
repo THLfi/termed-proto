@@ -1,5 +1,5 @@
 
-INSERT INTO termed.property (id) VALUES ('label');
+INSERT INTO termed.property (id) VALUES ('prefLabel');
 INSERT INTO termed.property (id) VALUES ('altLabel');
 INSERT INTO termed.property (id) VALUES ('hiddenLabel');
 INSERT INTO termed.property (id) VALUES ('deprecatedLabel');

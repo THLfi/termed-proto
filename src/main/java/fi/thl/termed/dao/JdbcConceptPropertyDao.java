@@ -1,6 +1,7 @@
 package fi.thl.termed.dao;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -17,6 +19,9 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import fi.thl.termed.model.PropertyValue;
+
+import static com.google.common.collect.Sets.newHashSet;
+import static fi.thl.termed.util.MapUtils.newHashMultimap;
 
 public class JdbcConceptPropertyDao {
 
@@ -31,26 +36,27 @@ public class JdbcConceptPropertyDao {
     this.sqlQueries = sqlQueries;
   }
 
-  public void saveProperties(String conceptId,
-                             Map<String, PropertyValue> properties) {
+  public void saveProperties(String conceptId, Map<String, Collection<PropertyValue>> properties) {
     saveProperties(conceptId, getProperties(conceptId), properties);
   }
 
   public void saveProperties(String conceptId,
-                             Map<String, PropertyValue> oldProperties,
-                             Map<String, PropertyValue> newProperties) {
+                             Map<String, Collection<PropertyValue>> oldProps,
+                             Map<String, Collection<PropertyValue>> newProps) {
 
-    Set<Map.Entry<String, PropertyValue>> oldRelated = oldProperties.entrySet();
-    Set<Map.Entry<String, PropertyValue>> newRelated = newProperties.entrySet();
+    Set<Map.Entry<String, PropertyValue>> oldProperties =
+        newHashSet(newHashMultimap(oldProps).entries());
+    Set<Map.Entry<String, PropertyValue>> newProperties =
+        newHashSet(newHashMultimap(newProps).entries());
 
-    for (Map.Entry<String, PropertyValue> removed : Sets.difference(oldRelated, newRelated)) {
+    for (Map.Entry<String, PropertyValue> removed : Sets.difference(oldProperties, newProperties)) {
       PropertyValue value = removed.getValue();
-      removePropertyValue(conceptId, removed.getKey(), value.getLang(), value.getLang());
+      removePropertyValue(conceptId, removed.getKey(), value.getLang(), value.getValue());
     }
 
-    for (Map.Entry<String, PropertyValue> added : Sets.difference(newRelated, oldRelated)) {
+    for (Map.Entry<String, PropertyValue> added : Sets.difference(newProperties, oldProperties)) {
       PropertyValue value = added.getValue();
-      insertPropertyValue(conceptId, added.getKey(), value.getLang(), value.getLang());
+      insertPropertyValue(conceptId, added.getKey(), value.getLang(), value.getValue());
     }
   }
 
@@ -65,8 +71,8 @@ public class JdbcConceptPropertyDao {
         conceptId, propertyId, lang, value);
   }
 
-  public Map<String, PropertyValue> getProperties(String conceptId) {
-    final Map<String, PropertyValue> properties = Maps.newHashMap();
+  public Map<String, Collection<PropertyValue>> getProperties(String conceptId) {
+    final Multimap<String, PropertyValue> properties = HashMultimap.create();
 
     jdbcTemplate
         .query(sqlQueries.getProperty("property-find-by-concept_id"), new RowCallbackHandler() {
@@ -78,7 +84,7 @@ public class JdbcConceptPropertyDao {
           }
         }, conceptId);
 
-    return properties;
+    return properties.asMap();
   }
 
   public void removeProperties(String conceptId) {

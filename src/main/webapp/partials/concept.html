@@ -1,6 +1,10 @@
 <ol class="breadcrumb">
     <li><a ng-href="#">Termipankki</a></li>
-    <li class="active">{{concept.properties.label.fi}}</li>
+    <li class="active">
+        <span ng-repeat="prefLabel in concept.properties.prefLabel | filter:lang='fi'">
+            {{prefLabel.value}}<span ng-show="!$last">, </span>
+        </span>
+    </li>
 </ol>
 
 <div class="row">
@@ -12,9 +16,30 @@
 </div>
 
 <h1 class="page-header">
-    {{concept.properties.label.fi}}
-    <small>{{concept.properties.altLabel.fi}}</small>
+    <span ng-repeat="prefLabel in concept.properties.prefLabel | filter:lang='fi'">
+        {{prefLabel.value}}<span ng-show="!$last">, </span>
+    </span>
+    <small>
+        <span ng-repeat="altLabel in concept.properties.altLabel | filter:lang='fi'">
+            {{altLabel.value}}<span ng-show="!$last">, </span>
+        </span>
+    </small>
 </h1>
+
+<dl>
+    <dt>Käytettävä termi</dt>
+    <dd>
+        <div ng-repeat="prefLabel in concept.properties.prefLabel | orderBy:langPriority">
+            <code class="text-muted">{{prefLabel.lang}}</code> {{prefLabel.value}}
+        </div>
+    </dd>
+    <dt>Vaihtoehtoiset termit</dt>
+    <dd>
+        <div ng-repeat="altLabel in concept.properties.altLabel | orderBy:orderBy:langPriority">
+            <code class="text-muted">{{altLabel.lang}}</code> {{altLabel.value}}
+        </div>
+    </dd>
+</dl>
 
 <dl>
     <dt>Yläkäsitteet</dt>
