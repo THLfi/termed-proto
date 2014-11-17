@@ -42,8 +42,8 @@ public class RdfImporter {
   private Logger log = LoggerFactory.getLogger(getClass());
 
   private ConceptJsonService service;
-  private List<String> langs=Lists.newArrayList("fi", "en", "sv");
-  private Gson gson=new GsonBuilder().setPrettyPrinting().create();
+  private List<String> langs = Lists.newArrayList("fi", "en", "sv");
+  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
   @Autowired
   public RdfImporter(ConceptJsonService service) {
