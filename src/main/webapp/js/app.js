@@ -37,9 +37,10 @@ App.controller('ConceptListCtrl', function($scope, $location, ConceptList) {
   $scope.newConcept = function() {
     ConceptList.save({
       properties: {
-        label: {
-          fi: "Uusi käsite"
-        }
+        prefLabel: [{
+          lang: 'fi',
+          value: 'Uusi käsite'
+        }]
       }
     }, function(concept) {
       $location.path('/concepts/' + concept.id + '/edit');

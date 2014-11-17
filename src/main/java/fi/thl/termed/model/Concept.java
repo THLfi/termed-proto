@@ -3,14 +3,15 @@ package fi.thl.termed.model;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Concept extends Resource {
 
-  private Map<String, Collection<PropertyValue>> properties;
+  private Map<String, Set<PropertyValue>> properties;
 
   private Concept type;
   private Concept parent;
@@ -31,17 +32,17 @@ public class Concept extends Resource {
     this.related = Lists.newArrayList();
   }
 
-  public Map<String, Collection<PropertyValue>> getProperties() {
+  public Map<String, Set<PropertyValue>> getProperties() {
     return properties;
   }
 
-  public void setProperties(Map<String, Collection<PropertyValue>> properties) {
+  public void setProperties(Map<String, Set<PropertyValue>> properties) {
     this.properties = properties;
   }
 
   public void addProperty(String propertyId, String lang, String value) {
     if (!properties.containsKey(propertyId)) {
-      properties.put(propertyId, Lists.<PropertyValue>newArrayList());
+      properties.put(propertyId, Sets.<PropertyValue>newHashSet());
     }
     properties.get(propertyId).add(new PropertyValue(lang, value));
   }

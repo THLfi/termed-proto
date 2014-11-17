@@ -1,8 +1,7 @@
 package fi.thl.termed.dao;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import org.slf4j.Logger;
@@ -12,7 +11,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -37,13 +35,13 @@ public class JdbcConceptPropertyDao {
     this.sqlQueries = sqlQueries;
   }
 
-  public void saveProperties(String conceptId, Map<String, Collection<PropertyValue>> properties) {
+  public void saveProperties(String conceptId, Map<String, Set<PropertyValue>> properties) {
     saveProperties(conceptId, getProperties(conceptId), properties);
   }
 
   public void saveProperties(String conceptId,
-                             Map<String, Collection<PropertyValue>> oldProps,
-                             Map<String, Collection<PropertyValue>> newProps) {
+                             Map<String, Set<PropertyValue>> oldProps,
+                             Map<String, Set<PropertyValue>> newProps) {
 
     Set<Map.Entry<String, PropertyValue>> oldProperties =
         newHashSet(newHashMultimap(oldProps).entries());
@@ -74,20 +72,26 @@ public class JdbcConceptPropertyDao {
         conceptId, propertyId, lang, value);
   }
 
-  public Map<String, Collection<PropertyValue>> getProperties(String conceptId) {
-    final Multimap<String, PropertyValue> properties = HashMultimap.create();
+  public Map<String, Set<PropertyValue>> getProperties(String conceptId) {
+    final Map<String, Set<PropertyValue>> properties = Maps.newHashMap();
 
     jdbcTemplate
         .query(sqlQueries.getProperty("property-find-by-concept_id"), new RowCallbackHandler() {
           @Override
           public void processRow(ResultSet resultSet) throws SQLException {
-            properties.put(resultSet.getString("property_id"),
-                           new PropertyValue(resultSet.getString("lang"),
-                                             resultSet.getString("value")));
+            String propertyId = resultSet.getString("property_id");
+
+            if (!properties.containsKey(propertyId)) {
+              properties.put(propertyId, Sets.<PropertyValue>newHashSet());
+            }
+
+            properties.get(resultSet.getString("property_id")).add(
+                new PropertyValue(resultSet.getString("lang"),
+                                  resultSet.getString("value")));
           }
         }, conceptId);
 
-    return properties.asMap();
+    return properties;
   }
 
   public void removeProperties(String conceptId) {
