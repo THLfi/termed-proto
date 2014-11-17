@@ -11,14 +11,29 @@ public class ConceptRepositoryImpl implements ConceptRepositoryExtended {
 
   @Override
   public Concept saveAndUpdateRelated(Concept concept) {
-    saveRelated(concept);
+    addToRelated(concept);
     return conceptRepository.save(concept);
   }
 
-  private void saveRelated(Concept concept) {
+  private void addToRelated(Concept concept) {
     if (concept.getRelated() != null) {
       for (Concept related : concept.getRelated()) {
         related.addRelated(concept);
+      }
+      conceptRepository.save(concept.getRelated());
+    }
+  }
+
+  @Override
+  public void deleteAndUpdateRelated(Concept concept) {
+    removeFromRelated(concept);
+    conceptRepository.delete(concept);
+  }
+
+  private void removeFromRelated(Concept concept) {
+    if (concept.getRelated() != null) {
+      for (Concept related : concept.getRelated()) {
+        related.removeRelated(concept);
       }
       conceptRepository.save(concept.getRelated());
     }

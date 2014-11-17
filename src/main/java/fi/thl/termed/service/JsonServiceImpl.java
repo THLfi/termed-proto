@@ -164,7 +164,7 @@ public class JsonServiceImpl implements JsonService {
 
   @Override
   public void removeConcept(String id) {
-    conceptRepository.delete(id);
+    conceptRepository.deleteAndUpdateRelated(conceptRepository.findOne(id));
   }
 
 }

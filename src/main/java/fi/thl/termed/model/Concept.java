@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -72,6 +73,20 @@ public class Concept extends SchemePropertyResource {
       related = Lists.newArrayList();
     }
     related.add(r);
+  }
+
+  public void removeRelated(Concept concept) {
+    if (related == null) {
+      return;
+    }
+
+    Iterator<Concept> i = related.iterator();
+
+    while (i.hasNext()) {
+      if (concept.getId().equals(i.next().getId())) {
+        i.remove();
+      }
+    }
   }
 
   public List<Collection> getCollections() {
