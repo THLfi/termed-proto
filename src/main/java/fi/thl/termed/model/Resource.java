@@ -2,6 +2,8 @@ package fi.thl.termed.model;
 
 import com.google.common.base.Objects;
 
+import java.util.UUID;
+
 public class Resource {
 
   private String id;
@@ -11,10 +13,6 @@ public class Resource {
 
   public Resource(String id) {
     this.id = id;
-  }
-
-  public Resource(Resource resource) {
-    this.id = resource.getId();
   }
 
   public boolean hasId() {
@@ -27,6 +25,12 @@ public class Resource {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public void ensureId() {
+    if (!hasId()) {
+      setId(UUID.randomUUID().toString());
+    }
   }
 
   public Objects.ToStringHelper toStringHelper() {
