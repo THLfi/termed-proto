@@ -3,8 +3,6 @@ package fi.thl.termed.controller;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -19,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,7 +27,9 @@ import java.util.List;
 import java.util.Map;
 
 import fi.thl.termed.model.Concept;
-import fi.thl.termed.service.ConceptJsonService;
+import fi.thl.termed.model.Scheme;
+import fi.thl.termed.repository.ConceptRepository;
+import fi.thl.termed.repository.SchemeRepository;
 import fi.thl.termed.util.SKOS;
 
 import static org.apache.commons.codec.digest.DigestUtils.sha1Hex;
@@ -41,22 +42,28 @@ public class RdfImporter {
   @SuppressWarnings("all")
   private Logger log = LoggerFactory.getLogger(getClass());
 
-  private ConceptJsonService service;
-  private List<String> langs = Lists.newArrayList("fi", "en", "sv");
-  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private SchemeRepository schemeRepository;
+  private ConceptRepository conceptRepository;
+
+  private List<String> languages = Lists.newArrayList("fi", "en", "sv");
 
   @Autowired
-  public RdfImporter(ConceptJsonService service) {
-    this.service = service;
+  public RdfImporter(SchemeRepository schemeRepository, ConceptRepository conceptRepository) {
+    this.schemeRepository = schemeRepository;
+    this.conceptRepository = conceptRepository;
   }
 
   @RequestMapping(method = POST, value = "import", consumes = "text/turtle;charset=UTF-8")
   @ResponseStatus(HttpStatus.NO_CONTENT)
+  @Transactional
   public void importTurtle(@RequestBody String input) {
     Model model = ModelFactory.createDefaultModel();
     model.read(new ByteArrayInputStream(input.getBytes()), null, "TTL");
 
     log.info("read {} statements", model.size());
+
+    Scheme scheme = new Scheme("tero");
+    schemeRepository.save(scheme);
 
     Map<String, Concept> concepts = Maps.newHashMap();
 
@@ -65,34 +72,35 @@ public class RdfImporter {
       addProperty(c, "prefLabel", model, r, SKOS.prefLabel);
       addProperties(c, "altLabel", model, r, SKOS.altLabel);
       addProperties(c, "hiddenLabel", model, r, SKOS.hiddenLabel);
+      c.setScheme(scheme);
       concepts.put(c.getId(), c);
     }
 
-    service.saveAll(gson.toJsonTree(concepts.values()).getAsJsonArray());
+    conceptRepository.save(concepts.values());
 
     for (Resource r : model.listResourcesWithProperty(RDF.type, SKOS.Concept).toList()) {
       Concept c = concepts.get(sha1Hex(r.getURI()));
       for (String broaderUri : getObjectValues(model, r, SKOS.broader)) {
-        String broaderId = sha1Hex(broaderUri);
-        if (concepts.containsKey(broaderId)) {
-          c.setBroader(new Concept(sha1Hex(broaderUri)));
+        Concept broader = concepts.get(sha1Hex(broaderUri));
+        if (broader != null) {
+          c.setBroader(broader);
         }
       }
       for (String relatedUri : getObjectValues(model, r, SKOS.related)) {
-        String relatedId = sha1Hex(relatedUri);
-        if (concepts.containsKey(relatedId)) {
-          c.getRelated().add(new Concept(relatedId));
+        Concept related = concepts.get(sha1Hex(relatedUri));
+        if (related != null) {
+          related.addRelated(c);
         }
       }
     }
 
-    service.saveAll(gson.toJsonTree(concepts.values()).getAsJsonArray());
+    conceptRepository.save(concepts.values());
 
     log.info("imported {} concepts", concepts.size());
   }
 
   private void addProperty(Concept c, String propertyId, Model model, Resource r, Property p) {
-    for (String lang : langs) {
+    for (String lang : languages) {
       String propertyValue = getLiteralValue(model, r, p, lang);
       if (!propertyValue.isEmpty()) {
         c.addProperty(propertyId, lang, propertyValue);
@@ -101,7 +109,7 @@ public class RdfImporter {
   }
 
   private void addProperties(Concept c, String propertyId, Model model, Resource r, Property p) {
-    for (String lang : langs) {
+    for (String lang : languages) {
       for (String propertyValue : getLiteralValues(model, r, p, lang)) {
         c.addProperty(propertyId, lang, propertyValue);
       }

@@ -2,47 +2,46 @@ package fi.thl.termed.model;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+
+import org.hibernate.search.annotations.Indexed;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-public class Concept extends Resource {
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
-  private Map<String, Set<PropertyValue>> properties;
+@Indexed
+@Entity
+public class Concept extends PropertyResource {
 
+  @ManyToOne
+  private Scheme scheme;
+
+  @ManyToOne
   private Concept broader;
+
+  @OneToMany(mappedBy = "broader", cascade = CascadeType.ALL)
   private List<Concept> narrower;
 
+  // no need to track back references because related
+  // should always be duplicated to both directions
+  @ManyToMany
+  @JoinTable(name = "concept_related")
   private List<Concept> related;
 
+  @ManyToMany(mappedBy = "members")
+  private List<Collection> collections;
+
   public Concept() {
-    this(null);
+    super();
   }
 
   public Concept(String id) {
     super(id);
-    this.properties = Maps.newHashMap();
-    this.broader = null;
-    this.narrower = Lists.newArrayList();
-    this.related = Lists.newArrayList();
-  }
-
-  public Map<String, Set<PropertyValue>> getProperties() {
-    return properties;
-  }
-
-  public void setProperties(Map<String, Set<PropertyValue>> properties) {
-    this.properties = properties;
-  }
-
-  public void addProperty(String propertyId, String lang, String value) {
-    if (!properties.containsKey(propertyId)) {
-      properties.put(propertyId, Sets.<PropertyValue>newHashSet());
-    }
-    properties.get(propertyId).add(new PropertyValue(lang, value));
   }
 
   public Concept getBroader() {
@@ -73,33 +72,39 @@ public class Concept extends Resource {
     this.related = related;
   }
 
+  public void addRelated(Concept r) {
+    if (related == null) {
+      related = Lists.newArrayList();
+    }
+    related.add(r);
+  }
+
+  public List<Collection> getCollections() {
+    return collections;
+  }
+
+  public void setCollections(List<Collection> collections) {
+    this.collections = collections;
+  }
+
+  public Scheme getScheme() {
+    return scheme;
+  }
+
+  public String getSchemeId() {
+    return scheme != null ? scheme.getId() : null;
+  }
+
+  public void setScheme(Scheme scheme) {
+    this.scheme = scheme;
+  }
+
   public Objects.ToStringHelper toStringHelper() {
     return super.toStringHelper()
-        .add("properties", properties)
         .add("broader", broader)
-        .add("related", related);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-
-    Concept that = (Concept) o;
-
-    return Objects.equal(getId(), that.getId()) &&
-           Objects.equal(properties, that.properties) &&
-           Objects.equal(broader, that.broader) &&
-           Objects.equal(related, that.related);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(getId(), properties, broader, related);
+        .add("related", related)
+        .add("collections", collections)
+        .add("scheme", scheme);
   }
 
 }

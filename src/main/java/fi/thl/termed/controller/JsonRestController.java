@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import fi.thl.termed.service.ConceptJsonService;
+import fi.thl.termed.service.JsonService;
 
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -23,12 +23,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
 @RequestMapping(value = "/", produces = "application/json;charset=UTF-8")
-public class ConceptJsonRestController {
+public class JsonRestController {
 
-  private final ConceptJsonService service;
+  private final JsonService service;
 
   @Autowired
-  public ConceptJsonRestController(ConceptJsonService service) {
+  public JsonRestController(JsonService service) {
     this.service = service;
   }
 
@@ -37,23 +37,23 @@ public class ConceptJsonRestController {
   public JsonArray query(
       @RequestParam(value = "query", required = false, defaultValue = "") String query,
       @RequestParam(value = "max", required = false, defaultValue = "100") int max) {
-    return query.isEmpty() ? service.query(max) : service.query(query, max);
+    return query.isEmpty() ? service.queryConcepts(max) : service.queryConcepts(query, max);
   }
 
   @RequestMapping(method = GET, value = "concepts/{id}")
   @ResponseBody
   public JsonObject get(@PathVariable("id") String id) {
-    return service.get(id);
+    return service.getConcept(id);
   }
 
   @RequestMapping(method = POST, value = "concepts", consumes = "application/json;charset=UTF-8")
   @ResponseBody
   public JsonElement save(@RequestBody JsonElement data) {
     if (data.isJsonObject()) {
-      return service.save(data.getAsJsonObject());
+      return service.saveConcept(data.getAsJsonObject());
     }
     if (data.isJsonArray()) {
-      return service.saveAll(data.getAsJsonArray());
+      return service.saveAllConcepts(data.getAsJsonArray());
     }
     return JsonNull.INSTANCE;
   }
@@ -61,7 +61,7 @@ public class ConceptJsonRestController {
   @RequestMapping(method = DELETE, value = "concepts/{id}")
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
   public void remove(@PathVariable("id") String id) {
-    service.remove(id);
+    service.removeConcept(id);
   }
 
 }
