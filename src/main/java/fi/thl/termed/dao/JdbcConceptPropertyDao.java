@@ -18,9 +18,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import fi.thl.termed.model.PropertyValue;
-
-import static com.google.common.collect.Sets.newHashSet;
-import static fi.thl.termed.util.MapUtils.newHashMultimap;
+import fi.thl.termed.util.MapUtils;
 
 public class JdbcConceptPropertyDao {
 
@@ -43,10 +41,8 @@ public class JdbcConceptPropertyDao {
                              Map<String, Set<PropertyValue>> oldProps,
                              Map<String, Set<PropertyValue>> newProps) {
 
-    Set<Map.Entry<String, PropertyValue>> oldProperties =
-        newHashSet(newHashMultimap(oldProps).entries());
-    Set<Map.Entry<String, PropertyValue>> newProperties =
-        newHashSet(newHashMultimap(newProps).entries());
+    Set<Map.Entry<String, PropertyValue>> oldProperties = MapUtils.entrySet(oldProps);
+    Set<Map.Entry<String, PropertyValue>> newProperties = MapUtils.entrySet(newProps);
 
     for (Map.Entry<String, PropertyValue> removed : Sets.difference(oldProperties, newProperties)) {
       PropertyValue value = removed.getValue();
