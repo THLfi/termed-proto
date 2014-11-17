@@ -1,15 +1,16 @@
 package fi.thl.termed.controller;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 import org.slf4j.Logger;
@@ -25,13 +26,23 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
+import fi.thl.termed.model.PropertyValue;
 import fi.thl.termed.model.Scheme;
+import fi.thl.termed.model.SchemePropertyResource;
+import fi.thl.termed.repository.CollectionRepository;
 import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
 import fi.thl.termed.util.SKOS;
 
+import static com.google.common.base.Functions.forMap;
+import static com.google.common.base.Predicates.in;
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.transform;
+import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.codec.digest.DigestUtils.sha1Hex;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -44,13 +55,50 @@ public class RdfImporter {
 
   private SchemeRepository schemeRepository;
   private ConceptRepository conceptRepository;
+  private CollectionRepository collectionRepository;
 
-  private List<String> languages = Lists.newArrayList("fi", "en", "sv");
+  private Set<Property> acceptedProperties = Sets.newHashSet(SKOS.prefLabel,
+                                                             SKOS.altLabel,
+                                                             SKOS.hiddenLabel,
+                                                             SKOS.note,
+                                                             SKOS.definition,
+                                                             SKOS.example);
+
+  private Set<String> acceptedLanguages = Sets.newHashSet("", "fi", "en", "sv");
+
+  private Function<RDFNode, String> nodeUriToId =
+      new Function<RDFNode, String>() {
+        @Override
+        public String apply(RDFNode s) {
+          return sha1Hex(s.isURIResource() ? s.asResource().getURI() : s.toString());
+        }
+      };
+
+  private Function<Statement, PropertyValue> statementsToPropertyValues =
+      new Function<Statement, PropertyValue>() {
+        @Override
+        public PropertyValue apply(Statement s) {
+          return new PropertyValue(localName(s.getPredicate()),
+                                   s.getLanguage(),
+                                   s.getLiteral().getString());
+        }
+      };
+
+  private Predicate<Statement> isAcceptedLiteralStatement = new Predicate<Statement>() {
+    @Override
+    public boolean apply(Statement s) {
+      RDFNode object = s.getObject();
+      return acceptedProperties.contains(s.getPredicate()) && object.isLiteral()
+             && acceptedLanguages.contains(object.asLiteral().getLanguage());
+    }
+  };
 
   @Autowired
-  public RdfImporter(SchemeRepository schemeRepository, ConceptRepository conceptRepository) {
+  public RdfImporter(SchemeRepository schemeRepository, ConceptRepository conceptRepository,
+                     CollectionRepository collectionRepository) {
     this.schemeRepository = schemeRepository;
     this.conceptRepository = conceptRepository;
+    this.collectionRepository = collectionRepository;
   }
 
   @RequestMapping(method = POST, value = "import", consumes = "text/turtle;charset=UTF-8")
@@ -62,90 +110,122 @@ public class RdfImporter {
 
     log.info("read {} statements", model.size());
 
-    Scheme scheme = new Scheme("tero");
-    scheme.addProperty("prefLabel", "fi", "TERO - Terveyden ja hyvinvoinnin ontologia");
-    schemeRepository.save(scheme);
+    Map<String, Scheme> schemes = readSchemes(model);
+    schemeRepository.save(schemes.values());
 
+    Map<String, Concept> concepts = readConcepts(model, schemes);
+    conceptRepository.save(concepts.values());
+    linkConcepts(model, concepts);
+    conceptRepository.save(concepts.values());
+
+    Map<String, Collection> collections = readCollections(model, concepts, schemes);
+    collectionRepository.save(collections.values());
+
+    log.info("imported {} schemes", schemes.size());
+    log.info("imported {} concepts", concepts.size());
+    log.info("imported {} collections", collections.size());
+  }
+
+  private Map<String, Scheme> readSchemes(Model model) {
+    Map<String, Scheme> schemes = Maps.newHashMap();
+
+    for (Resource r : instancesOf(model, SKOS.ConceptScheme)) {
+      Scheme scheme = new Scheme(sha1Hex(r.getURI()));
+      scheme.setProperties(readProperties(model, r));
+      schemes.put(scheme.getId(), scheme);
+    }
+
+    return schemes;
+  }
+
+  private List<Resource> instancesOf(Model model, Resource rdfClass) {
+    return model.listResourcesWithProperty(RDF.type, rdfClass).toList();
+  }
+
+  private Map<String, Concept> readConcepts(Model model, Map<String, Scheme> schemes) {
     Map<String, Concept> concepts = Maps.newHashMap();
 
-    for (Resource r : model.listResourcesWithProperty(RDF.type, SKOS.Concept).toList()) {
-      Concept c = new Concept(sha1Hex(r.getURI()));
-      addProperty(c, "prefLabel", model, r, SKOS.prefLabel);
-      addProperties(c, "altLabel", model, r, SKOS.altLabel);
-      addProperties(c, "hiddenLabel", model, r, SKOS.hiddenLabel);
-      c.setScheme(scheme);
-      concepts.put(c.getId(), c);
+    for (Resource r : instancesOf(model, SKOS.Concept)) {
+      Concept concept = new Concept(sha1Hex(r.getURI()));
+      concept.setProperties(readProperties(model, r));
+      concept.setScheme(readObject(model, r, SKOS.inScheme, schemes));
+      if (concept.getScheme() == null && !schemes.isEmpty()) {
+        assignAnyScheme(concept, schemes);
+      }
+      concepts.put(concept.getId(), concept);
     }
 
-    conceptRepository.save(concepts.values());
-
-    for (Resource r : model.listResourcesWithProperty(RDF.type, SKOS.Concept).toList()) {
-      Concept c = concepts.get(sha1Hex(r.getURI()));
-      for (String broaderUri : getObjectValues(model, r, SKOS.broader)) {
-        Concept broader = concepts.get(sha1Hex(broaderUri));
-        if (broader != null) {
-          c.setBroader(broader);
-        }
-      }
-      for (String relatedUri : getObjectValues(model, r, SKOS.related)) {
-        Concept related = concepts.get(sha1Hex(relatedUri));
-        if (related != null) {
-          related.addRelated(c);
-        }
-      }
-    }
-
-    conceptRepository.save(concepts.values());
-
-    log.info("imported {} concepts", concepts.size());
+    return concepts;
   }
 
-  private void addProperty(Concept c, String propertyId, Model model, Resource r, Property p) {
-    for (String lang : languages) {
-      String propertyValue = getLiteralValue(model, r, p, lang);
-      if (!propertyValue.isEmpty()) {
-        c.addProperty(propertyId, lang, propertyValue);
-      }
+  private void assignAnyScheme(SchemePropertyResource concept, Map<String, Scheme> schemes) {
+    Scheme scheme = schemes.values().iterator().next();
+    log.info("no scheme found for {}, using {}", concept, scheme);
+    concept.setScheme(scheme);
+  }
+
+  private void linkConcepts(Model model, Map<String, Concept> concepts) {
+    for (Resource r : instancesOf(model, SKOS.Concept)) {
+      Concept concept = concepts.get(sha1Hex(r.getURI()));
+      concept.setBroader(readObject(model, r, SKOS.broader, concepts));
+      concept.setNarrower(readObjects(model, r, SKOS.narrower, concepts));
+      concept.setRelated(readObjects(model, r, SKOS.related, concepts));
     }
   }
 
-  private void addProperties(Concept c, String propertyId, Model model, Resource r, Property p) {
-    for (String lang : languages) {
-      for (String propertyValue : getLiteralValues(model, r, p, lang)) {
-        c.addProperty(propertyId, lang, propertyValue);
+  private Map<String, Collection> readCollections(Model model, Map<String, Concept> concepts,
+                                                  Map<String, Scheme> schemes) {
+    Map<String, Collection> collections = Maps.newHashMap();
+
+    for (Resource r : instancesOf(model, SKOS.Collection)) {
+      Collection collection = new Collection(sha1Hex(r.getURI()));
+      collection.setProperties(readProperties(model, r));
+      collection.setMembers(readObjects(model, r, SKOS.member, concepts));
+      collection.setScheme(readObject(model, r, SKOS.inScheme, schemes));
+      if (collection.getScheme() == null) {
+        inferSchemeFromMembers(collection, collection.getMembers());
+      }
+      if (collection.getScheme() == null) {
+        assignAnyScheme(collection, schemes);
+      }
+      collections.put(collection.getId(), collection);
+    }
+
+    return collections;
+  }
+
+  private void inferSchemeFromMembers(Collection collection, List<Concept> members) {
+    for (Concept member : members) {
+      if (member.getScheme() != null) {
+        collection.setScheme(member.getScheme());
+        break;
       }
     }
   }
 
-  private List<String> getObjectValues(Model m, Resource r, Property p) {
-    List<String> values = Lists.newArrayList();
-
-    for (RDFNode n : m.listObjectsOfProperty(r, p).toList()) {
-      if (n.isURIResource()) {
-        values.add(n.asResource().getURI());
-      }
-    }
-
-    return values;
+  private <T> T readObject(Model model, Resource r, Property p, Map<String, T> values) {
+    List<T> objects = readObjects(model, r, p, values);
+    return !objects.isEmpty() ? objects.get(0) : null;
   }
 
-  private String getLiteralValue(Model m, Resource r, Property p, String lang) {
-    return Joiner.on(", ").join(getLiteralValues(m, r, p, lang));
+  private <T> List<T> readObjects(Model model, Resource r, Property p, Map<String, T> values) {
+    Iterable<RDFNode> objects = model.listObjectsOfProperty(r, p).toList();
+    Iterable<String> objectIds = transform(objects, nodeUriToId);
+    Iterable<String> existingObjectIds = filter(objectIds, in(values.keySet()));
+    Iterable<T> populatedObjects = transform(existingObjectIds, forMap(values));
+    return newArrayList(populatedObjects);
   }
 
-  private List<String> getLiteralValues(Model m, Resource r, Property p, String lang) {
-    List<String> values = Lists.newArrayList();
+  private List<PropertyValue> readProperties(Model model, Resource r) {
+    return newArrayList(transform(filter(model.listStatements(r, null, (RDFNode) null).toList(),
+                                         isAcceptedLiteralStatement), statementsToPropertyValues));
+  }
 
-    for (RDFNode n : m.listObjectsOfProperty(r, p).toList()) {
-      if (n.isLiteral()) {
-        Literal literal = n.asLiteral();
-        if (lang.equals(literal.getLanguage())) {
-          values.add(literal.getString());
-        }
-      }
-    }
-
-    return values;
+  private String localName(Resource resource) {
+    String uri = resource.getURI();
+    int idx = uri.lastIndexOf('#');
+    idx = idx == -1 ? uri.lastIndexOf('/') : idx;
+    return uri.substring(idx + 1);
   }
 
 }

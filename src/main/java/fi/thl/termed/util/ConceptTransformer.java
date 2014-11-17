@@ -18,22 +18,44 @@ import javax.persistence.EntityManager;
 
 import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
+import fi.thl.termed.model.Resource;
 import fi.thl.termed.model.SchemePropertyResource;
 
 public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerializer<Concept> {
 
-  private class SerializedConcept extends SchemePropertyResource {
+  private class SerializedBroaderConcept extends SchemePropertyResource {
 
-    private Concept broader;
-    private List<SchemePropertyResource> narrower;
-    private List<SchemePropertyResource> related;
-    private List<Collection> collections;
+    private SerializedBroaderConcept broader;
 
-    public Concept getBroader() {
+    public SerializedBroaderConcept(Concept concept) {
+      super(concept);
+      // recursive constructor to build whole ancestor path
+      if (concept.getBroader() != null) {
+        this.broader = new SerializedBroaderConcept(concept.getBroader());
+      }
+    }
+
+    public SerializedBroaderConcept getBroader() {
       return broader;
     }
 
-    public void setBroader(Concept broader) {
+    public void setBroader(SerializedBroaderConcept broader) {
+      this.broader = broader;
+    }
+  }
+
+  private class SerializedConcept extends SchemePropertyResource {
+
+    private SerializedBroaderConcept broader;
+    private List<SchemePropertyResource> narrower;
+    private List<SchemePropertyResource> related;
+    private List<SchemePropertyResource> collections;
+
+    public SerializedBroaderConcept getBroader() {
+      return broader;
+    }
+
+    public void setBroader(SerializedBroaderConcept broader) {
       this.broader = broader;
     }
 
@@ -53,14 +75,13 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
       this.related = related;
     }
 
-    public List<Collection> getCollections() {
-      return collections != null ? collections : Collections.<Collection>emptyList();
+    public List<SchemePropertyResource> getCollections() {
+      return collections != null ? collections : Collections.<SchemePropertyResource>emptyList();
     }
 
-    public void setCollections(List<Collection> collections) {
+    public void setCollections(List<SchemePropertyResource> collections) {
       this.collections = collections;
     }
-
   }
 
   private final Function<Concept, SchemePropertyResource> conceptToPropertyResource =
@@ -71,20 +92,32 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
         }
       };
 
+  private final Function<Collection, SchemePropertyResource> collectionToPropertyResource =
+      new Function<Collection, SchemePropertyResource>() {
+        @Override
+        public SchemePropertyResource apply(Collection concept) {
+          return new SchemePropertyResource(concept);
+        }
+      };
+
   private final Function<SchemePropertyResource, Concept> propertyResourceToConcept =
       new Function<SchemePropertyResource, Concept>() {
         @Override
         public Concept apply(SchemePropertyResource propertyResource) {
-          return find(propertyResource);
+          return findConcept(propertyResource);
+        }
+      };
+
+  private final Function<SchemePropertyResource, Collection> propertyResourceToCollection =
+      new Function<SchemePropertyResource, Collection>() {
+        @Override
+        public Collection apply(SchemePropertyResource propertyResource) {
+          return findCollection(propertyResource);
         }
       };
 
   private final EntityManager em;
   private final boolean truncated;
-
-  public ConceptTransformer(EntityManager em) {
-    this(em, false);
-  }
 
   public ConceptTransformer(EntityManager em, boolean truncated) {
     Preconditions.checkNotNull(em);
@@ -92,9 +125,12 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
     this.truncated = truncated;
   }
 
-  private Concept find(SchemePropertyResource propertyResource) {
-    return propertyResource != null && propertyResource.getId() != null ?
-           em.find(Concept.class, propertyResource.getId()) : null;
+  private Concept findConcept(Resource r) {
+    return r != null && r.getId() != null ? em.find(Concept.class, r.getId()) : null;
+  }
+
+  private Collection findCollection(Resource r) {
+    return r != null && r.getId() != null ? em.find(Collection.class, r.getId()) : null;
   }
 
   @Override
@@ -113,10 +149,11 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
     concept.setId(serializedConcept.getId());
     concept.setProperties(serializedConcept.getProperties());
     concept.setScheme(serializedConcept.getScheme());
-    concept.setBroader(serializedConcept.getBroader());
+    concept.setBroader(findConcept(serializedConcept.getBroader()));
     concept.setNarrower(transform(serializedConcept.getNarrower(), propertyResourceToConcept));
     concept.setRelated(transform(serializedConcept.getRelated(), propertyResourceToConcept));
-    concept.setCollections(serializedConcept.getCollections());
+    concept.setCollections(transform(serializedConcept.getCollections(),
+                                     propertyResourceToCollection));
 
     return concept;
   }
@@ -132,10 +169,12 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
 
     if (!truncated) {
       serializedConcept.setScheme(concept.getScheme());
-      serializedConcept.setBroader(concept.getBroader());
+      serializedConcept.setBroader(
+          concept.getBroader() != null ? new SerializedBroaderConcept(concept.getBroader()) : null);
       serializedConcept.setNarrower(transform(concept.getNarrower(), conceptToPropertyResource));
       serializedConcept.setRelated(transform(concept.getRelated(), conceptToPropertyResource));
-      serializedConcept.setCollections(concept.getCollections());
+      serializedConcept.setCollections(transform(concept.getCollections(),
+                                                 collectionToPropertyResource));
     }
 
     return jsonSerializationContext.serialize(serializedConcept, SerializedConcept.class);

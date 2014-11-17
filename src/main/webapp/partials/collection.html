@@ -1,0 +1,60 @@
+<ol class="breadcrumb">
+    <li><a ng-href="#">Termipankki</a></li>
+    <li><a ng-href="#/schemes/{{collection.scheme.id}}/concepts">
+        <thl-property-values values="collection.scheme.properties.prefLabel"
+                             lang="fi"></thl-property-values>
+    </a></li>
+    <li class="active">
+        <thl-property-values values="collection.properties.prefLabel" lang="fi"></thl-property-values>
+    </li>
+</ol>
+
+<div class="row">
+    <div class="col-xs-8">
+        <a class="btn btn-sm btn-default"
+           ng-href="#/schemes/{{collection.scheme.id}}/collections/{{collection.id}}/edit">
+            Muokkaa
+        </a>
+    </div>
+</div>
+
+<h1 class="page-header">
+    <thl-property-values values="collection.properties.prefLabel" lang="fi"></thl-property-values>
+    <small>
+        <thl-property-values values="collection.properties.altLabel" lang="fi"></thl-property-values>
+    </small>
+</h1>
+
+<dl>
+    <dt>Ensisijainen termi</dt>
+    <dd>
+        <thl-property-values values="collection.properties.prefLabel"></thl-property-values>
+    </dd>
+    <dt>Vaihtoehtoiset termit</dt>
+    <dd>
+        <thl-property-values values="collection.properties.altLabel"></thl-property-values>
+    </dd>
+</dl>
+
+<dl>
+    <dt>Kokoelmaan kuuluvat käsitteet</dt>
+    <dd>
+        <span ng-repeat="r in collection.members | orderBy:prefLabelFi">
+            <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}"><thl-property-values
+                    values="r.properties.prefLabel" lang="fi"></thl-property-values></a><span
+                ng-show="!$last" class="text-muted">, </span>
+        </span>
+        <span ng-show="!collection.members || collection.members.length == 0">
+            -
+        </span>
+    </dd>
+</dl>
+
+<hr>
+
+<span class="label label-default" ng-click="showJson = !showJson">json</span>
+
+<div ng-show="showJson">
+    <pre>{{collection | json}}</pre>
+</div>
+

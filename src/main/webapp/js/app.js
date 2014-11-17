@@ -6,19 +6,40 @@ App.factory('SchemeList', function($resource) {
   return $resource('api/schemes');
 }).factory('Scheme', function($resource) {
   return $resource('api/schemes/:schemeId');
+}).factory('CollectionList', function($resource) {
+  return $resource('api/schemes/:schemeId/collections');
+}).factory('Collection', function($resource) {
+  return $resource('api/schemes/:schemeId/collections/:id');
 }).factory('ConceptList', function($resource) {
   return $resource('api/schemes/:schemeId/concepts');
 }).factory('Concept', function($resource) {
   return $resource('api/schemes/:schemeId/concepts/:id');
 });
 
-App.factory('Config', function() {
+App.factory('PropertyUtils', function() {
   return {
     langPriority: function(value) {
       if (value.lang == 'fi') return 0;
       if (value.lang == 'sv') return 1;
       if (value.lang == 'en') return 2;
       return value.lang;
+    },
+    prefLabelFi: function(value) {
+      return value.properties.prefLabel.filter(function(value) {
+        return value.lang == 'fi';
+      }).map(function(value) {
+        return value.value;
+      }).join(', ');
+    },
+    ensurePropertiesFiValue: function(properties, propertyIds) {
+      for (var i = 0; i < propertyIds.length; i++) {
+        if (!properties[propertyIds[i]]) {
+          properties[propertyIds[i]] = [{
+            lang: 'fi',
+            value: ''
+          }];
+        }
+      }
     }
   }
 });
@@ -26,6 +47,55 @@ App.factory('Config', function() {
 App.controller('SchemeListCtrl', function($scope, $location, SchemeList) {
 
   $scope.schemes = SchemeList.query();
+
+});
+
+App.controller('CollectionCtrl', function($scope, $routeParams, Collection,
+        ConceptList, PropertyUtils) {
+
+  Collection.get({
+    schemeId: $routeParams.schemeId,
+    id: $routeParams.id
+  }, function(collection) {
+    $scope.collection = collection;
+  });
+
+  $scope.langPriority = PropertyUtils.langPriority;
+  $scope.prefLabelFi = PropertyUtils.prefLabelFi;
+
+});
+
+App.controller('CollectionEditCtrl', function($scope, $routeParams, $location,
+        Collection, CollectionList, PropertyUtils) {
+
+  Collection.get({
+    schemeId: $routeParams.schemeId,
+    id: $routeParams.id
+  }, function(collection) {
+    PropertyUtils.ensurePropertiesFiValue(collection.properties, ['prefLabel',
+        'altLabel']);
+    $scope.collection = collection;
+  });
+
+  $scope.save = function() {
+    $scope.collection.$save({
+      schemeId: $routeParams.schemeId
+    }, function(collection) {
+      $location.path('/schemes/' + $routeParams.schemeId + '/collections/'
+              + collection.id);
+    }, function(error) {
+      $scope.error = error;
+    });
+  }
+
+  $scope.remove = function() {
+    $scope.collection.$delete({
+      schemeId: $routeParams.schemeId,
+      id: $routeParams.id
+    }, function() {
+      $location.path('/schemes/' + $routeParams.schemeId + '/concepts');
+    });
+  }
 
 });
 
@@ -76,33 +146,15 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
 });
 
 App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
-        Concept, ConceptList, Config) {
-
-  function ensureProperties(properties, propertyIds) {
-    for (var i = 0; i < propertyIds.length; i++) {
-      if (!properties[propertyIds[i]]) {
-        var values = []
-        properties[propertyIds[i]] = values;
-        ensureValue(values);
-      }
-    }
-  }
-
-  function ensureValue(values) {
-    if (values.length == 0) {
-      values.push({
-        lang: 'fi',
-        value: ''
-      });
-    }
-  }
+        Concept, ConceptList, PropertyUtils) {
 
   Concept.get({
     schemeId: $routeParams.schemeId,
     id: $routeParams.id
   }, function(concept) {
-    ensureProperties(concept.properties, ['prefLabel', 'altLabel',
-        'definition', 'note', 'example', 'hiddenLabel', 'deprecatedLabel']);
+    PropertyUtils.ensurePropertiesFiValue(concept.properties, ['prefLabel',
+        'altLabel', 'definition', 'note', 'example', 'hiddenLabel',
+        'deprecatedLabel']);
     $scope.concept = concept;
   });
 
@@ -129,7 +181,7 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
 });
 
 App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
-        ConceptList, Config) {
+        ConceptList, PropertyUtils) {
 
   function collectBroader(concept) {
     var broader = [concept];
@@ -151,15 +203,8 @@ App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
     $scope.broader = collectBroader(concept);
   });
 
-  $scope.langPriority = Config.langPriority;
-
-  $scope.prefLabelFi = function(value) {
-    return value.properties.prefLabel.filter(function(value) {
-      return value.lang == 'fi';
-    }).map(function(value) {
-      return value.value;
-    }).join(', ');
-  }
+  $scope.langPriority = PropertyUtils.langPriority;
+  $scope.prefLabelFi = PropertyUtils.prefLabelFi;
 
 });
 
@@ -167,6 +212,12 @@ App.config(function($routeProvider) {
   $routeProvider.when('/schemes/', {
     templateUrl: 'partials/scheme-list.html',
     controller: 'SchemeListCtrl'
+  }).when('/schemes/:schemeId/collections/:id', {
+    templateUrl: 'partials/collection.html',
+    controller: 'CollectionCtrl'
+  }).when('/schemes/:schemeId/collections/:id/edit', {
+    templateUrl: 'partials/collection-edit.html',
+    controller: 'CollectionEditCtrl'
   }).when('/schemes/:schemeId/concepts', {
     templateUrl: 'partials/concept-list.html',
     controller: 'ConceptListCtrl',

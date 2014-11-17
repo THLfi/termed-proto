@@ -80,6 +80,17 @@
             -
         </span>
     </dd>
+    <dt>Kuuluu kokoelmiin</dt>
+    <dd>
+        <span ng-repeat="c in concept.collections | orderBy:prefLabelFi">
+            <a ng-href="#/schemes/{{c.scheme.id}}/collections/{{c.id}}"><thl-property-values
+                    values="c.properties.prefLabel" lang="fi"></thl-property-values></a><span
+                ng-show="!$last" class="text-muted">, </span>
+        </span>
+        <span ng-show="!concept.collections || concept.collections.length == 0">
+            -
+        </span>
+    </dd>
 </dl>
 
 <br>

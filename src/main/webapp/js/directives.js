@@ -6,8 +6,8 @@ App.directive('thlPropertyValues', function() {
       lang: '@'
     },
     templateUrl: 'partials/property-values.html',
-    controller: function($scope, Config) {
-      $scope.langPriority = Config.langPriority;
+    controller: function($scope, PropertyUtils) {
+      $scope.langPriority = PropertyUtils.langPriority;
     }
   };
 });
@@ -19,7 +19,7 @@ App.directive('thlPropertyValuesEdit', function() {
       values: '='
     },
     templateUrl: 'partials/property-values-edit.html',
-    controller: function($scope, Config) {
+    controller: function($scope, PropertyUtils) {
       $scope.addPropertyValue = function(values) {
         values.push({
           lang: 'fi',
@@ -35,7 +35,7 @@ App.directive('thlPropertyValuesEdit', function() {
           });
         }
       }
-      $scope.langPriority = Config.langPriority;
+      $scope.langPriority = PropertyUtils.langPriority;
     }
   };
 });
