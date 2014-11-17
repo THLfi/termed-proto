@@ -1,7 +1,6 @@
 package fi.thl.termed.model;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -10,7 +9,7 @@ import java.util.Map;
 
 public class Concept extends Resource {
 
-  private Map<String, Map<String, String>> properties;
+  private Map<String, PropertyValue> properties;
 
   private Concept type;
   private Concept parent;
@@ -31,25 +30,12 @@ public class Concept extends Resource {
     this.related = Lists.newArrayList();
   }
 
-  public Map<String, Map<String, String>> getProperties() {
+  public Map<String, PropertyValue> getProperties() {
     return properties;
   }
 
-  public void setProperties(Map<String, Map<String, String>> properties) {
+  public void setProperties(Map<String, PropertyValue> properties) {
     this.properties = properties;
-  }
-
-  public void addProperty(String propertyId, String lang, String value) {
-    if (Strings.isNullOrEmpty(value)) {
-      return;
-    }
-    if (properties == null) {
-      properties = Maps.newHashMap();
-    }
-    if (!properties.containsKey(propertyId)) {
-      properties.put(propertyId, Maps.<String, String>newHashMap());
-    }
-    properties.get(propertyId).put(lang, value);
   }
 
   public Concept getType() {
@@ -90,13 +76,6 @@ public class Concept extends Resource {
 
   public void setRelated(List<Concept> related) {
     this.related = related;
-  }
-
-  public void addRelated(Concept c) {
-    if (related == null) {
-      related = Lists.newArrayList();
-    }
-    related.add(c);
   }
 
   public Objects.ToStringHelper toStringHelper() {

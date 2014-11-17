@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import fi.thl.termed.model.Concept;
+import fi.thl.termed.model.PropertyValue;
 import fi.thl.termed.service.ConceptJsonService;
 import fi.thl.termed.util.SKOS;
 
@@ -41,6 +42,7 @@ public class RdfImporter {
   @SuppressWarnings("all")
   private Logger log = LoggerFactory.getLogger(getClass());
   private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private List<String> langs = Lists.newArrayList("fi", "en", "sv");
 
   private final ConceptJsonService service;
 
@@ -61,15 +63,9 @@ public class RdfImporter {
 
     for (Resource r : model.listResourcesWithProperty(RDF.type, SKOS.Concept).toList()) {
       Concept c = new Concept(sha1Hex(r.getURI()));
-      c.addProperty("label", "fi", getLiteralValues(model, r, SKOS.prefLabel, "fi"));
-      c.addProperty("label", "sv", getLiteralValues(model, r, SKOS.prefLabel, "sv"));
-      c.addProperty("label", "en", getLiteralValues(model, r, SKOS.prefLabel, "en"));
-      c.addProperty("altLabel", "fi", getLiteralValues(model, r, SKOS.altLabel, "fi"));
-      c.addProperty("altLabel", "sv", getLiteralValues(model, r, SKOS.altLabel, "sv"));
-      c.addProperty("altLabel", "en", getLiteralValues(model, r, SKOS.altLabel, "en"));
-      c.addProperty("hiddenLabel", "fi", getLiteralValues(model, r, SKOS.hiddenLabel, "fi"));
-      c.addProperty("hiddenLabel", "sv", getLiteralValues(model, r, SKOS.hiddenLabel, "sv"));
-      c.addProperty("hiddenLabel", "en", getLiteralValues(model, r, SKOS.hiddenLabel, "en"));
+      addProperty(c, "label", model, r, SKOS.prefLabel);
+      addProperties(c, "altLabel", model, r, SKOS.prefLabel);
+      addProperties(c, "hiddenLabel", model, r, SKOS.prefLabel);
       concepts.put(c.getId(), c);
     }
 
@@ -86,7 +82,7 @@ public class RdfImporter {
       for (String relatedUri : getObjectValues(model, r, SKOS.related)) {
         String relatedId = sha1Hex(relatedUri);
         if (concepts.containsKey(relatedId)) {
-          c.addRelated(new Concept(relatedId));
+          c.getRelated().add(new Concept(relatedId));
         }
       }
     }
@@ -94,6 +90,23 @@ public class RdfImporter {
     service.saveAll(gson.toJsonTree(concepts.values()).getAsJsonArray());
 
     log.info("imported {} concepts", concepts.size());
+  }
+
+  private void addProperty(Concept c, String propertyId, Model model, Resource r, Property p) {
+    for (String lang : langs) {
+      String propertyValue = getLiteralValue(model, r, p, lang);
+      if (!propertyValue.isEmpty()) {
+        c.getProperties().add(new PropertyValue(propertyId, lang, propertyValue));
+      }
+    }
+  }
+
+  private void addProperties(Concept c, String propertyId, Model model, Resource r, Property p) {
+    for (String lang : langs) {
+      for (String propertyValue : getLiteralValues(model, r, p, lang)) {
+        c.getProperties().add(new PropertyValue(propertyId, lang, propertyValue));
+      }
+    }
   }
 
   private List<String> getObjectValues(Model m, Resource r, Property p) {
@@ -108,7 +121,11 @@ public class RdfImporter {
     return values;
   }
 
-  private String getLiteralValues(Model m, Resource r, Property p, String lang) {
+  private String getLiteralValue(Model m, Resource r, Property p, String lang) {
+    return Joiner.on(", ").join(getLiteralValues(m, r, p, lang));
+  }
+
+  private List<String> getLiteralValues(Model m, Resource r, Property p, String lang) {
     List<String> values = Lists.newArrayList();
 
     for (RDFNode n : m.listObjectsOfProperty(r, p).toList()) {
@@ -120,7 +137,7 @@ public class RdfImporter {
       }
     }
 
-    return Joiner.on(", ").join(values);
+    return values;
   }
 
 }

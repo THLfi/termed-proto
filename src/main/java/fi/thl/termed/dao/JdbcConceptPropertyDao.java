@@ -1,8 +1,7 @@
 package fi.thl.termed.dao;
 
-import com.google.common.base.Predicates;
-import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,11 +12,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
-import fi.thl.termed.util.MapUtils;
-import fi.thl.termed.util.Pair;
+import fi.thl.termed.model.PropertyValue;
 
 public class JdbcConceptPropertyDao {
 
@@ -33,32 +32,25 @@ public class JdbcConceptPropertyDao {
   }
 
   public void saveProperties(String conceptId,
-                             Map<String, Map<String, String>> properties) {
+                             Map<String, PropertyValue> properties) {
     saveProperties(conceptId, getProperties(conceptId), properties);
   }
 
   public void saveProperties(String conceptId,
-                             Map<String, Map<String, String>> oldProperties,
-                             Map<String, Map<String, String>> newProperties) {
+                             Map<String, PropertyValue> oldProperties,
+                             Map<String, PropertyValue> newProperties) {
 
-    MapDifference<Pair<String, String>, String> diff =
-        Maps.difference(
-            Maps.filterValues(MapUtils.collapseKeys(oldProperties), Predicates.notNull()),
-            Maps.filterValues(MapUtils.collapseKeys(newProperties), Predicates.notNull()));
+    Set<Map.Entry<String, PropertyValue>> oldRelated = oldProperties.entrySet();
+    Set<Map.Entry<String, PropertyValue>> newRelated = newProperties.entrySet();
 
-    for (Map.Entry<Pair<String, String>, String> added : diff.entriesOnlyOnRight().entrySet()) {
-      Pair<String, String> propLang = added.getKey();
-      insertPropertyValue(conceptId, propLang.getLeft(), propLang.getRight(), added.getValue());
+    for (Map.Entry<String, PropertyValue> removed : Sets.difference(oldRelated, newRelated)) {
+      PropertyValue value = removed.getValue();
+      removePropertyValue(conceptId, removed.getKey(), value.getLang(), value.getLang());
     }
-    for (Map.Entry<Pair<String, String>, MapDifference.ValueDifference<String>> modified : diff
-        .entriesDiffering().entrySet()) {
-      Pair<String, String> propLang = modified.getKey();
-      updatePropertyValue(conceptId, propLang.getLeft(), propLang.getRight(),
-                          modified.getValue().rightValue());
-    }
-    for (Map.Entry<Pair<String, String>, String> removed : diff.entriesOnlyOnLeft().entrySet()) {
-      Pair<String, String> propLang = removed.getKey();
-      removePropertyValue(conceptId, propLang.getLeft(), propLang.getRight(), removed.getValue());
+
+    for (Map.Entry<String, PropertyValue> added : Sets.difference(newRelated, oldRelated)) {
+      PropertyValue value = added.getValue();
+      insertPropertyValue(conceptId, added.getKey(), value.getLang(), value.getLang());
     }
   }
 
@@ -67,32 +59,22 @@ public class JdbcConceptPropertyDao {
                         conceptId, propertyId, lang, value);
   }
 
-  private void updatePropertyValue(String conceptId, String propertyId, String lang, String value) {
-    jdbcTemplate.update(
-        sqlQueries.getProperty("property-update-value-by-concept_id-and-property_id-and-lang"),
-        value, conceptId, propertyId, lang);
-  }
-
   private void removePropertyValue(String conceptId, String propertyId, String lang, String value) {
     jdbcTemplate.update(
         sqlQueries.getProperty("property-delete-by-concept_id-and-property_id-and-lang-and-value"),
         conceptId, propertyId, lang, value);
   }
 
-  public Map<String, Map<String, String>> getProperties(String conceptId) {
-    return MapUtils.expandKeys(getPropertyMap(conceptId));
-  }
-
-  private Map<Pair<String, String>, String> getPropertyMap(String conceptId) {
-    final Map<Pair<String, String>, String> properties = Maps.newHashMap();
+  public Map<String, PropertyValue> getProperties(String conceptId) {
+    final Map<String, PropertyValue> properties = Maps.newHashMap();
 
     jdbcTemplate
         .query(sqlQueries.getProperty("property-find-by-concept_id"), new RowCallbackHandler() {
           @Override
           public void processRow(ResultSet resultSet) throws SQLException {
-            properties.put(new Pair<String, String>(resultSet.getString("property_id"),
-                                                    resultSet.getString("lang")),
-                           resultSet.getString("value"));
+            properties.put(resultSet.getString("property_id"),
+                           new PropertyValue(resultSet.getString("lang"),
+                                             resultSet.getString("value")));
           }
         }, conceptId);
 
