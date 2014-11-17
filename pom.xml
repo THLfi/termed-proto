@@ -212,6 +212,8 @@
         <filters>
             <filter>src/main/resources/jdbc.${env}.properties
             </filter>
+            <filter>src/main/resources/persistence.${env}.properties
+            </filter>
         </filters>
         <resources>
             <resource>

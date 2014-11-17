@@ -20,6 +20,9 @@
 
     <context:component-scan base-package="fi.thl.termed"/>
 
+    <context:property-placeholder
+            location="classpath:jdbc.properties, classpath:persistence.properties"/>
+
     <mvc:annotation-driven>
         <mvc:message-converters>
             <bean class="fi.thl.termed.util.GsonHttpMessageConverter"/>
@@ -39,7 +42,7 @@
           class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
           depends-on="flyway">
         <property name="dataSource" ref="dataSource"/>
-        <property name="persistenceUnitName" value="persistenceUnit"/>
+        <property name="persistenceUnitName" value="${persistenceUnitName}"/>
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
         </property>
@@ -53,10 +56,6 @@
                 <entry key="schema" value="termed"/>
             </map>
         </property>
-    </bean>
-
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations" value="classpath:jdbc.properties"/>
     </bean>
 
     <bean id="dataSource" destroy-method="close"
