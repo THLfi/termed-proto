@@ -16,6 +16,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,6 @@ import static com.google.common.base.Predicates.in;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Lists.newArrayList;
-import static org.apache.commons.codec.digest.DigestUtils.sha1Hex;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
@@ -71,14 +71,6 @@ public class RdfImporter {
       .build();
 
   private Set<String> acceptedLanguages = Sets.newHashSet("", "fi", "en", "sv");
-
-  private Function<RDFNode, String> nodeUriToId =
-      new Function<RDFNode, String>() {
-        @Override
-        public String apply(RDFNode s) {
-          return sha1Hex(s.isURIResource() ? s.asResource().getURI() : s.toString());
-        }
-      };
 
   private Function<Statement, PropertyValue> statementsToPropertyValues =
       new Function<Statement, PropertyValue>() {
@@ -136,12 +128,26 @@ public class RdfImporter {
     Map<String, Scheme> schemes = Maps.newHashMap();
 
     for (Resource r : instancesOf(model, SKOS.ConceptScheme)) {
-      Scheme scheme = new Scheme(sha1Hex(r.getURI()));
+      Scheme scheme = new Scheme(getId(model, r));
       scheme.setProperties(readProperties(model, r));
       schemes.put(scheme.getId(), scheme);
     }
 
     return schemes;
+  }
+
+  private String getId(Model model, Resource r) {
+    String uri = r.getURI();
+    String id = model.shortForm(uri);
+
+    // use uri sha1 hex if shortening failed
+    id = id.equals(uri) ? DigestUtils.sha1Hex(uri) : id;
+
+    // remove trailing semicolon from uris without local name
+    id = id.endsWith(":") ?
+         id.substring(0, id.length() - 1) : id;
+
+    return id.replace(':', '_');
   }
 
   private List<Resource> instancesOf(Model model, Resource rdfClass) {
@@ -152,7 +158,7 @@ public class RdfImporter {
     Map<String, Concept> concepts = Maps.newHashMap();
 
     for (Resource r : instancesOf(model, SKOS.Concept)) {
-      Concept concept = new Concept(sha1Hex(r.getURI()));
+      Concept concept = new Concept(getId(model, r));
       concept.setProperties(readProperties(model, r));
       concept.setScheme(readObject(model, r, SKOS.inScheme, schemes));
       if (concept.getScheme() == null && !schemes.isEmpty()) {
@@ -172,7 +178,7 @@ public class RdfImporter {
 
   private void linkConcepts(Model model, Map<String, Concept> concepts) {
     for (Resource r : instancesOf(model, SKOS.Concept)) {
-      Concept concept = concepts.get(sha1Hex(r.getURI()));
+      Concept concept = concepts.get(getId(model, r));
       concept.setBroader(readObject(model, r, SKOS.broader, concepts));
       concept.setNarrower(readObjects(model, r, SKOS.narrower, concepts));
       concept.setRelated(readObjects(model, r, SKOS.related, concepts));
@@ -184,7 +190,7 @@ public class RdfImporter {
     Map<String, Collection> collections = Maps.newHashMap();
 
     for (Resource r : instancesOf(model, SKOS.Collection)) {
-      Collection collection = new Collection(sha1Hex(r.getURI()));
+      Collection collection = new Collection(getId(model, r));
       collection.setProperties(readProperties(model, r));
       collection.setMembers(readObjects(model, r, SKOS.member, concepts));
       collection.setScheme(readObject(model, r, SKOS.inScheme, schemes));
@@ -216,7 +222,7 @@ public class RdfImporter {
 
   private <T> List<T> readObjects(Model model, Resource r, Property p, Map<String, T> values) {
     Iterable<RDFNode> objects = model.listObjectsOfProperty(r, p).toList();
-    Iterable<String> objectIds = transform(objects, nodeUriToId);
+    Iterable<String> objectIds = transform(objects, new UriToId(model));
     Iterable<String> existingObjectIds = filter(objectIds, in(values.keySet()));
     Iterable<T> populatedObjects = transform(existingObjectIds, forMap(values));
     return newArrayList(populatedObjects);
@@ -225,6 +231,21 @@ public class RdfImporter {
   private List<PropertyValue> readProperties(Model model, Resource r) {
     return newArrayList(transform(filter(model.listStatements(r, null, (RDFNode) null).toList(),
                                          isAcceptedLiteralStatement), statementsToPropertyValues));
+  }
+
+  private class UriToId implements Function<RDFNode, String> {
+
+    private Model model;
+
+    public UriToId(Model model) {
+      this.model = model;
+    }
+
+    @Override
+    public String apply(RDFNode input) {
+      return input.isURIResource() ? getId(model, (Resource) input)
+                                   : DigestUtils.sha1Hex(input.toString());
+    }
   }
 
 }
