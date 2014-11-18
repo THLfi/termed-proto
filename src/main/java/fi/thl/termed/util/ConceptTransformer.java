@@ -128,12 +128,10 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
       };
 
   private final EntityManager em;
-  private final boolean truncated;
 
-  public ConceptTransformer(EntityManager em, boolean truncated) {
+  public ConceptTransformer(EntityManager em) {
     Preconditions.checkNotNull(em);
     this.em = em;
-    this.truncated = truncated;
   }
 
   private Concept findConcept(Resource r) {
@@ -148,9 +146,6 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
   public Concept deserialize(JsonElement jsonElement, Type type,
                              JsonDeserializationContext jsonDeserializationContext)
       throws JsonParseException {
-
-    Preconditions.checkState(!truncated,
-                             "truncated ConceptTransformer can't deserialize Concepts.");
 
     SerializedConcept serializedConcept =
         jsonDeserializationContext.deserialize(jsonElement, SerializedConcept.class);
@@ -177,16 +172,13 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
 
     serializedConcept.setId(concept.getId());
     serializedConcept.setProperties(concept.getProperties());
-
-    if (!truncated) {
-      serializedConcept.setScheme(concept.getScheme());
-      serializedConcept.setBroader(
-          concept.getBroader() != null ? new SerializedBroaderConcept(concept.getBroader()) : null);
-      serializedConcept.setNarrower(transform(concept.getNarrower(), conceptToPropertyResource));
-      serializedConcept.setRelated(transform(concept.getRelated(), conceptToPropertyResource));
-      serializedConcept.setCollections(transform(concept.getCollections(),
-                                                 collectionToPropertyResource));
-    }
+    serializedConcept.setScheme(concept.getScheme());
+    serializedConcept.setBroader(
+        concept.getBroader() != null ? new SerializedBroaderConcept(concept.getBroader()) : null);
+    serializedConcept.setNarrower(transform(concept.getNarrower(), conceptToPropertyResource));
+    serializedConcept.setRelated(transform(concept.getRelated(), conceptToPropertyResource));
+    serializedConcept.setCollections(transform(concept.getCollections(),
+                                               collectionToPropertyResource));
 
     return jsonSerializationContext.serialize(serializedConcept, SerializedConcept.class);
   }

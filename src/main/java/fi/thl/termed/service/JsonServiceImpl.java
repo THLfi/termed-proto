@@ -39,7 +39,6 @@ public class JsonServiceImpl implements JsonService {
   private ConceptRepository conceptRepository;
   private ConceptIndex conceptIndex;
   private Gson gson;
-  private Gson truncatedGson;
 
   @PersistenceContext
   private EntityManager em;
@@ -56,19 +55,13 @@ public class JsonServiceImpl implements JsonService {
 
   @PostConstruct
   public void init() {
-    this.gson = buildGson(false);
-    // has faster concept serializer but can't deserialize
-    this.truncatedGson = buildGson(true);
-    this.conceptIndex = new ConceptIndex(em);
-  }
-
-  private Gson buildGson(boolean truncated) {
-    return new GsonBuilder().setPrettyPrinting()
-        .registerTypeAdapter(Concept.class, new ConceptTransformer(em, truncated))
+    this.gson = new GsonBuilder().setPrettyPrinting()
+        .registerTypeAdapter(Concept.class, new ConceptTransformer(em))
         .registerTypeAdapterFactory(new HibernateProxyTypeAdapterFactory())
         .registerTypeAdapter(PropertyValueListTransformer.PROPERTY_LIST_TYPE,
                              new PropertyValueListTransformer())
         .create();
+    this.conceptIndex = new ConceptIndex(em);
   }
 
   private <T> JsonObject toJson(T object) {
@@ -139,9 +132,8 @@ public class JsonServiceImpl implements JsonService {
   @Override
   public JsonArray queryConcepts(String schemeId, String query, int first, int max,
                                  List<String> orderBy) {
-    return truncatedGson.toJsonTree(
-        conceptIndex.query(addSchemeIdToQuery(schemeId, query), first, max, orderBy))
-        .getAsJsonArray();
+    return gson.toJsonTree(conceptIndex.query(
+        addSchemeIdToQuery(schemeId, query), first, max, orderBy)).getAsJsonArray();
   }
 
   private String addSchemeIdToQuery(String schemeId, String query) {

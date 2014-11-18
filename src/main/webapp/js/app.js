@@ -140,6 +140,66 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
 
 });
 
+App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
+        Scheme, Concept, ConceptList) {
+
+  $scope.query = ($location.search()).q || "";
+
+  $scope.scheme = Scheme.get({
+    schemeId: $routeParams.schemeId
+  });
+
+  $scope.searchConcepts = function(query) {
+    ConceptList.query({
+      schemeId: $routeParams.schemeId,
+      query: query,
+      max: 20,
+      orderBy: 'prefLabel.fi.sortable'
+    }, function(concepts) {
+      $scope.concepts = concepts;
+      $location.search({
+        q: $scope.query
+      }).replace();
+    });
+  }
+
+  $scope.loadNarrower = function(concept) {
+    ConceptList.query({
+      schemeId: $routeParams.schemeId,
+      query: "broader.id:" + concept.id,
+      max: -1,
+      orderBy: 'prefLabel.fi.sortable'
+    }, function(concepts) {
+      concept.narrower = concepts;
+      concept.expanded = true;
+    });
+  }
+
+  $scope.newConcept = function() {
+    var concept = new Concept({
+      scheme: $scope.scheme,
+      properties: {
+        prefLabel: [{
+          lang: 'fi',
+          value: 'Uusi käsite'
+        }]
+      }
+    });
+
+    concept.$save({
+      schemeId: $routeParams.schemeId
+    }, function(concept) {
+      $location.path('/schemes/' + $routeParams.schemeId + '/concepts/'
+              + concept.id + '/edit');
+    }, function(error) {
+      $scope.error = error;
+    });
+  }
+
+  $scope.searchConcepts(($location.search()).q || "broader:null");
+
+});
+
 App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
         ConceptList, PropertyUtils) {
 
@@ -271,6 +331,10 @@ App.config(function($routeProvider) {
   }).when('/schemes/:schemeId/concepts', {
     templateUrl: 'partials/concept-list.html',
     controller: 'ConceptListCtrl',
+    reloadOnSearch: false
+  }).when('/schemes/:schemeId/tree', {
+    templateUrl: 'partials/concept-tree.html',
+    controller: 'ConceptTreeCtrl',
     reloadOnSearch: false
   }).when('/schemes/:schemeId/concepts/:id', {
     templateUrl: 'partials/concept.html',

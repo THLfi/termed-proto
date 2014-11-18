@@ -41,25 +41,38 @@
             </div>
         </div>
         <br>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Käsite</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="concept in concepts">
-                <td>
-                    <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}">
-                        <thl-property-values values="concept.properties.prefLabel"
-                                             lang="fi"></thl-property-values>
-                    </a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <ul class="list-unstyled">
+            <li ng-repeat="concept in concepts">
+                <div ng-include="'concept-tree-node.html'"></div>
+            </li>
+        </ul>
     </div>
 </div>
+
+<script type="text/ng-template" id="concept-tree-node.html">
+    <div style="width: 1.5em; float: left;">
+        <span ng-show="concept.narrower.length > 0">
+            <span ng-show="!concept.expanded"
+                  ng-click="loadNarrower(concept)">&#9658;</span>
+            <span ng-show="concept.expanded"
+                  ng-click="concept.expanded = false">&#9660;</span>
+        </span>
+        <span ng-show="concept.narrower.length == 0">
+            &#9679;
+        </span>
+    </div>
+    <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}">
+        <thl-property-values values="concept.properties.prefLabel"
+                             lang="fi"></thl-property-values>
+    </a>
+    <div style="clear:both"></div>
+
+    <ul style="list-style-type: none;" ng-if="concept.expanded">
+        <li ng-repeat="concept in concept.narrower">
+            <div ng-include="'concept-tree-node.html'"></div>
+        </li>
+    </ul>
+</script>
 
 <span class="label label-default" ng-click="showJson = !showJson">json</span>
 

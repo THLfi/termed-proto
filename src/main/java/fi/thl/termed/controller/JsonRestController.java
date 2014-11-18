@@ -65,7 +65,8 @@ public class JsonRestController {
       @RequestParam(value = "first", required = false, defaultValue = "0") int first,
       @RequestParam(value = "max", required = false, defaultValue = "50") int max,
       @RequestParam(value = "orderBy", required = false) List<String> orderBy) {
-    return service.queryConcepts(schemeId, query, first, max, orderBy);
+    return service
+        .queryConcepts(schemeId, query, first, max < 0 ? Integer.MAX_VALUE : max, orderBy);
   }
 
   @RequestMapping(method = GET, value = "schemes/{schemeId}/concepts/{conceptId}")
