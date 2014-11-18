@@ -48,6 +48,49 @@ App.controller('SchemeListCtrl', function($scope, $location, SchemeList) {
 
   $scope.schemes = SchemeList.query();
 
+  $scope.newScheme = function() {
+    SchemeList.save({
+      properties: {
+        prefLabel: [{
+          lang: 'fi',
+          value: 'Uusi sanasto'
+        }]
+      }
+    }, function(scheme) {
+      $location.path('/schemes/' + scheme.id + '/edit');
+    });
+  }
+});
+
+App.controller('SchemeEditCtrl', function($scope, $routeParams, $location,
+        Scheme, SchemeList, PropertyUtils) {
+
+  Scheme.get({
+    schemeId: $routeParams.schemeId
+  }, function(scheme) {
+    PropertyUtils.ensurePropertiesFiValue(scheme.properties, ['prefLabel',
+        'altLabel']);
+    $scope.scheme = scheme;
+  });
+
+  $scope.save = function() {
+    $scope.scheme.$save(function(scheme) {
+      $location.path('/schemes');
+    }, function(error) {
+      $scope.error = error;
+    });
+  }
+
+  $scope.remove = function() {
+    $scope.scheme.$delete({
+      schemeId: $routeParams.schemeId
+    }, function() {
+      $location.path('/schemes');
+    }, function(error) {
+      $scope.error = error;
+    });
+  }
+
 });
 
 App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
@@ -155,6 +198,8 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
       id: $routeParams.id
     }, function() {
       $location.path('/schemes/' + $routeParams.schemeId + '/concepts');
+    }, function(error) {
+      $scope.error = error;
     });
   }
 
@@ -204,6 +249,8 @@ App.controller('CollectionEditCtrl', function($scope, $routeParams, $location,
       id: $routeParams.id
     }, function() {
       $location.path('/schemes/' + $routeParams.schemeId + '/concepts');
+    }, function(error) {
+      $scope.error = error;
     });
   }
 });
@@ -212,6 +259,9 @@ App.config(function($routeProvider) {
   $routeProvider.when('/schemes/', {
     templateUrl: 'partials/scheme-list.html',
     controller: 'SchemeListCtrl'
+  }).when('/schemes/:schemeId/edit', {
+    templateUrl: 'partials/scheme-edit.html',
+    controller: 'SchemeEditCtrl'
   }).when('/schemes/:schemeId/collections/:id', {
     templateUrl: 'partials/collection.html',
     controller: 'CollectionCtrl'

@@ -51,6 +51,7 @@
             <thead>
             <tr>
                 <th>Käsite</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -59,6 +60,12 @@
                     <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}">
                         <thl-property-values values="concept.properties.prefLabel"
                                              lang="fi"></thl-property-values>
+                    </a>
+                </td>
+                <td class="text-right">
+                    <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}/edit"
+                       class="btn btn-xs btn-link">
+                        <span class="glyphicon glyphicon-edit"></span>
                     </a>
                 </td>
             </tr>
