@@ -144,16 +144,22 @@ App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
         Scheme, Concept, ConceptList) {
 
   $scope.query = ($location.search()).q || "";
+  $scope.max = 50;
 
   $scope.scheme = Scheme.get({
     schemeId: $routeParams.schemeId
   });
 
+  $scope.loadMoreResults = function() {
+    $scope.max += 50;
+    $scope.searchConcepts(($location.search()).q || "broader:null");
+  }
+
   $scope.searchConcepts = function(query) {
     ConceptList.query({
       schemeId: $routeParams.schemeId,
       query: query,
-      max: 20,
+      max: $scope.max,
       orderBy: 'prefLabel.fi.sortable'
     }, function(concepts) {
       $scope.concepts = concepts;
