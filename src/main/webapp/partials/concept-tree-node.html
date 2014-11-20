@@ -2,18 +2,15 @@
     <span ng-show="concept.narrower.length > 0">
         <span ng-show="!concept.expanded"
               ng-click="loadNarrower(concept)">
-            <!--<span class="glyphicon glyphicon-chevron-right"></span>-->
-            &#9658;
+            <span class="glyphicon glyphicon-expand"></span>
         </span>
         <span ng-show="concept.expanded"
               ng-click="concept.expanded = false">
-            <!--<span class="glyphicon glyphicon-chevron-down"></span>-->
-            &#9660;
+            <span class="glyphicon glyphicon-collapse-down"></span>
         </span>
     </span>
     <span ng-show="concept.narrower.length == 0">
-        <!--<span class="glyphicon glyphicon-stop"></span>-->
-        &#9679;
+        <span class="glyphicon glyphicon-unchecked"></span>
     </span>
 </div>
 <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}">
