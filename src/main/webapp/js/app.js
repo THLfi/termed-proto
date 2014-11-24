@@ -321,7 +321,7 @@ App.controller('CollectionEditCtrl', function($scope, $routeParams, $location,
   }
 });
 
-App.config(function($routeProvider) {
+App.config(function($routeProvider, $httpProvider) {
   $routeProvider.when('/schemes/', {
     templateUrl: 'partials/scheme-list.html',
     controller: 'SchemeListCtrl'
@@ -351,4 +351,11 @@ App.config(function($routeProvider) {
   }).otherwise({
     redirectTo: '/schemes'
   });
+
+  if (!$httpProvider.defaults.headers.get) {
+    $httpProvider.defaults.headers.get = {};
+  }
+  // disable caches for IE
+  $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
+  $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
 });

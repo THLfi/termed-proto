@@ -62,11 +62,12 @@ public class PropertyValueListTransformer implements JsonSerializer<List<Propert
       String propertyLang = Strings.nullToEmpty(property.getLang());
       String propertyValue = Strings.nullToEmpty(property.getValue());
 
-      if (!propertyMap.containsKey(propertyId)) {
-        propertyMap.put(propertyId, Lists.<LangValue>newArrayList());
+      if (!propertyValue.isEmpty()) {
+        if (!propertyMap.containsKey(propertyId)) {
+          propertyMap.put(propertyId, Lists.<LangValue>newArrayList());
+        }
+        propertyMap.get(propertyId).add(new LangValue(propertyLang, propertyValue));
       }
-
-      propertyMap.get(propertyId).add(new LangValue(propertyLang, propertyValue));
     }
 
     return jsonSerializationContext.serialize(propertyMap, PROPERTY_MAP_TYPE);
