@@ -130,6 +130,11 @@ public class JsonServiceImpl implements JsonService {
   }
 
   @Override
+  public JsonArray queryConcepts(String query, int first, int max, List<String> orderBy) {
+    return gson.toJsonTree(conceptIndex.query(query, first, max, orderBy)).getAsJsonArray();
+  }
+
+  @Override
   public JsonArray queryConcepts(String schemeId, String query, int first, int max,
                                  List<String> orderBy) {
     return gson.toJsonTree(conceptIndex.query(

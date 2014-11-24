@@ -36,7 +36,8 @@ public class PropertyValueListBridge implements FieldBridge {
       // non-analyzed fields for sorting
       document.add(
           new Field(propertyValue.getPropertyId() + "." + propertyValue.getLang() + ".sortable",
-                    propertyValue.getValue(), Field.Store.NO, Field.Index.NOT_ANALYZED)
+                    propertyValue.getValue().toLowerCase(), Field.Store.NO,
+                    Field.Index.NOT_ANALYZED)
       );
       document.add(
           new Field(propertyValue.getPropertyId() + ".sortable",

@@ -10,6 +10,8 @@ App.factory('SchemeList', function($resource) {
   return $resource('api/schemes/:schemeId/collections');
 }).factory('Collection', function($resource) {
   return $resource('api/schemes/:schemeId/collections/:id');
+}).factory('ConceptListAll', function($resource) {
+  return $resource('api/concepts');
 }).factory('ConceptList', function($resource) {
   return $resource('api/schemes/:schemeId/concepts');
 }).factory('Concept', function($resource) {
@@ -44,7 +46,28 @@ App.factory('PropertyUtils', function() {
   }
 });
 
-App.controller('SchemeListCtrl', function($scope, $location, SchemeList) {
+App.controller('SchemeListCtrl', function($scope, $location, SchemeList, ConceptListAll) {
+
+  $scope.query = ($location.search()).q || "";
+  $scope.max = 50;
+
+  $scope.loadMoreResults = function() {
+    $scope.max += 50;
+    $scope.searchConcepts(($location.search()).q || "");
+  }
+
+  $scope.searchConcepts = function(query) {
+    ConceptListAll.query({
+      query: query,
+      max: $scope.max,
+      orderBy: 'prefLabel.fi.sortable'
+    }, function(concepts) {
+      $scope.concepts = concepts;
+      $location.search({
+        q: $scope.query
+      }).replace();
+    });
+  }
 
   $scope.schemes = SchemeList.query();
 
@@ -60,6 +83,9 @@ App.controller('SchemeListCtrl', function($scope, $location, SchemeList) {
       $location.path('/schemes/' + scheme.id + '/edit');
     });
   }
+
+  $scope.searchConcepts(($location.search()).q || "");
+
 });
 
 App.controller('SchemeEditCtrl', function($scope, $routeParams, $location,
@@ -75,7 +101,7 @@ App.controller('SchemeEditCtrl', function($scope, $routeParams, $location,
 
   $scope.save = function() {
     $scope.scheme.$save(function(scheme) {
-      $location.path('/schemes');
+      $location.path('/schemes/' + $routeParams.schemeId + '/concepts');
     }, function(error) {
       $scope.error = error;
     });
@@ -331,7 +357,8 @@ App.controller('CollectionEditCtrl', function($scope, $routeParams, $location,
 App.config(function($routeProvider, $httpProvider) {
   $routeProvider.when('/schemes/', {
     templateUrl: 'partials/scheme-list.html',
-    controller: 'SchemeListCtrl'
+    controller: 'SchemeListCtrl',
+    reloadOnSearch: false
   }).when('/schemes/:schemeId/edit', {
     templateUrl: 'partials/scheme-edit.html',
     controller: 'SchemeEditCtrl'

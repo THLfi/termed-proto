@@ -57,6 +57,16 @@ public class JsonRestController {
     return service.getCollection(collectionId);
   }
 
+  @RequestMapping(method = GET, value = "concepts")
+  @ResponseBody
+  public JsonArray queryConceptsFromAllSchemes(
+      @RequestParam(value = "query", required = false, defaultValue = "") String query,
+      @RequestParam(value = "first", required = false, defaultValue = "0") int first,
+      @RequestParam(value = "max", required = false, defaultValue = "50") int max,
+      @RequestParam(value = "orderBy", required = false) List<String> orderBy) {
+    return service.queryConcepts(query, first, max < 0 ? Integer.MAX_VALUE : max, orderBy);
+  }
+
   @RequestMapping(method = GET, value = "schemes/{schemeId}/concepts")
   @ResponseBody
   public JsonArray queryConcepts(

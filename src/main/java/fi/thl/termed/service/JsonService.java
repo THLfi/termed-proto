@@ -24,6 +24,8 @@ public interface JsonService {
 
   JsonObject getConcept(String id);
 
+  JsonArray queryConcepts(String query, int first, int max, List<String> orderBy);
+
   JsonArray queryConcepts(String schemeId, String query, int first, int max, List<String> orderBy);
 
   void removeConcept(String id);
