@@ -48,8 +48,7 @@ public class Collection extends SchemeResource {
   }
 
   public Objects.ToStringHelper toStringHelper() {
-    return super.toStringHelper()
-        .add("members", members);
+    return super.toStringHelper().add("members", members);
   }
 
   @Override
