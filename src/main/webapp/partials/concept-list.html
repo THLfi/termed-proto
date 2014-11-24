@@ -59,7 +59,8 @@
             </tbody>
         </table>
         <br/>
-        <button class="btn btn-default btn-xs" ng-click="loadMoreResults()">
+        <button class="btn btn-default btn-xs {{concepts.length == max || 'disabled'}}"
+                ng-click="loadMoreResults()">
             Lataa lisää hakutuloksia
         </button>
     </div>
