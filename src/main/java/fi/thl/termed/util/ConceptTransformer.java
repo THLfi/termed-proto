@@ -21,11 +21,11 @@ import javax.persistence.EntityManager;
 import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.Resource;
-import fi.thl.termed.model.SchemePropertyResource;
+import fi.thl.termed.model.SchemeResource;
 
 public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerializer<Concept> {
 
-  private class SerializedBroaderConcept extends SchemePropertyResource {
+  private class SerializedBroaderConcept extends SchemeResource {
 
     private SerializedBroaderConcept broader;
 
@@ -55,12 +55,12 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
     }
   }
 
-  private class SerializedConcept extends SchemePropertyResource {
+  private class SerializedConcept extends SchemeResource {
 
     private SerializedBroaderConcept broader;
-    private List<SchemePropertyResource> narrower;
-    private List<SchemePropertyResource> related;
-    private List<SchemePropertyResource> collections;
+    private List<SchemeResource> narrower;
+    private List<SchemeResource> related;
+    private List<SchemeResource> collections;
 
     public SerializedBroaderConcept getBroader() {
       return broader;
@@ -70,59 +70,59 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
       this.broader = broader;
     }
 
-    public List<SchemePropertyResource> getNarrower() {
-      return narrower != null ? narrower : Collections.<SchemePropertyResource>emptyList();
+    public List<SchemeResource> getNarrower() {
+      return narrower != null ? narrower : Collections.<SchemeResource>emptyList();
     }
 
-    public void setNarrower(List<SchemePropertyResource> narrower) {
+    public void setNarrower(List<SchemeResource> narrower) {
       this.narrower = narrower;
     }
 
-    public List<SchemePropertyResource> getRelated() {
-      return related != null ? related : Collections.<SchemePropertyResource>emptyList();
+    public List<SchemeResource> getRelated() {
+      return related != null ? related : Collections.<SchemeResource>emptyList();
     }
 
-    public void setRelated(List<SchemePropertyResource> related) {
+    public void setRelated(List<SchemeResource> related) {
       this.related = related;
     }
 
-    public List<SchemePropertyResource> getCollections() {
-      return collections != null ? collections : Collections.<SchemePropertyResource>emptyList();
+    public List<SchemeResource> getCollections() {
+      return collections != null ? collections : Collections.<SchemeResource>emptyList();
     }
 
-    public void setCollections(List<SchemePropertyResource> collections) {
+    public void setCollections(List<SchemeResource> collections) {
       this.collections = collections;
     }
   }
 
-  private final Function<Concept, SchemePropertyResource> conceptToPropertyResource =
-      new Function<Concept, SchemePropertyResource>() {
+  private final Function<Concept, SchemeResource> conceptToPropertyResource =
+      new Function<Concept, SchemeResource>() {
         @Override
-        public SchemePropertyResource apply(Concept concept) {
-          return new SchemePropertyResource(concept);
+        public SchemeResource apply(Concept concept) {
+          return new SchemeResource(concept);
         }
       };
 
-  private final Function<Collection, SchemePropertyResource> collectionToPropertyResource =
-      new Function<Collection, SchemePropertyResource>() {
+  private final Function<Collection, SchemeResource> collectionToPropertyResource =
+      new Function<Collection, SchemeResource>() {
         @Override
-        public SchemePropertyResource apply(Collection concept) {
-          return new SchemePropertyResource(concept);
+        public SchemeResource apply(Collection concept) {
+          return new SchemeResource(concept);
         }
       };
 
-  private final Function<SchemePropertyResource, Concept> propertyResourceToConcept =
-      new Function<SchemePropertyResource, Concept>() {
+  private final Function<SchemeResource, Concept> propertyResourceToConcept =
+      new Function<SchemeResource, Concept>() {
         @Override
-        public Concept apply(SchemePropertyResource propertyResource) {
+        public Concept apply(SchemeResource propertyResource) {
           return findConcept(propertyResource);
         }
       };
 
-  private final Function<SchemePropertyResource, Collection> propertyResourceToCollection =
-      new Function<SchemePropertyResource, Collection>() {
+  private final Function<SchemeResource, Collection> propertyResourceToCollection =
+      new Function<SchemeResource, Collection>() {
         @Override
-        public Collection apply(SchemePropertyResource propertyResource) {
+        public Collection apply(SchemeResource propertyResource) {
           return findCollection(propertyResource);
         }
       };
@@ -153,6 +153,7 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
     Concept concept = new Concept();
 
     concept.setId(serializedConcept.getId());
+    concept.setUri(serializedConcept.getUri());
     concept.setProperties(serializedConcept.getProperties());
     concept.setScheme(serializedConcept.getScheme());
     concept.setBroader(findConcept(serializedConcept.getBroader()));
@@ -171,6 +172,7 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
     SerializedConcept serializedConcept = new SerializedConcept();
 
     serializedConcept.setId(concept.getId());
+    serializedConcept.setUri(concept.getUri());
     serializedConcept.setProperties(concept.getProperties());
     serializedConcept.setScheme(concept.getScheme());
     serializedConcept.setBroader(

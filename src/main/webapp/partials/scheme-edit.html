@@ -41,6 +41,20 @@
         <label>Vaihtoehtoiset termit</label>
         <thl-property-values-edit values="scheme.properties.altLabel"></thl-property-values-edit>
     </div>
+    <div class="form-group">
+        <label>URI</label>
+
+        <div class="row">
+            <div class="col-sm-11 col-xs-10">
+                <input type="text" class="form-control" ng-model="scheme.uri">
+            </div>
+            <div class="col-sm-1 col-xs-2 text-right">
+                <button class="btn btn-default" ng-click="scheme.uri = ''">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            </div>
+        </div>
+    </div>
 </form>
 
 <hr>

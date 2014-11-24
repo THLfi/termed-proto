@@ -16,7 +16,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +30,13 @@ import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.PropertyValue;
 import fi.thl.termed.model.Scheme;
-import fi.thl.termed.model.SchemePropertyResource;
+import fi.thl.termed.model.SchemeResource;
 import fi.thl.termed.repository.CollectionRepository;
 import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
@@ -106,17 +106,19 @@ public class RdfImporter {
     Model model = ModelFactory.createDefaultModel();
     model.read(new ByteArrayInputStream(input.getBytes(Charsets.UTF_8)), null, "TTL");
 
+    Map<String, String> uriIdMap = Maps.newHashMap();
+
     log.info("read {} statements", model.size());
 
-    Map<String, Scheme> schemes = readSchemes(model);
+    Map<String, Scheme> schemes = readSchemes(model, uriIdMap);
     schemeRepository.save(schemes.values());
 
-    Map<String, Concept> concepts = readConcepts(model, schemes);
+    Map<String, Concept> concepts = readConcepts(model, schemes, uriIdMap);
     conceptRepository.save(concepts.values());
-    linkConcepts(model, concepts);
+    linkConcepts(model, concepts, uriIdMap);
     conceptRepository.save(concepts.values());
 
-    Map<String, Collection> collections = readCollections(model, concepts, schemes);
+    Map<String, Collection> collections = readCollections(model, concepts, schemes, uriIdMap);
     collectionRepository.save(collections.values());
 
     log.info("imported {} schemes", schemes.size());
@@ -124,11 +126,12 @@ public class RdfImporter {
     log.info("imported {} collections", collections.size());
   }
 
-  private Map<String, Scheme> readSchemes(Model model) {
+  private Map<String, Scheme> readSchemes(Model model, Map<String, String> uriIdMap) {
     Map<String, Scheme> schemes = Maps.newHashMap();
 
     for (Resource r : instancesOf(model, SKOS.ConceptScheme)) {
-      Scheme scheme = new Scheme(getId(model, r));
+      Scheme scheme = new Scheme(getId(r.getURI(), uriIdMap));
+      scheme.setUri(r.getURI());
       scheme.setProperties(readProperties(model, r));
       schemes.put(scheme.getId(), scheme);
     }
@@ -136,31 +139,26 @@ public class RdfImporter {
     return schemes;
   }
 
-  private String getId(Model model, Resource r) {
-    String uri = r.getURI();
-    String id = model.shortForm(uri);
-
-    // use uri sha1 hex if shortening failed
-    id = id.equals(uri) ? DigestUtils.sha1Hex(uri) : id;
-
-    // remove trailing semicolon from uris without local name
-    id = id.endsWith(":") ?
-         id.substring(0, id.length() - 1) : id;
-
-    return id.replace(':', '_');
+  private String getId(String uri, Map<String, String> uriIdMap) {
+    if (!uriIdMap.containsKey(uri)) {
+      uriIdMap.put(uri, UUID.randomUUID().toString());
+    }
+    return uriIdMap.get(uri);
   }
 
   private List<Resource> instancesOf(Model model, Resource rdfClass) {
     return model.listResourcesWithProperty(RDF.type, rdfClass).toList();
   }
 
-  private Map<String, Concept> readConcepts(Model model, Map<String, Scheme> schemes) {
+  private Map<String, Concept> readConcepts(Model model, Map<String, Scheme> schemes,
+                                            Map<String, String> uriIdMap) {
     Map<String, Concept> concepts = Maps.newHashMap();
 
     for (Resource r : instancesOf(model, SKOS.Concept)) {
-      Concept concept = new Concept(getId(model, r));
+      Concept concept = new Concept(getId(r.getURI(), uriIdMap));
+      concept.setUri(r.getURI());
       concept.setProperties(readProperties(model, r));
-      concept.setScheme(readObject(model, r, SKOS.inScheme, schemes));
+      concept.setScheme(readObject(model, r, SKOS.inScheme, schemes, uriIdMap));
       if (concept.getScheme() == null && !schemes.isEmpty()) {
         assignAnyScheme(concept, schemes);
       }
@@ -170,30 +168,33 @@ public class RdfImporter {
     return concepts;
   }
 
-  private void assignAnyScheme(SchemePropertyResource concept, Map<String, Scheme> schemes) {
+  private void assignAnyScheme(SchemeResource concept, Map<String, Scheme> schemes) {
     Scheme scheme = schemes.values().iterator().next();
     log.info("no scheme found for {}, using {}", concept, scheme);
     concept.setScheme(scheme);
   }
 
-  private void linkConcepts(Model model, Map<String, Concept> concepts) {
+  private void linkConcepts(Model model, Map<String, Concept> concepts,
+                            Map<String, String> uriIdMap) {
     for (Resource r : instancesOf(model, SKOS.Concept)) {
-      Concept concept = concepts.get(getId(model, r));
-      concept.setBroader(readObject(model, r, SKOS.broader, concepts));
-      concept.setNarrower(readObjects(model, r, SKOS.narrower, concepts));
-      concept.setRelated(readObjects(model, r, SKOS.related, concepts));
+      Concept concept = concepts.get(getId(r.getURI(), uriIdMap));
+      concept.setBroader(readObject(model, r, SKOS.broader, concepts, uriIdMap));
+      concept.setNarrower(readObjects(model, r, SKOS.narrower, concepts, uriIdMap));
+      concept.setRelated(readObjects(model, r, SKOS.related, concepts, uriIdMap));
     }
   }
 
   private Map<String, Collection> readCollections(Model model, Map<String, Concept> concepts,
-                                                  Map<String, Scheme> schemes) {
+                                                  Map<String, Scheme> schemes,
+                                                  Map<String, String> uriIdMap) {
     Map<String, Collection> collections = Maps.newHashMap();
 
     for (Resource r : instancesOf(model, SKOS.Collection)) {
-      Collection collection = new Collection(getId(model, r));
+      Collection collection = new Collection(getId(r.getURI(), uriIdMap));
+      collection.setUri(r.getURI());
       collection.setProperties(readProperties(model, r));
-      collection.setMembers(readObjects(model, r, SKOS.member, concepts));
-      collection.setScheme(readObject(model, r, SKOS.inScheme, schemes));
+      collection.setMembers(readObjects(model, r, SKOS.member, concepts, uriIdMap));
+      collection.setScheme(readObject(model, r, SKOS.inScheme, schemes, uriIdMap));
       if (collection.getScheme() == null) {
         inferSchemeFromMembers(collection, collection.getMembers());
       }
@@ -215,14 +216,16 @@ public class RdfImporter {
     }
   }
 
-  private <T> T readObject(Model model, Resource r, Property p, Map<String, T> values) {
-    List<T> objects = readObjects(model, r, p, values);
+  private <T> T readObject(Model model, Resource r, Property p, Map<String, T> values,
+                           Map<String, String> uriIdMap) {
+    List<T> objects = readObjects(model, r, p, values, uriIdMap);
     return !objects.isEmpty() ? objects.get(0) : null;
   }
 
-  private <T> List<T> readObjects(Model model, Resource r, Property p, Map<String, T> values) {
+  private <T> List<T> readObjects(Model model, Resource r, Property p, Map<String, T> values,
+                                  Map<String, String> uriIdMap) {
     Iterable<RDFNode> objects = model.listObjectsOfProperty(r, p).toList();
-    Iterable<String> objectIds = transform(objects, new UriToId(model));
+    Iterable<String> objectIds = transform(objects, new UriToId(uriIdMap));
     Iterable<String> existingObjectIds = filter(objectIds, in(values.keySet()));
     Iterable<T> populatedObjects = transform(existingObjectIds, forMap(values));
     return newArrayList(populatedObjects);
@@ -235,16 +238,16 @@ public class RdfImporter {
 
   private class UriToId implements Function<RDFNode, String> {
 
-    private Model model;
+    private Map<String, String> uriIdMap;
 
-    public UriToId(Model model) {
-      this.model = model;
+    public UriToId(Map<String, String> uriIdMap) {
+      this.uriIdMap = uriIdMap;
     }
 
     @Override
     public String apply(RDFNode input) {
-      return input.isURIResource() ? getId(model, (Resource) input)
-                                   : DigestUtils.sha1Hex(input.toString());
+      String uri = input.isURIResource() ? input.asResource().getURI() : input.toString();
+      return getId(uri, uriIdMap);
     }
   }
 

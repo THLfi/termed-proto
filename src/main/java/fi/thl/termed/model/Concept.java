@@ -21,7 +21,7 @@ import fi.thl.termed.util.ResourceIdMatches;
 
 @Indexed
 @Entity
-public class Concept extends SchemePropertyResource {
+public class Concept extends SchemeResource {
 
   @IndexedEmbedded(includePaths = {"id"}, indexNullAs = LuceneConstants.NULL)
   @ManyToOne

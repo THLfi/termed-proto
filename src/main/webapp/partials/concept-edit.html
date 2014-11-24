@@ -101,6 +101,23 @@
         <thl-property-values-edit
                 values="concept.properties.deprecatedLabel"></thl-property-values-edit>
     </div>
+
+    <br>
+
+    <div class="form-group">
+        <label>URI</label>
+
+        <div class="row">
+            <div class="col-sm-11 col-xs-10">
+                <input type="text" class="form-control" ng-model="concept.uri">
+            </div>
+            <div class="col-sm-1 col-xs-2 text-right">
+                <button class="btn btn-default" ng-click="concept.uri = ''">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            </div>
+        </div>
+    </div>
 </form>
 
 <hr>

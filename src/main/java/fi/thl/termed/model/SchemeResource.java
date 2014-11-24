@@ -10,21 +10,21 @@ import javax.persistence.MappedSuperclass;
 
 @Indexed
 @MappedSuperclass
-public class SchemePropertyResource extends PropertyResource {
+public class SchemeResource extends PropertyResource {
 
   @IndexedEmbedded(includePaths = {"id"})
   @ManyToOne
   private Scheme scheme;
 
-  public SchemePropertyResource() {
+  public SchemeResource() {
     super();
   }
 
-  public SchemePropertyResource(String id) {
+  public SchemeResource(String id) {
     super(id);
   }
 
-  public SchemePropertyResource(SchemePropertyResource propertyResource) {
+  public SchemeResource(SchemeResource propertyResource) {
     super(propertyResource);
     this.scheme = propertyResource.scheme;
   }

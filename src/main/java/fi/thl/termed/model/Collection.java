@@ -16,7 +16,7 @@ import fi.thl.termed.util.ResourceIdMatches;
 
 @Indexed
 @Entity
-public class Collection extends SchemePropertyResource {
+public class Collection extends SchemeResource {
 
   @ManyToMany
   @JoinTable(

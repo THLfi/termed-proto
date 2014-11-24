@@ -19,7 +19,7 @@ import fi.thl.termed.util.PropertyValueListBridge;
 
 @Indexed
 @MappedSuperclass
-public class PropertyResource extends Resource {
+public class PropertyResource extends UriResource {
 
   @Field
   @FieldBridge(impl = PropertyValueListBridge.class)

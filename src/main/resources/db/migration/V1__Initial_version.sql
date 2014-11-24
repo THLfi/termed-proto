@@ -8,7 +8,8 @@ CREATE TABLE ${schema}.lang (
 );
 
 CREATE TABLE ${schema}.scheme (
-    id varchar(255) PRIMARY KEY NOT NULL
+    id varchar(255) PRIMARY KEY NOT NULL,
+    uri varchar(255) UNIQUE
 );
 
 CREATE TABLE ${schema}.scheme_properties (
@@ -21,8 +22,10 @@ CREATE TABLE ${schema}.scheme_properties (
 
 CREATE TABLE ${schema}.concept (
     id varchar(255) PRIMARY KEY NOT NULL,
+    uri varchar(255),
     scheme_id varchar(255) NOT NULL REFERENCES ${schema}.scheme(id),
-    broader_id varchar(255) REFERENCES ${schema}.concept(id)
+    broader_id varchar(255) REFERENCES ${schema}.concept(id),
+    CONSTRAINT concept_scheme_id_uri_unique UNIQUE(scheme_id, uri)
 );
 
 CREATE TABLE ${schema}.concept_related (
@@ -40,7 +43,9 @@ CREATE TABLE ${schema}.concept_properties (
 
 CREATE TABLE ${schema}.collection (
     id varchar(255) PRIMARY KEY NOT NULL,
-    scheme_id varchar(255) NOT NULL REFERENCES ${schema}.scheme(id)
+    uri varchar(255),
+    scheme_id varchar(255) NOT NULL REFERENCES ${schema}.scheme(id),
+    CONSTRAINT collection_scheme_id_uri_unique UNIQUE(scheme_id, uri)
 );
 
 CREATE TABLE ${schema}.collection_concept (

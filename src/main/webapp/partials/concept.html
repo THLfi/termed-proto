@@ -61,8 +61,9 @@
     <dt>Alakäsitteet</dt>
     <dd>
         <span ng-repeat="n in concept.narrower | orderBy:prefLabelFi">
-            <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}"><thl-property-values
-                    values="n.properties.prefLabel" lang="fi"></thl-property-values></a><span
+            <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
+                <thl-property-values
+                        values="n.properties.prefLabel" lang="fi"></thl-property-values></a><span
                 ng-show="!$last" class="text-muted">, </span>
         </span>
         <span ng-show="!concept.narrower || concept.narrower.length == 0">
@@ -72,8 +73,9 @@
     <dt>Assosiatiiviset käsitteet</dt>
     <dd>
         <span ng-repeat="r in concept.related | orderBy:prefLabelFi">
-            <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}"><thl-property-values
-                    values="r.properties.prefLabel" lang="fi"></thl-property-values></a><span
+            <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}">
+                <thl-property-values
+                        values="r.properties.prefLabel" lang="fi"></thl-property-values></a><span
                 ng-show="!$last" class="text-muted">, </span>
         </span>
         <span ng-show="!concept.related || concept.related.length == 0">
@@ -83,8 +85,10 @@
     <dt>Kuuluu kokoelmiin</dt>
     <dd>
         <span ng-repeat="c in concept.collections | orderBy:prefLabelFi">
-            <a ng-href="#/schemes/{{c.scheme.id}}/collections/{{c.id}}"><thl-property-values
-                    values="c.properties.prefLabel" lang="fi"></thl-property-values></a><span
+            <a ng-href="#/schemes/{{c.scheme.id}}/collections/{{c.id}}">
+                <thl-property-values
+                        values="c.properties.prefLabel" lang="fi"></thl-property-values>
+            </a><span
                 ng-show="!$last" class="text-muted">, </span>
         </span>
         <span ng-show="!concept.collections || concept.collections.length == 0">
@@ -120,6 +124,15 @@
     <dt>Korvatut termit</dt>
     <dd>
         <thl-property-values values="concept.properties.deprecatedLabel"></thl-property-values>
+    </dd>
+</dl>
+
+<br>
+
+<dl>
+    <dt>URI</dt>
+    <dd>
+        {{concept.uri}}
     </dd>
 </dl>
 
