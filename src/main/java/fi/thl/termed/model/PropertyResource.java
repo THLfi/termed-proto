@@ -60,4 +60,23 @@ public class PropertyResource extends UriResource {
     return super.toStringHelper().add("properties", properties);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    PropertyResource that = (PropertyResource) o;
+
+    return super.equals(o) && Objects.equal(properties, that.properties);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(super.hashCode(), properties);
+  }
+
 }

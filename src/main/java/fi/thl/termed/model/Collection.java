@@ -52,5 +52,23 @@ public class Collection extends SchemeResource {
         .add("members", members);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    Collection that = (Collection) o;
+
+    return super.equals(o) && Objects.equal(members, that.members);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(super.hashCode(), members);
+  }
 
 }

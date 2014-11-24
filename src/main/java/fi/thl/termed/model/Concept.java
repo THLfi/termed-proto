@@ -100,4 +100,27 @@ public class Concept extends SchemeResource {
         .add("collections", collections);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    Concept that = (Concept) o;
+
+    return super.equals(o) &&
+           Objects.equal(broader, that.broader) &&
+           Objects.equal(narrower, that.narrower) &&
+           Objects.equal(related, that.related) &&
+           Objects.equal(collections, that.collections);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(super.hashCode(), broader, narrower, related, collections);
+  }
+
 }

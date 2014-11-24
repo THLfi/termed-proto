@@ -41,4 +41,23 @@ public class UriResource extends Resource {
     return super.toStringHelper().add("uri", uri);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    UriResource that = (UriResource) o;
+
+    return super.equals(o) && Objects.equal(uri, that.uri);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(super.hashCode(), uri);
+  }
+
 }

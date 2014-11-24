@@ -73,4 +73,26 @@ public class PropertyValue {
         .add("value", value).toString();
   }
 
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    PropertyValue that = (PropertyValue) o;
+
+    return Objects.equal(property, that.property) &&
+           Objects.equal(lang, that.lang) &&
+           Objects.equal(value, that.value);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(property, lang, value);
+  }
+
 }

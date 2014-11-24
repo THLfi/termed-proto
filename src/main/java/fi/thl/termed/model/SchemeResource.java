@@ -42,4 +42,23 @@ public class SchemeResource extends PropertyResource {
     return super.toStringHelper().add("scheme", scheme);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    SchemeResource that = (SchemeResource) o;
+
+    return super.equals(o) && Objects.equal(scheme, that.scheme);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(super.hashCode(), scheme);
+  }
+
 }
