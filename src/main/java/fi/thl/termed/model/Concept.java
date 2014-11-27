@@ -47,6 +47,10 @@ public class Concept extends SchemeResource {
     super(id);
   }
 
+  public Concept(SchemeResource schemeResource) {
+    super(schemeResource);
+  }
+
   public Concept getBroader() {
     return broader;
   }

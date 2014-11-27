@@ -32,6 +32,10 @@ public class Collection extends SchemeResource {
     super(id);
   }
 
+  public Collection(SchemeResource schemeResource) {
+    super(schemeResource);
+  }
+
   public List<Concept> getMembers() {
     return members;
   }

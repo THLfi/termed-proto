@@ -24,9 +24,9 @@ public class SchemeResource extends PropertyResource {
     super(id);
   }
 
-  public SchemeResource(SchemeResource propertyResource) {
-    super(propertyResource);
-    this.scheme = propertyResource.scheme;
+  public SchemeResource(SchemeResource schemeResource) {
+    super(schemeResource);
+    this.scheme = schemeResource.scheme;
   }
 
   public Scheme getScheme() {
