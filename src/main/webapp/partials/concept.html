@@ -64,8 +64,7 @@
         <span ng-repeat="n in concept.narrower | orderBy:prefLabelFi">
             <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}"><thl-property-values
                         values="n.properties.prefLabel" lang="fi"></thl-property-values></a><span
-                ng-show="!$last" class="text-muted">, </span>
-        </span>
+                ng-show="!$last" class="text-muted">, </span></span>
         <span ng-show="!concept.narrower || concept.narrower.length == 0">
             -
         </span>
