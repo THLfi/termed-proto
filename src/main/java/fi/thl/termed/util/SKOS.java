@@ -6,9 +6,10 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 public final class SKOS {
 
-
   private SKOS() {
   }
+
+  protected static final String uri = "http://www.w3.org/2004/02/skos/core#";
 
   // classes
   public static final Resource ConceptScheme = skosResource("ConceptScheme");
@@ -39,7 +40,11 @@ public final class SKOS {
   }
 
   private static String skos(String localName) {
-    return "http://www.w3.org/2004/02/skos/core#" + localName;
+    return uri + localName;
+  }
+
+  public static String getUri() {
+    return uri;
   }
 
 }
