@@ -46,7 +46,8 @@ App.factory('PropertyUtils', function() {
   }
 });
 
-App.controller('SchemeListCtrl', function($scope, $location, SchemeList, ConceptListAll) {
+App.controller('SchemeListCtrl', function($scope, $location, SchemeList,
+        ConceptListAll) {
 
   $scope.query = ($location.search()).q || "";
   $scope.max = 50;
@@ -239,8 +240,8 @@ App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
 
 });
 
-App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
-        ConceptList, PropertyUtils) {
+App.controller('ConceptCtrl', function($scope, $routeParams, $location,
+        Concept, ConceptList, PropertyUtils) {
 
   function collectBroader(concept) {
     var broader = [concept];
@@ -264,6 +265,28 @@ App.controller('ConceptCtrl', function($scope, $routeParams, Concept,
 
   $scope.langPriority = PropertyUtils.langPriority;
   $scope.prefLabelFi = PropertyUtils.prefLabelFi;
+
+  $scope.newConcept = function() {
+    var concept = new Concept({
+      scheme: $scope.concept.scheme,
+      broader: $scope.concept,
+      properties: {
+        prefLabel: [{
+          lang: 'fi',
+          value: 'Uusi käsite'
+        }]
+      }
+    });
+
+    concept.$save({
+      schemeId: $routeParams.schemeId
+    }, function(concept) {
+      $location.path('/schemes/' + $routeParams.schemeId + '/concepts/'
+              + concept.id + '/edit');
+    }, function(error) {
+      $scope.error = error;
+    });
+  }
 
 });
 

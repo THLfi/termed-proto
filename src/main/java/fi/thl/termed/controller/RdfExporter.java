@@ -69,7 +69,12 @@ public class RdfExporter {
   @Transactional
   public void exportTurtle(@PathVariable("schemeId") String schemeId, HttpServletResponse response)
       throws IOException {
-    log.info("Export {}", schemeId);
+    log.info("Exporting {}", schemeId);
+
+    if (!schemeRepository.exists(schemeId)) {
+      log.error("Scheme {} does not exist.", schemeId);
+      return;
+    }
 
     Model model = ModelFactory.createDefaultModel();
     model.setNsPrefix("skos", SKOS.getUri());

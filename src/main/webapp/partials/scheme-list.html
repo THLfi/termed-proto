@@ -47,7 +47,8 @@
                         </td>
                         <td>
                             <small>
-                                <a ng-href="#/schemes/{{scheme.id}}/concepts" class="text-muted">
+                                <a ng-href="#/schemes/{{concept.scheme.id}}/concepts"
+                                   class="text-muted">
                                     <thl-property-values
                                             values="concept.scheme.properties.prefLabel"
                                             lang="fi"></thl-property-values>
@@ -58,7 +59,7 @@
                     </tbody>
                 </table>
                 <br/>
-                <button class="btn btn-default btn-xs {{concepts.length == max || 'disabled'}}"
+                <button class="btn btn-default btn-sm {{concepts.length == max || 'disabled'}}"
                         ng-click="loadMoreResults()">
                     Lataa lisää hakutuloksia
                 </button>
