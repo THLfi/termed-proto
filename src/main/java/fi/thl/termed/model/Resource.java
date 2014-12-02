@@ -1,6 +1,7 @@
 package fi.thl.termed.model;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 import org.hibernate.search.annotations.Indexed;
 
@@ -30,7 +31,7 @@ public class Resource {
   }
 
   public boolean hasId() {
-    return id != null;
+    return !Strings.isNullOrEmpty(id);
   }
 
   public String getId() {

@@ -51,7 +51,8 @@ public class JsonRestController {
     return service.queryCollections(schemeId);
   }
 
-  @RequestMapping(method = GET, value = "schemes/{schemeId}/collections/{collectionId}")
+  @RequestMapping(method = GET, value = {"schemes/{schemeId}/collections/{collectionId}",
+                                         "collections/{collectionId}"})
   @ResponseBody
   public JsonObject getCollection(@PathVariable("collectionId") String collectionId) {
     return service.getCollection(collectionId);
@@ -79,13 +80,15 @@ public class JsonRestController {
         .queryConcepts(schemeId, query, first, max < 0 ? Integer.MAX_VALUE : max, orderBy);
   }
 
-  @RequestMapping(method = GET, value = "schemes/{schemeId}/concepts/{conceptId}")
+  @RequestMapping(method = GET, value = {"schemes/{schemeId}/concepts/{conceptId}",
+                                         "concepts/{conceptId}"})
   @ResponseBody
   public JsonObject getConcept(@PathVariable("conceptId") String conceptId) {
     return service.getConcept(conceptId);
   }
 
-  @RequestMapping(method = GET, value = "schemes/{schemeId}/concepts/{conceptId}/broader")
+  @RequestMapping(method = GET, value = {"schemes/{schemeId}/concepts/{conceptId}/broader",
+                                         "concepts/{conceptId}/broader"})
   @ResponseBody
   public JsonArray getConceptBroaderPaths(@PathVariable("conceptId") String conceptId) {
     return service.getConceptBroaderPaths(conceptId);

@@ -1,6 +1,7 @@
 package fi.thl.termed.model;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
@@ -29,7 +30,7 @@ public class UriResource extends Resource {
   }
 
   public boolean hasUri() {
-    return uri != null;
+    return !Strings.isNullOrEmpty(uri);
   }
 
   public String getUri() {
