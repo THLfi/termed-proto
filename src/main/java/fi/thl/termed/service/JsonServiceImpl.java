@@ -26,6 +26,7 @@ import fi.thl.termed.repository.ConceptIndex;
 import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
 import fi.thl.termed.util.ConceptTransformer;
+import fi.thl.termed.util.ConceptUtils;
 import fi.thl.termed.util.HibernateProxyTypeAdapterFactory;
 import fi.thl.termed.util.LuceneQueryUtils;
 import fi.thl.termed.util.PropertyValueListTransformer;
@@ -127,6 +128,13 @@ public class JsonServiceImpl implements JsonService {
   public JsonObject getCollection(String id) {
     return collectionRepository.exists(id) ? toJson(collectionRepository.findOne(id))
                                            : new JsonObject();
+  }
+
+  @Override
+  public JsonArray getConceptBroaderPaths(String id) {
+    return conceptRepository.exists(id) ? gson
+        .toJsonTree(ConceptUtils.findBroaderPaths(conceptRepository.findOne(id)))
+        .getAsJsonArray() : new JsonArray();
   }
 
   @Override

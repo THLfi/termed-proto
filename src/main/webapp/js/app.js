@@ -16,6 +16,8 @@ App.factory('SchemeList', function($resource) {
   return $resource('api/schemes/:schemeId/concepts');
 }).factory('Concept', function($resource) {
   return $resource('api/schemes/:schemeId/concepts/:id');
+}).factory('ConceptBroaderPaths', function($resource) {
+  return $resource('api/schemes/:schemeId/concepts/:id/broader');
 });
 
 App.factory('PropertyUtils', function() {
@@ -241,13 +243,17 @@ App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
 });
 
 App.controller('ConceptCtrl', function($scope, $routeParams, $location,
-        Concept, ConceptList, PropertyUtils) {
+        Concept, ConceptBroaderPaths, ConceptList, PropertyUtils) {
 
   Concept.get({
     schemeId: $routeParams.schemeId,
     id: $routeParams.id
   }, function(concept) {
     $scope.concept = concept;
+    $scope.broaderPaths = ConceptBroaderPaths.query({
+      schemeId: $routeParams.schemeId,
+      id: $routeParams.id
+    });
   });
 
   $scope.langPriority = PropertyUtils.langPriority;

@@ -98,13 +98,6 @@ public class Concept extends SchemeResource {
     this.collections = collections;
   }
 
-  public Objects.ToStringHelper toStringHelper() {
-    return super.toStringHelper()
-        .add("broader", broader)
-        .add("related", related)
-        .add("collections", collections);
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
