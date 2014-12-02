@@ -40,22 +40,11 @@
 <dl>
     <dt>Yläkäsitteet</dt>
     <dd>
-        <span ng-show="concept.broader">
-            <span ng-repeat="b in broader">
-                <span ng-if="!$last">
-                    <a ng-href="#/schemes/{{b.scheme.id}}/concepts/{{b.id}}" ng-if="!$last">
-                        <thl-property-values values="b.properties.prefLabel"
-                                             lang="fi"></thl-property-values>
-                    </a>
-                    <span class="text-muted">&gt;</span>
-                </span>
-                <span ng-if="$last">
-                    <thl-property-values values="b.properties.prefLabel"
-                                         lang="fi"></thl-property-values>
-                </span>
-            </span>
-        </span>
-        <span ng-show="!concept.broader">
+        <span ng-repeat="b in concept.broader | orderBy:prefLabelFi">
+            <a ng-href="#/schemes/{{b.scheme.id}}/concepts/{{b.id}}"><thl-property-values
+                    values="b.properties.prefLabel" lang="fi"></thl-property-values></a><span
+                ng-show="!$last" class="text-muted">, </span></span>
+        <span ng-show="!concept.broader || concept.broader.length == 0">
             -
         </span>
     </dd>

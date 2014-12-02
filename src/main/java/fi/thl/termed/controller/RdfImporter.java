@@ -178,7 +178,7 @@ public class RdfImporter {
                             Map<String, String> uriIdMap) {
     for (Resource r : instancesOf(model, SKOS.Concept)) {
       Concept concept = concepts.get(getId(r.getURI(), uriIdMap));
-      concept.setBroader(readObject(model, r, SKOS.broader, concepts, uriIdMap));
+      concept.setBroader(readObjects(model, r, SKOS.broader, concepts, uriIdMap));
       concept.setNarrower(readObjects(model, r, SKOS.narrower, concepts, uriIdMap));
       concept.setRelated(readObjects(model, r, SKOS.related, concepts, uriIdMap));
     }

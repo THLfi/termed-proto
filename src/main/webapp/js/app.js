@@ -243,24 +243,11 @@ App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
 App.controller('ConceptCtrl', function($scope, $routeParams, $location,
         Concept, ConceptList, PropertyUtils) {
 
-  function collectBroader(concept) {
-    var broader = [concept];
-    function recursiveCollectBroader(concept) {
-      if (concept.broader) {
-        broader.unshift(concept.broader);
-        recursiveCollectBroader(concept.broader);
-      }
-    }
-    recursiveCollectBroader(concept);
-    return broader;
-  }
-
   Concept.get({
     schemeId: $routeParams.schemeId,
     id: $routeParams.id
   }, function(concept) {
     $scope.concept = concept;
-    $scope.broader = collectBroader(concept);
   });
 
   $scope.langPriority = PropertyUtils.langPriority;
@@ -269,7 +256,7 @@ App.controller('ConceptCtrl', function($scope, $routeParams, $location,
   $scope.newConcept = function() {
     var concept = new Concept({
       scheme: $scope.concept.scheme,
-      broader: $scope.concept,
+      broader: [$scope.concept],
       properties: {
         prefLabel: [{
           lang: 'fi',

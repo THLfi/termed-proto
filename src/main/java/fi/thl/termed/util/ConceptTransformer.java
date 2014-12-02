@@ -47,7 +47,7 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
     concept.setUri(serializedConcept.getUri());
     concept.setProperties(serializedConcept.getProperties());
     concept.setScheme(serializedConcept.getScheme());
-    concept.setBroader(findConcept(serializedConcept.getBroader()));
+    concept.setBroader(transform(serializedConcept.getBroader(), findConcept));
     concept.setNarrower(transform(serializedConcept.getNarrower(), findConcept));
     concept.setRelated(transform(serializedConcept.getRelated(), findConcept));
     concept.setCollections(transform(serializedConcept.getCollections(), findCollection));
@@ -64,7 +64,7 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
     serializedConcept.setUri(concept.getUri());
     serializedConcept.setProperties(concept.getProperties());
     serializedConcept.setScheme(concept.getScheme());
-    serializedConcept.setBroader(truncateConceptWithBroader(concept.getBroader()));
+    serializedConcept.setBroader(transform(concept.getBroader(), truncateConcept));
     serializedConcept.setNarrower(transform(concept.getNarrower(), truncateConcept));
     serializedConcept.setRelated(transform(concept.getRelated(), truncateConcept));
     serializedConcept.setCollections(transform(concept.getCollections(), truncateCollection));
@@ -88,13 +88,13 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
     return concept != null ? new Concept(new SchemeResource(concept)) : null;
   }
 
-  private Concept truncateConceptWithBroader(Concept concept) {
-    Concept truncated = truncateConcept(concept);
-    if (concept != null && concept.getBroader() != null) {
-      truncated.setBroader(truncateConceptWithBroader(concept.getBroader()));
-    }
-    return truncated;
-  }
+//  private Concept truncateConceptWithBroader(Concept concept) {
+//    Concept truncated = truncateConcept(concept);
+//    if (concept != null && concept.getBroader() != null) {
+//      truncated.setBroader(truncateConceptWithBroader(concept.getBroader()));
+//    }
+//    return truncated;
+//  }
 
   private Collection truncateCollection(Collection collection) {
     return collection != null ? new Collection(new SchemeResource(collection)) : null;

@@ -1,5 +1,5 @@
 
-CREATE INDEX concept_broader_id_idx ON ${schema}.concept(broader_id);
+CREATE INDEX concept_broader_narrower_broader_id_idx ON ${schema}.concept_broader_narrower(broader_id);
 
 CREATE INDEX concept_scheme_id_idx ON ${schema}.concept(scheme_id);
 

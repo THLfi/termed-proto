@@ -24,8 +24,12 @@ CREATE TABLE ${schema}.concept (
     id varchar(255) PRIMARY KEY NOT NULL,
     uri varchar(255),
     scheme_id varchar(255) NOT NULL REFERENCES ${schema}.scheme(id),
-    broader_id varchar(255) REFERENCES ${schema}.concept(id),
     CONSTRAINT concept_scheme_id_uri_unique UNIQUE(scheme_id, uri)
+);
+
+CREATE TABLE ${schema}.concept_broader_narrower (
+    broader_id varchar(255) REFERENCES ${schema}.concept(id),
+    narrower_id varchar(255) REFERENCES ${schema}.concept(id)
 );
 
 CREATE TABLE ${schema}.concept_related (

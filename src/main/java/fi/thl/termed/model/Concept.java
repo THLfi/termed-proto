@@ -9,12 +9,10 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import fi.thl.termed.util.LuceneConstants;
 import fi.thl.termed.util.ResourceIdMatches;
@@ -24,10 +22,13 @@ import fi.thl.termed.util.ResourceIdMatches;
 public class Concept extends SchemeResource {
 
   @IndexedEmbedded(includePaths = {"id"}, indexNullAs = LuceneConstants.NULL)
-  @ManyToOne
-  private Concept broader;
+  @ManyToMany
+  @JoinTable(name = "concept_broader_narrower",
+      joinColumns = {@JoinColumn(name = "broader_id")},
+      inverseJoinColumns = {@JoinColumn(name = "narrower_id")})
+  private List<Concept> broader;
 
-  @OneToMany(mappedBy = "broader", cascade = CascadeType.ALL)
+  @ManyToMany(mappedBy = "broader")
   private List<Concept> narrower;
 
   // no need to track back references because related
@@ -51,11 +52,11 @@ public class Concept extends SchemeResource {
     super(schemeResource);
   }
 
-  public Concept getBroader() {
+  public List<Concept> getBroader() {
     return broader;
   }
 
-  public void setBroader(Concept broader) {
+  public void setBroader(List<Concept> broader) {
     this.broader = broader;
   }
 

@@ -125,7 +125,9 @@ public class RdfExporter {
       model.add(r, SKOS.inScheme, createResource(concept.getScheme().getUri()));
       exportProperties(concept, r, model);
       if (concept.getBroader() != null) {
-        model.add(r, SKOS.broader, createResource(concept.getBroader().getUri()));
+        for (Concept broader : concept.getBroader()) {
+          model.add(r, SKOS.broader, createResource(broader.getUri()));
+        }
       }
       if (concept.getNarrower() != null) {
         for (Concept narrower : concept.getNarrower()) {
