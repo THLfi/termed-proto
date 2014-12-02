@@ -12,10 +12,16 @@
             <span class="glyphicon glyphicon-edit"></span>
             Muokkaa
         </a>
-        <button class="btn btn-default btn-sm" ng-click="newConcept()">
-            <span class="glyphicon glyphicon-plus"></span>
-            Lisää uusi käsite
-        </button>
+
+        <div class="btn-group" role="group">
+            <button class="btn btn-sm btn-default" ng-click="newConcept()">
+                <span class="glyphicon glyphicon-plus"></span>
+                Lisää käsite
+            </button>
+            <button class="btn btn-sm btn-default" ng-click="newCollection()">
+                kokoelma
+            </button>
+        </div>
     </div>
     <div class="col-sm-6 text-right">
         <a class="btn btn-default btn-sm" ng-href="api/export/{{scheme.id}}">

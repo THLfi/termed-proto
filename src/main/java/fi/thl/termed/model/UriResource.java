@@ -28,6 +28,10 @@ public class UriResource extends Resource {
     this.uri = resource.uri;
   }
 
+  public boolean hasUri() {
+    return uri != null;
+  }
+
   public String getUri() {
     return uri;
   }

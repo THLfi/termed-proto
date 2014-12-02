@@ -123,7 +123,7 @@ App.controller('SchemeEditCtrl', function($scope, $routeParams, $location,
 });
 
 App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
-        Scheme, Concept, ConceptList) {
+        Scheme, Concept, ConceptList, Collection) {
 
   $scope.query = ($location.search()).q || "";
   $scope.max = 50;
@@ -167,6 +167,27 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
     }, function(concept) {
       $location.path('/schemes/' + $routeParams.schemeId + '/concepts/'
               + concept.id + '/edit');
+    }, function(error) {
+      $scope.error = error;
+    });
+  }
+
+  $scope.newCollection = function() {
+    var collection = new Collection({
+      scheme: $scope.scheme,
+      properties: {
+        prefLabel: [{
+          lang: 'fi',
+          value: 'Uusi käsitekokoelma'
+        }]
+      }
+    });
+
+    collection.$save({
+      schemeId: $routeParams.schemeId
+    }, function(collection) {
+      $location.path('/schemes/' + $routeParams.schemeId + '/collections/'
+              + collection.id + '/edit');
     }, function(error) {
       $scope.error = error;
     });
