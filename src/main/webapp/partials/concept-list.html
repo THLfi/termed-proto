@@ -19,11 +19,15 @@
                 Lisää käsite
             </button>
             <button class="btn btn-sm btn-default" ng-click="newCollection()">
-                kokoelma
+                <span class="glyphicon glyphicon-plus"></span>
+                Lisää kokoelma
             </button>
         </div>
     </div>
     <div class="col-sm-6 text-right">
+        <button class="btn btn-sm btn-default {{!tree || 'active'}}" ng-click="toggleTree()">
+            <span class="glyphicon glyphicon-expand"></span> Näytä hierarkkia
+        </button>
         <a class="btn btn-default btn-sm" ng-href="api/export/{{scheme.id}}">
             <span class="glyphicon glyphicon-download-alt"></span>
             Lataa RDF-muodossa
@@ -36,35 +40,46 @@
                          lang="fi"></thl-property-values>
 </h1>
 
-<div class="input-group input-group-sm">
-    <div class="input-group-addon">
-        <span class="glyphicon glyphicon-search"></span>
+<div ng-if="!tree">
+    <div class="input-group input-group-sm">
+        <div class="input-group-addon">
+            <span class="glyphicon glyphicon-search"></span>
+        </div>
+        <input class="form-control" ng-model="query"
+               ng-change="searchConcepts(query)" ng-model-options="{debounce: 250}"
+               placeholder="Etsi käsitettä"
+               type="text">
     </div>
-    <input class="form-control" ng-model="query"
-           ng-change="searchConcepts(query)" ng-model-options="{debounce: 250}"
-           placeholder="Etsi käsitettä"
-           type="text">
+
+    <br>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Käsite</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="concept in concepts">
+            <td>
+                <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}">
+                    <thl-property-values values="concept.properties.prefLabel"
+                                         lang="fi"></thl-property-values>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
-<br>
-
-<table class="table">
-    <thead>
-    <tr>
-        <th>Käsite</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="concept in concepts">
-        <td>
-            <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}">
-                <thl-property-values values="concept.properties.prefLabel"
-                                     lang="fi"></thl-property-values>
-            </a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div ng-if="tree">
+    <ul class="list-unstyled">
+        <li ng-repeat="concept in concepts">
+            <div ng-include="'partials/concept-tree-node.html'"></div>
+        </li>
+    </ul>
+    <br>
+</div>
 
 <button class="btn btn-default btn-sm {{concepts.length == max || 'disabled'}}"
         ng-click="loadMoreResults()">

@@ -21,7 +21,7 @@ import fi.thl.termed.util.ResourceIdMatches;
 @Entity
 public class Concept extends SchemeResource {
 
-  @IndexedEmbedded(includePaths = {"id"}, indexNullAs = LuceneConstants.NULL)
+  @IndexedEmbedded(includePaths = {"id"})
   @ManyToMany
   @JoinTable(name = "concept_broader_narrower",
       joinColumns = {@JoinColumn(name = "broader_id")},

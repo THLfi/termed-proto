@@ -151,6 +151,29 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
     });
   }
 
+  $scope.toggleTree = function() {
+    if ($scope.tree) {
+      $scope.tree = false;
+      $scope.query = "";
+    } else {
+      $scope.tree = true;
+      $scope.query = "*:* -broader.id:[* TO *]";
+    }
+    $scope.searchConcepts($scope.query);
+  }
+
+  $scope.loadNarrower = function(concept) {
+    ConceptList.query({
+      schemeId: $routeParams.schemeId,
+      query: "broader.id:" + concept.id,
+      max: -1,
+      orderBy: 'prefLabel.fi.sortable'
+    }, function(concepts) {
+      concept.narrower = concepts;
+      concept.expanded = true;
+    });
+  }
+
   $scope.newConcept = function() {
     var concept = new Concept({
       scheme: $scope.scheme,
@@ -194,72 +217,6 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
   }
 
   $scope.searchConcepts(($location.search()).q || "");
-
-});
-
-App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
-        Scheme, Concept, ConceptList) {
-
-  $scope.query = ($location.search()).q || "";
-  $scope.max = 50;
-
-  $scope.scheme = Scheme.get({
-    schemeId: $routeParams.schemeId
-  });
-
-  $scope.loadMoreResults = function() {
-    $scope.max += 50;
-    $scope.searchConcepts(($location.search()).q || "broader:null");
-  }
-
-  $scope.searchConcepts = function(query) {
-    ConceptList.query({
-      schemeId: $routeParams.schemeId,
-      query: query,
-      max: $scope.max,
-      orderBy: 'prefLabel.fi.sortable'
-    }, function(concepts) {
-      $scope.concepts = concepts;
-      $location.search({
-        q: $scope.query
-      }).replace();
-    });
-  }
-
-  $scope.loadNarrower = function(concept) {
-    ConceptList.query({
-      schemeId: $routeParams.schemeId,
-      query: "broader.id:" + concept.id,
-      max: -1,
-      orderBy: 'prefLabel.fi.sortable'
-    }, function(concepts) {
-      concept.narrower = concepts;
-      concept.expanded = true;
-    });
-  }
-
-  $scope.newConcept = function() {
-    var concept = new Concept({
-      scheme: $scope.scheme,
-      properties: {
-        prefLabel: [{
-          lang: 'fi',
-          value: 'Uusi käsite'
-        }]
-      }
-    });
-
-    concept.$save({
-      schemeId: $routeParams.schemeId
-    }, function(concept) {
-      $location.path('/schemes/' + $routeParams.schemeId + '/concepts/'
-              + concept.id + '/edit');
-    }, function(error) {
-      $scope.error = error;
-    });
-  }
-
-  $scope.searchConcepts(($location.search()).q || "broader:null");
 
 });
 
@@ -408,10 +365,6 @@ App.config(function($routeProvider, $httpProvider) {
   }).when('/schemes/:schemeId/concepts', {
     templateUrl: 'partials/concept-list.html',
     controller: 'ConceptListCtrl',
-    reloadOnSearch: false
-  }).when('/schemes/:schemeId/tree', {
-    templateUrl: 'partials/concept-tree.html',
-    controller: 'ConceptTreeCtrl',
     reloadOnSearch: false
   }).when('/schemes/:schemeId/concepts/:id', {
     templateUrl: 'partials/concept.html',
