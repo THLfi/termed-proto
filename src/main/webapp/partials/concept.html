@@ -38,7 +38,7 @@
 </dl>
 
 <dl>
-    <dt>Yläkäsitteet</dt>
+    <dt>Yläkäsitehierarkiat</dt>
     <dd>
         <span ng-show="concept.broader">
             <span ng-repeat="path in broaderPaths">
@@ -58,6 +58,16 @@
                 <br ng-if="!$last">
             </span>
         </span>
+        <span ng-show="!concept.broader || concept.broader.length == 0">
+            -
+        </span>
+    </dd>
+    <dt>Yläkäsitteet</dt>
+    <dd>
+        <span ng-repeat="n in concept.broader | orderBy:prefLabelFi">
+            <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}"><thl-property-values
+                    values="n.properties.prefLabel" lang="fi"></thl-property-values></a><span
+                ng-show="!$last" class="text-muted">, </span></span>
         <span ng-show="!concept.broader || concept.broader.length == 0">
             -
         </span>
