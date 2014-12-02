@@ -1,8 +1,10 @@
 package fi.thl.termed.util;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import java.util.List;
+import java.util.Set;
 
 import fi.thl.termed.model.Concept;
 
@@ -16,23 +18,29 @@ public final class ConceptUtils {
 
     if (hasBroader(concept)) {
       for (Concept broader : concept.getBroader()) {
-        findBroaderPaths(broader, Lists.newArrayList(concept), paths);
+        findBroaderPaths(broader, Sets.newLinkedHashSet(Lists.newArrayList(concept)), paths);
       }
     }
 
     return paths;
   }
 
-  private static void findBroaderPaths(Concept concept, List<Concept> path,
+  private static void findBroaderPaths(Concept concept, Set<Concept> path,
                                        List<List<Concept>> paths) {
-    path.add(concept);
+
+    if (!path.contains(concept)) {
+      path.add(concept);
+    } else {
+      paths.add(Lists.reverse(Lists.newArrayList(path)));
+      return;
+    }
 
     if (hasBroader(concept)) {
       for (Concept broader : concept.getBroader()) {
-        findBroaderPaths(broader, Lists.newArrayList(path), paths);
+        findBroaderPaths(broader, Sets.newLinkedHashSet(path), paths);
       }
     } else {
-      paths.add(Lists.reverse(path));
+      paths.add(Lists.reverse(Lists.newArrayList(path)));
     }
   }
 
