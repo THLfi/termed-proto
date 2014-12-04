@@ -26,10 +26,6 @@
     </small>
 </h1>
 
-<div class="text-muted" style="margin:-18px 0 18px">
-    <small>{{concept.uri}}</small>
-</div>
-
 <dl>
     <dt>Ensisijainen termi</dt>
     <dd>
@@ -60,6 +56,8 @@
         <thl-property-values values="concept.properties.example"></thl-property-values>
     </dd>
 </dl>
+
+<br>
 
 <dl>
     <dt ng-show="concept.broader && concept.broader.length > 0">Yläkäsitehierarkiat</dt>
@@ -119,6 +117,7 @@
         </span>
     </dd>
 </dl>
+
 <dl>
     <dt ng-show="concept.properties.source">Lähde</dt>
     <dd ng-show="concept.properties.source">
@@ -127,6 +126,10 @@
 </dl>
 
 <hr>
+
+<div class="text-muted" style="margin:-18px 0 18px">
+    <small>{{concept.uri}}</small>
+</div>
 
 <span class="label label-default" ng-click="showJson = !showJson">json</span>
 
