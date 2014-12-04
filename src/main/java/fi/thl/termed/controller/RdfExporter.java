@@ -8,7 +8,9 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +85,8 @@ public class RdfExporter {
         .put("note", SKOS.note)
         .put("definition", SKOS.definition)
         .put("example", SKOS.example)
+        .put("source", DC.source)
+        .put("comment", RDFS.comment)
         .build();
   }
 
