@@ -10,7 +10,7 @@ import javax.persistence.MappedSuperclass;
 
 @Indexed
 @MappedSuperclass
-public class SchemeResource extends PropertyResource {
+public class SchemeResource extends AuditedResource {
 
   @IndexedEmbedded(includePaths = {"id"})
   @ManyToOne

@@ -46,6 +46,10 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
     concept.setId(serializedConcept.getId());
     concept.setUri(serializedConcept.getUri());
     concept.setProperties(serializedConcept.getProperties());
+    concept.setCreatedBy(serializedConcept.getCreatedBy());
+    concept.setLastModifiedBy(serializedConcept.getLastModifiedBy());
+    concept.setCreatedDate(serializedConcept.getCreatedDate());
+    concept.setLastModifiedDate(serializedConcept.getLastModifiedDate());
     concept.setScheme(serializedConcept.getScheme());
     concept.setBroader(transform(serializedConcept.getBroader(), findConcept));
     concept.setNarrower(transform(serializedConcept.getNarrower(), findConcept));
@@ -63,6 +67,10 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
     serializedConcept.setId(concept.getId());
     serializedConcept.setUri(concept.getUri());
     serializedConcept.setProperties(concept.getProperties());
+    serializedConcept.setCreatedBy(concept.getCreatedBy());
+    serializedConcept.setLastModifiedBy(concept.getLastModifiedBy());
+    serializedConcept.setCreatedDate(concept.getCreatedDate());
+    serializedConcept.setLastModifiedDate(concept.getLastModifiedDate());
     serializedConcept.setScheme(concept.getScheme());
     serializedConcept.setBroader(transform(concept.getBroader(), truncateConcept));
     serializedConcept.setNarrower(transform(concept.getNarrower(), truncateConcept));
@@ -87,14 +95,6 @@ public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerial
   private Concept truncateConcept(Concept concept) {
     return concept != null ? new Concept(new SchemeResource(concept)) : null;
   }
-
-//  private Concept truncateConceptWithBroader(Concept concept) {
-//    Concept truncated = truncateConcept(concept);
-//    if (concept != null && concept.getBroader() != null) {
-//      truncated.setBroader(truncateConceptWithBroader(concept.getBroader()));
-//    }
-//    return truncated;
-//  }
 
   private Collection truncateCollection(Collection collection) {
     return collection != null ? new Collection(new SchemeResource(collection)) : null;

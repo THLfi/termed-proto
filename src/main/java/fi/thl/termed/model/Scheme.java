@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 
 @Indexed
 @Entity
-public class Scheme extends PropertyResource {
+public class Scheme extends AuditedResource {
 
   public Scheme() {
     this(null);

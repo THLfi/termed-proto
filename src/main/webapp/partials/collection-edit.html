@@ -39,6 +39,15 @@
     </small>
 </h1>
 
+<div class="row text-muted" style="margin-top:-18px;margin-bottom:20px">
+    <div class="col-sm-6">
+        <small>Päivitetty {{collection.lastModifiedDate | date:'d.M.yyyy HH:mm:ss'}}</small>
+    </div>
+    <div class="col-sm-6 text-right">
+        <small>Lisätty {{collection.createdDate | date:'d.M.yyyy HH:mm:ss'}}</small>
+    </div>
+</div>
+
 <form role="form">
     <div class="form-group">
         <label>Ensisijainen termi</label>

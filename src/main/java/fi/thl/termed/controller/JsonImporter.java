@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.Date;
 import java.util.List;
 
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.Scheme;
 import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
+import fi.thl.termed.util.GsonDateConverter;
 import fi.thl.termed.util.PropertyValueListTransformer;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -36,6 +38,7 @@ public class JsonImporter {
   private TypeToken<List<Concept>> conceptListTypeToken = new TypeToken<List<Concept>>() {
   };
   private Gson gson = new GsonBuilder()
+      .registerTypeAdapter(Date.class, new GsonDateConverter())
       .registerTypeAdapter(PropertyValueListTransformer.PROPERTY_LIST_TYPE,
                            new PropertyValueListTransformer()).create();
 

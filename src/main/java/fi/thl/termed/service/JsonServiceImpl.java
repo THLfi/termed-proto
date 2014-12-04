@@ -12,12 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import fi.thl.termed.model.AuditedResource;
 import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.Scheme;
@@ -27,6 +29,7 @@ import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
 import fi.thl.termed.util.ConceptTransformer;
 import fi.thl.termed.util.ConceptUtils;
+import fi.thl.termed.util.GsonDateConverter;
 import fi.thl.termed.util.HibernateProxyTypeAdapterFactory;
 import fi.thl.termed.util.LuceneQueryUtils;
 import fi.thl.termed.util.PropertyValueListTransformer;
@@ -57,6 +60,7 @@ public class JsonServiceImpl implements JsonService {
   @PostConstruct
   public void init() {
     this.gson = new GsonBuilder().setPrettyPrinting()
+        .registerTypeAdapter(Date.class, new GsonDateConverter())
         .registerTypeAdapter(Concept.class, new ConceptTransformer(em))
         .registerTypeAdapterFactory(new HibernateProxyTypeAdapterFactory())
         .registerTypeAdapter(PropertyValueListTransformer.PROPERTY_LIST_TYPE,
@@ -77,6 +81,11 @@ public class JsonServiceImpl implements JsonService {
     return gson.fromJson(object, cls);
   }
 
+  private <T extends AuditedResource> T resourceUpdated(T auditedResource) {
+    auditedResource.resourceUpdated();
+    return auditedResource;
+  }
+
   @Override
   public JsonElement saveConcept(JsonElement data) {
     if (data.isJsonObject()) {
@@ -90,7 +99,7 @@ public class JsonServiceImpl implements JsonService {
 
   private JsonObject saveConcept(JsonObject concept) {
     return toJson(conceptIndex.index(
-        conceptRepository.saveAndUpdateRelated(fromJson(concept, Concept.class))));
+        conceptRepository.saveAndUpdateRelated(resourceUpdated(fromJson(concept, Concept.class)))));
   }
 
   private JsonPrimitive saveConcept(JsonArray concepts) {
@@ -106,12 +115,12 @@ public class JsonServiceImpl implements JsonService {
 
   @Override
   public JsonObject saveScheme(JsonObject data) {
-    return toJson(schemeRepository.save(fromJson(data, Scheme.class)));
+    return toJson(schemeRepository.save(resourceUpdated(fromJson(data, Scheme.class))));
   }
 
   @Override
   public JsonObject saveCollection(JsonObject data) {
-    return toJson(collectionRepository.save(fromJson(data, Collection.class)));
+    return toJson(collectionRepository.save(resourceUpdated(fromJson(data, Collection.class))));
   }
 
   @Override
