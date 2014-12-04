@@ -146,7 +146,7 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
     }, function(concepts) {
       $scope.concepts = concepts;
       $location.search({
-        q: $scope.query
+        q: query
       }).replace();
     });
   }
@@ -270,7 +270,7 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
   }, function(concept) {
     PropertyUtils.ensurePropertiesFiValue(concept.properties, ['prefLabel',
         'altLabel', 'definition', 'note', 'example', 'hiddenLabel',
-        'deprecatedLabel']);
+        'deprecatedLabel', 'comment', 'source']);
     $scope.concept = concept;
   });
 

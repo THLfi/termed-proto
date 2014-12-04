@@ -5,7 +5,8 @@
                              lang="fi"></thl-property-values>
     </a></li>
     <li class="active">
-        <thl-property-values values="collection.properties.prefLabel" lang="fi"></thl-property-values>
+        <thl-property-values values="collection.properties.prefLabel"
+                             lang="fi"></thl-property-values>
     </li>
 </ol>
 
@@ -21,43 +22,36 @@
 <h1 class="page-header">
     <thl-property-values values="collection.properties.prefLabel" lang="fi"></thl-property-values>
     <small>
-        <thl-property-values values="collection.properties.altLabel" lang="fi"></thl-property-values>
+        <thl-property-values values="collection.properties.altLabel"
+                             lang="fi"></thl-property-values>
     </small>
 </h1>
+
+<div class="text-muted" style="margin:-18px 0 18px">
+    <small>{{collection.uri}}</small>
+</div>
 
 <dl>
     <dt>Ensisijainen termi</dt>
     <dd>
         <thl-property-values values="collection.properties.prefLabel"></thl-property-values>
     </dd>
-    <dt>Vaihtoehtoiset termit</dt>
-    <dd>
+    <dt ng-show="collection.properties.altLabel">Vaihtoehtoiset termit</dt>
+    <dd ng-show="collection.properties.altLabel">
         <thl-property-values values="collection.properties.altLabel"></thl-property-values>
     </dd>
 </dl>
 
 <dl>
-    <dt>Kokoelmaan kuuluvat käsitteet</dt>
-    <dd>
+    <dt ng-show="collection.members && collection.members.length > 0">
+        Kokoelmaan kuuluvat käsitteet
+    </dt>
+    <dd ng-show="collection.members && collection.members.length > 0">
         <span ng-repeat="r in collection.members | orderBy:prefLabelFi">
-            <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}"><thl-property-values
-                    values="r.properties.prefLabel" lang="fi"></thl-property-values></a><span
-                ng-show="!$last" class="text-muted">, </span>
-        </span>
-        <span ng-show="!collection.members || collection.members.length == 0">
-            -
-        </span>
-    </dd>
-</dl>
-
-<br>
-
-<dl>
-    <dt>URI</dt>
-    <dd>
-        {{collection.uri}}
-        <span ng-show="!collection.uri">
-            -
+            <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}">
+                <thl-property-values values="r.properties.prefLabel"
+                                     lang="fi"></thl-property-values>
+            </a><br>
         </span>
     </dd>
 </dl>
