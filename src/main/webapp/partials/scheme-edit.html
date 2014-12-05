@@ -9,12 +9,14 @@
 <div class="row">
     <div class="col-xs-8">
         <button class="btn btn-sm btn-success" ng-click="save()">
+            <span class="glyphicon glyphicon-floppy-disk"></span>
             Tallenna
         </button>
     </div>
 
     <div class="col-xs-4 text-right">
         <button class="btn btn-sm btn-danger" ng-click="remove()">
+            <span class="glyphicon glyphicon-trash"></span>
             Poista
         </button>
     </div>
@@ -33,10 +35,16 @@
 
 <div class="row text-muted" style="margin-top:-18px;margin-bottom:20px">
     <div class="col-sm-6">
-        <small>Päivitetty {{scheme.lastModifiedDate | date:'d.M.yyyy HH:mm:ss'}}</small>
+        <small>
+            Päivitetty {{scheme.lastModifiedDate | date:'d.M.yyyy HH:mm:ss'}} /
+            {{scheme.lastModifiedBy}}
+        </small>
     </div>
     <div class="col-sm-6 text-right">
-        <small>Lisätty {{scheme.createdDate | date:'d.M.yyyy HH:mm:ss'}}</small>
+        <small>
+            Lisätty {{scheme.createdDate | date:'d.M.yyyy HH:mm:ss'}} /
+            {{scheme.createdBy}}
+        </small>
     </div>
 </div>
 

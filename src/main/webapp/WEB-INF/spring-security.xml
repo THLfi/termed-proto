@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+    <http auto-config="false" use-expressions="true" create-session="always"
+          entry-point-ref="unauthorizedEntryPoint">
+
+        <!-- permit authentication and get -->
+        <intercept-url pattern="/api/user/authenticate" access="permitAll"
+                       method="POST"/>
+        <intercept-url pattern="/api/**" access="permitAll"
+                       method="GET"/>
+
+        <!-- restrict modifiers -->
+        <intercept-url pattern="/**" access="hasRole('admin')"
+                       method="DELETE"/>
+        <intercept-url pattern="/**" access="hasRole('admin')"
+                       method="POST"/>
+        <intercept-url pattern="/**" access="hasRole('admin')"
+                       method="PUT"/>
+    </http>
+
+    <!-- replies always with 401 -->
+    <beans:bean id="unauthorizedEntryPoint"
+                class="fi.thl.termed.util.UnauthorizedEntryPoint"/>
+
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider ref="thlAuthenticationProvider"/>
+    </authentication-manager>
+
+    <beans:bean id="thlAuthenticationProvider"
+                class="fi.thl.termed.util.ThlAuthenticationProvider"/>
+
+</beans:beans>

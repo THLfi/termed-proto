@@ -1,6 +1,6 @@
 'use strict';
 
-var App = angular.module('termed', ['ngResource', 'ngRoute']);
+var App = angular.module('termed', ['ngResource', 'ngRoute', 'http-auth-interceptor']);
 
 App.factory('SchemeList', function($resource) {
   return $resource('api/schemes');
