@@ -1,5 +1,5 @@
-jdbc.*.properties
-!jdbc.test.properties
+app.*.properties
+!app.test.properties
 bin
 target
 index

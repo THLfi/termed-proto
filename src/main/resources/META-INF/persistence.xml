@@ -5,7 +5,7 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
                 http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 
-    <persistence-unit name="persistenceUnitTest">
+    <persistence-unit name="testPersistenceUnit">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <properties>
             <property name="hibernate.search.default.directory_provider" value="ram"/>
@@ -19,8 +19,9 @@
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <properties>
             <property name="hibernate.search.default.directory_provider" value="filesystem"/>
-            <!-- read and set by maven filter from persistence.<env>.properties -->
-            <property name="hibernate.search.default.indexBase" value="${indexBase}"/>
+            <!-- read and set by maven filter from app.<env>.properties -->
+            <property name="hibernate.search.default.indexBase"
+                      value="${hibernate.search.indexBase}"/>
             <property name="hibernate.search.lucene_version" value="LUCENE_36"/>
             <property name="hibernate.default_schema" value="termed"/>
             <property name="hibernate.hbm2ddl.auto" value="verify"/>

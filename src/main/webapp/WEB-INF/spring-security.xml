@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/security"
              xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.springframework.org/schema/beans
-           http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.0.xsd
            http://www.springframework.org/schema/security
-           http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+           http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
-    <http auto-config="false" use-expressions="true" create-session="always"
+    <context:property-placeholder location="classpath:app.properties"/>
+
+    <http auto-config="false" use-expressions="true" create-session="ifRequired"
           entry-point-ref="unauthorizedEntryPoint">
 
         <!-- permit authentication and get -->
@@ -27,13 +32,24 @@
 
     <!-- replies always with 401 -->
     <beans:bean id="unauthorizedEntryPoint"
-                class="fi.thl.termed.util.UnauthorizedEntryPoint"/>
+                class="fi.thl.termed.security.UnauthorizedEntryPoint"/>
 
     <authentication-manager alias="authenticationManager">
-        <authentication-provider ref="thlAuthenticationProvider"/>
+        <authentication-provider ref="authenticationProvider"/>
     </authentication-manager>
 
+    <beans:alias name="${spring.security.authenticationProvider}" alias="authenticationProvider"/>
+
     <beans:bean id="thlAuthenticationProvider"
-                class="fi.thl.termed.util.ThlAuthenticationProvider"/>
+                class="fi.thl.termed.security.ThlAuthenticationProvider">
+        <beans:constructor-arg index="0" value="${thl.authentication.url}"/>
+        <beans:constructor-arg index="1" value="${thl.authentication.application}"/>
+        <beans:constructor-arg index="2" value="${thl.authentication.secretKey}"/>
+    </beans:bean>
+
+    <beans:bean id="testAuthenticationProvider"
+                class="fi.thl.termed.security.MemoryBasedUsernamePasswordAuthenticationProvider">
+        <beans:constructor-arg value="${termed.testUserPassList}"/>
+    </beans:bean>
 
 </beans:beans>

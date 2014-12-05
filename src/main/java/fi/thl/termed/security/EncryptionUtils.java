@@ -1,4 +1,4 @@
-package fi.thl.termed.util;
+package fi.thl.termed.security;
 
 import java.security.GeneralSecurityException;
 

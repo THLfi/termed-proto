@@ -11,7 +11,8 @@ App.controller('LoginCtrl', function($scope, $http, $location, authService) {
       }),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
-      }
+      },
+      ignoreAuthModule: true
     }).success(function() {
       authService.loginConfirmed();
     });

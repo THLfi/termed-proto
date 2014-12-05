@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.Collection;
 
@@ -31,23 +33,24 @@ public class UserController {
   @SuppressWarnings("all")
   private Logger log = LoggerFactory.getLogger(getClass());
 
-  @Qualifier("thlAuthenticationProvider")
+  @Qualifier("authenticationProvider")
   @Autowired
   private AuthenticationProvider authenticationProvider;
 
   @RequestMapping(method = POST, value = "authenticate")
-  @ResponseBody
+  @ResponseStatus(value = HttpStatus.NO_CONTENT)
   public void authenticate(@RequestParam("username") String username,
-                           @RequestParam("password") String password) {
+                           @RequestParam("password") String password,
+                           HttpServletRequest request) {
+    log.info("Authenticating {}", username);
 
-    log.info("Authenticating user \"{}\"", username);
     Authentication authentication = authenticationProvider.authenticate(
         new UsernamePasswordAuthenticationToken(username, password));
     SecurityContextHolder.getContext().setAuthentication(authentication);
   }
 
   @RequestMapping(method = {GET, POST}, value = "logout")
-  @ResponseBody
+  @ResponseStatus(value = HttpStatus.NO_CONTENT)
   public void logout(HttpServletRequest request) {
     HttpSession context = request.getSession(false);
     if (context != null) {

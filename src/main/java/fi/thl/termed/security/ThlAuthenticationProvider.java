@@ -1,4 +1,4 @@
-package fi.thl.termed.util;
+package fi.thl.termed.security;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -36,9 +36,6 @@ public class ThlAuthenticationProvider implements AuthenticationProvider {
   private String secretKey;
 
   private RestTemplate restTemplate;
-
-  public ThlAuthenticationProvider() {
-  }
 
   public ThlAuthenticationProvider(String authServiceUrl, String application, String secretKey) {
     this(authServiceUrl, application, secretKey, new RestTemplate());
