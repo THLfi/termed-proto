@@ -1,15 +1,19 @@
 <div ng-controller="LoginCtrl">
     <div class="text-right">
         <div ng-if="user.name == 'anonymousUser'">
-            <a ng-click="showLogin()">
-                kirjaudu sisään
-            </a>
+            <small>
+                <a ng-click="showLogin()">
+                    kirjaudu sisään
+                </a>
+            </small>
         </div>
         <div ng-if="user.name != 'anonymousUser'">
-            <strong>{{user.name}}</strong> |
-            <a ng-click="logout()">
-                kirjaudu ulos
-            </a>
+            <small>
+                <strong>{{user.name}}</strong> |
+                <a ng-click="logout()">
+                    kirjaudu ulos
+                </a>
+            </small>
         </div>
     </div>
 
