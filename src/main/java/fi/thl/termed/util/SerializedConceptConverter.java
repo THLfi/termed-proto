@@ -1,16 +1,10 @@
 package fi.thl.termed.util;
 
+import com.google.common.base.Converter;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -20,64 +14,33 @@ import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.Resource;
 import fi.thl.termed.model.SchemeResource;
 
-public class ConceptTransformer implements JsonDeserializer<Concept>, JsonSerializer<Concept> {
-
-  // define a new class for serialized concept to avoid calling this serializer in loop
-  private class SerializedConcept extends Concept {
-
-  }
+public class SerializedConceptConverter extends Converter<Concept, SerializedConcept> {
 
   private final EntityManager em;
 
-  public ConceptTransformer(EntityManager em) {
+  public SerializedConceptConverter(EntityManager em) {
     Preconditions.checkNotNull(em);
     this.em = em;
   }
 
   @Override
-  public Concept deserialize(JsonElement jsonElement, Type type,
-                             JsonDeserializationContext jsonDeserializationContext)
-      throws JsonParseException {
-
-    SerializedConcept serializedConcept =
-        jsonDeserializationContext.deserialize(jsonElement, SerializedConcept.class);
-
-    Concept concept = new Concept();
-    concept.setId(serializedConcept.getId());
-    concept.setUri(serializedConcept.getUri());
-    concept.setProperties(serializedConcept.getProperties());
-    concept.setCreatedBy(serializedConcept.getCreatedBy());
-    concept.setLastModifiedBy(serializedConcept.getLastModifiedBy());
-    concept.setCreatedDate(serializedConcept.getCreatedDate());
-    concept.setLastModifiedDate(serializedConcept.getLastModifiedDate());
-    concept.setScheme(serializedConcept.getScheme());
-    concept.setBroader(transform(serializedConcept.getBroader(), findConcept));
-    concept.setNarrower(transform(serializedConcept.getNarrower(), findConcept));
-    concept.setRelated(transform(serializedConcept.getRelated(), findConcept));
-    concept.setCollections(transform(serializedConcept.getCollections(), findCollection));
-
-    return concept;
-  }
-
-  @Override
-  public JsonElement serialize(Concept concept, Type type,
-                               JsonSerializationContext jsonSerializationContext) {
-
-    SerializedConcept serializedConcept = new SerializedConcept();
-    serializedConcept.setId(concept.getId());
-    serializedConcept.setUri(concept.getUri());
-    serializedConcept.setProperties(concept.getProperties());
-    serializedConcept.setCreatedBy(concept.getCreatedBy());
-    serializedConcept.setLastModifiedBy(concept.getLastModifiedBy());
-    serializedConcept.setCreatedDate(concept.getCreatedDate());
-    serializedConcept.setLastModifiedDate(concept.getLastModifiedDate());
-    serializedConcept.setScheme(concept.getScheme());
+  protected SerializedConcept doForward(Concept concept) {
+    SerializedConcept serializedConcept = new SerializedConcept(new SchemeResource(concept));
     serializedConcept.setBroader(transform(concept.getBroader(), truncateConcept));
     serializedConcept.setNarrower(transform(concept.getNarrower(), truncateConcept));
     serializedConcept.setRelated(transform(concept.getRelated(), truncateConcept));
     serializedConcept.setCollections(transform(concept.getCollections(), truncateCollection));
+    return serializedConcept;
+  }
 
-    return jsonSerializationContext.serialize(serializedConcept, SerializedConcept.class);
+  @Override
+  protected Concept doBackward(SerializedConcept serializedConcept) {
+    Concept concept = new Concept(new SchemeResource(serializedConcept));
+    concept.setBroader(transform(serializedConcept.getBroader(), findConcept));
+    concept.setNarrower(transform(serializedConcept.getNarrower(), findConcept));
+    concept.setRelated(transform(serializedConcept.getRelated(), findConcept));
+    concept.setCollections(transform(serializedConcept.getCollections(), findCollection));
+    return concept;
   }
 
   public <F, T> List<T> transform(List<F> fromList, Function<F, T> function) {

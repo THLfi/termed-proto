@@ -27,12 +27,14 @@ import fi.thl.termed.repository.CollectionRepository;
 import fi.thl.termed.repository.ConceptIndex;
 import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
-import fi.thl.termed.util.ConceptTransformer;
 import fi.thl.termed.util.ConceptUtils;
+import fi.thl.termed.util.ConvertingSerializer;
 import fi.thl.termed.util.GsonDateConverter;
 import fi.thl.termed.util.HibernateProxyTypeAdapterFactory;
 import fi.thl.termed.util.LuceneQueryUtils;
 import fi.thl.termed.util.PropertyValueListTransformer;
+import fi.thl.termed.util.SerializedConcept;
+import fi.thl.termed.util.SerializedConceptConverter;
 
 @Service
 @Transactional
@@ -61,7 +63,9 @@ public class JsonServiceImpl implements JsonService {
   public void init() {
     this.gson = new GsonBuilder().setPrettyPrinting()
         .registerTypeAdapter(Date.class, new GsonDateConverter())
-        .registerTypeAdapter(Concept.class, new ConceptTransformer(em))
+        .registerTypeAdapter(Concept.class,
+                             new ConvertingSerializer<Concept, SerializedConcept>(
+                                 SerializedConcept.class, new SerializedConceptConverter(em)))
         .registerTypeAdapterFactory(new HibernateProxyTypeAdapterFactory())
         .registerTypeAdapter(PropertyValueListTransformer.PROPERTY_LIST_TYPE,
                              new PropertyValueListTransformer())
