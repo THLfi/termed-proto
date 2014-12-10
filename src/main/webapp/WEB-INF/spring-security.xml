@@ -12,7 +12,7 @@
 
     <context:property-placeholder location="classpath:app.properties"/>
 
-    <http auto-config="false" use-expressions="true" create-session="ifRequired"
+    <http auto-config="false" use-expressions="true" create-session="never"
           entry-point-ref="unauthorizedEntryPoint">
 
         <!-- permit authentication and get -->

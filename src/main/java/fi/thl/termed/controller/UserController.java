@@ -46,6 +46,9 @@ public class UserController {
 
     Authentication authentication = authenticationProvider.authenticate(
         new UsernamePasswordAuthenticationToken(username, password));
+
+    // init session after successful authentication
+    request.getSession();
     SecurityContextHolder.getContext().setAuthentication(authentication);
   }
 
