@@ -83,7 +83,6 @@
                     <thead>
                     <tr>
                         <th>Sanasto</th>
-                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -94,15 +93,11 @@
                                                      lang="fi"></thl-property-values>
                             </a>
                         </td>
-                        <td class="text-right">
-                            <a ng-href="#/schemes/{{scheme.id}}/edit" class="text-muted">
-                                <span class="glyphicon glyphicon-edit"></span>
-                            </a>
-                        </td>
                     </tr>
                     </tbody>
                 </table>
-                <button class="btn btn-default btn-sm" ng-click="newScheme()">
+                <button class="btn btn-default btn-sm" ng-click="newScheme()"
+                        ng-show="user.role == 'admin'">
                     <span class="glyphicon glyphicon-plus"></span>
                     Lisää uusi sanasto
                 </button>

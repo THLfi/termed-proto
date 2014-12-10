@@ -1,6 +1,21 @@
 'use strict';
 
-App.controller('LoginCtrl', function($scope, $http, $location, authService) {
+App.controller('LoginCtrl', function($scope, $rootScope, $http, $location,
+        authService) {
+
+  function getUserInfo() {
+    $http({
+      method: 'GET',
+      url: 'api/user/info'
+    }).success(function(user) {
+      $rootScope.user = user;
+    });
+  }
+
+  $scope.showLogin = function() {
+    $('#loginModal').modal('show');
+  }
+
   $scope.login = function() {
     $http({
       method: 'POST',
@@ -15,8 +30,21 @@ App.controller('LoginCtrl', function($scope, $http, $location, authService) {
       ignoreAuthModule: true
     }).success(function() {
       authService.loginConfirmed();
+      getUserInfo();
     });
   };
+
+  $scope.logout = function() {
+    $http({
+      method: 'POST',
+      url: 'api/user/logout'
+    }).success(function(user) {
+      getUserInfo();
+    });
+  }
+
+  getUserInfo();
+
 });
 
 App.directive('showWhenLoginRequired', function($timeout, authService) {

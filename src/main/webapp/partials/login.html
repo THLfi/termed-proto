@@ -1,4 +1,18 @@
 <div ng-controller="LoginCtrl">
+    <div class="text-right">
+        <div ng-if="user.name == 'anonymousUser'">
+            <a ng-click="showLogin()">
+                kirjaudu sisään
+            </a>
+        </div>
+        <div ng-if="user.name != 'anonymousUser'">
+            <strong>{{user.name}}</strong> |
+            <a ng-click="logout()">
+                kirjaudu ulos
+            </a>
+        </div>
+    </div>
+
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog"
          aria-labelledby="loginModalLabel" aria-hidden="true" show-when-login-required>
         <div class="modal-dialog">

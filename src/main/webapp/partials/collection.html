@@ -10,13 +10,12 @@
     </li>
 </ol>
 
-<div class="row">
-    <div class="col-xs-8">
-        <a class="btn btn-sm btn-default"
-           ng-href="#/schemes/{{collection.scheme.id}}/collections/{{collection.id}}/edit">
-            Muokkaa
-        </a>
-    </div>
+<div ng-show="user.role == 'admin'">
+    <a class="btn btn-sm btn-default"
+       ng-href="#/schemes/{{collection.scheme.id}}/collections/{{collection.id}}/edit">
+        <span class="glyphicon glyphicon-edit"></span>
+        Muokkaa
+    </a>
 </div>
 
 <h1 class="page-header">
@@ -55,7 +54,7 @@
 <hr>
 
 <div class="text-muted" style="margin:-18px 0 18px">
-    <small>{{collection.uri}}&nbsp;</small>
+    <small>{{collection.uri}}</small>
 </div>
 
 <span class="label label-default" ng-click="showJson = !showJson">json</span>

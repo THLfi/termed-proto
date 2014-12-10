@@ -9,15 +9,17 @@
     </li>
 </ol>
 
-<a class="btn btn-sm btn-default"
-   ng-href="#/schemes/{{concept.scheme.id}}/concepts/{{concept.id}}/edit">
-    <span class="glyphicon glyphicon-edit"></span>
-    Muokkaa
-</a>
-<button class="btn btn-sm btn-default" ng-click="newConcept()">
-    <span class="glyphicon glyphicon-plus"></span>
-    Lisää alakäsite
-</button>
+<div ng-show="user.role == 'admin'">
+    <a class="btn btn-sm btn-default"
+       ng-href="#/schemes/{{concept.scheme.id}}/concepts/{{concept.id}}/edit">
+        <span class="glyphicon glyphicon-edit"></span>
+        Muokkaa
+    </a>
+    <button class="btn btn-sm btn-default" ng-click="newConcept()">
+        <span class="glyphicon glyphicon-plus"></span>
+        Lisää alakäsite
+    </button>
+</div>
 
 <h1 class="page-header">
     <thl-property-values values="concept.properties.prefLabel" lang="fi"></thl-property-values>
@@ -128,7 +130,7 @@
 <hr>
 
 <div class="text-muted" style="margin:-18px 0 18px">
-    <small>{{concept.uri}}&nbsp;</small>
+    <small>{{concept.uri}}</small>
 </div>
 
 <span class="label label-default" ng-click="showJson = !showJson">json</span>
