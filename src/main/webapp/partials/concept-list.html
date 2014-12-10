@@ -37,10 +37,10 @@
 
 <!-- use floating element for buttons when not logged in -->
 <div class="pull-right" ng-show="user.role != 'admin'">
-    <button class="btn btn-sm btn-default {{!tree || 'active'}}" ng-click="toggleTree()">
+    <button class="btn btn-xs btn-link {{!tree || 'active'}}" ng-click="toggleTree()">
         <span class="glyphicon glyphicon-expand"></span> Näytä hierarkia
     </button>
-    <a class="btn btn-default btn-sm" ng-href="api/export/{{scheme.id}}">
+    <a class="btn btn-link btn-xs" ng-href="api/export/{{scheme.id}}">
         <span class="glyphicon glyphicon-download-alt"></span>
         Lataa RDF-muodossa
     </a>
