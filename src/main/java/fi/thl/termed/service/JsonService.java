@@ -26,6 +26,8 @@ public interface JsonService {
 
   JsonArray getConceptBroaderPaths(String id);
 
+  JsonArray getConceptTreesFor(String conceptId);
+
   JsonArray queryConcepts(String query, int first, int max, List<String> orderBy);
 
   JsonArray queryConcepts(String schemeId, String query, int first, int max, List<String> orderBy);

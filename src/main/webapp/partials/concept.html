@@ -21,6 +21,19 @@
     </button>
 </div>
 
+<script type="text/ng-template" id="concept-narrower.html">
+    <thl-property-values values="concept.properties.prefLabel" lang="fi"></thl-property-values>
+    <ul style="list-style-type: none;" ng-repeat="root in trees">
+        <li ng-repeat="concept in concept.narrower">
+            <div ng-include="'concept-narrower.html'"></div>
+        </li>
+    </ul>
+</script>
+
+<ul style="list-style-type: none;" ng-repeat="concept in trees">
+    <li ng-include="'concept-narrower.html'"></li>
+</ul>
+
 <h1 class="page-header">
     <thl-property-values values="concept.properties.prefLabel" lang="fi"></thl-property-values>
     <small>

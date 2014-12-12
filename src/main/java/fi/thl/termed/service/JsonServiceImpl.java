@@ -27,6 +27,7 @@ import fi.thl.termed.repository.CollectionRepository;
 import fi.thl.termed.repository.ConceptIndex;
 import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
+import fi.thl.termed.util.ConceptTreeBuilder;
 import fi.thl.termed.util.ConceptUtils;
 import fi.thl.termed.util.ConvertingSerializer;
 import fi.thl.termed.util.GsonDateConverter;
@@ -45,6 +46,7 @@ public class JsonServiceImpl implements JsonService {
   private ConceptRepository conceptRepository;
   private ConceptIndex conceptIndex;
   private Gson gson;
+  private Gson simpleGson;
 
   @PersistenceContext
   private EntityManager em;
@@ -67,6 +69,11 @@ public class JsonServiceImpl implements JsonService {
                              new ConvertingSerializer<Concept, SerializedConcept>(
                                  SerializedConcept.class, new SerializedConceptConverter(em)))
         .registerTypeAdapterFactory(new HibernateProxyTypeAdapterFactory())
+        .registerTypeAdapter(PropertyValueListTransformer.PROPERTY_LIST_TYPE,
+                             new PropertyValueListTransformer())
+        .create();
+    this.simpleGson = new GsonBuilder().setPrettyPrinting()
+        .registerTypeAdapter(Date.class, new GsonDateConverter())
         .registerTypeAdapter(PropertyValueListTransformer.PROPERTY_LIST_TYPE,
                              new PropertyValueListTransformer())
         .create();
@@ -147,6 +154,13 @@ public class JsonServiceImpl implements JsonService {
   public JsonArray getConceptBroaderPaths(String id) {
     return conceptRepository.exists(id) ? gson
         .toJsonTree(ConceptUtils.findBroaderPaths(conceptRepository.findOne(id)))
+        .getAsJsonArray() : new JsonArray();
+  }
+
+  @Override
+  public JsonArray getConceptTreesFor(String conceptId) {
+    return conceptRepository.exists(conceptId) ? simpleGson
+        .toJsonTree(ConceptTreeBuilder.buildConceptTreesFor(conceptRepository.findOne(conceptId)))
         .getAsJsonArray() : new JsonArray();
   }
 
