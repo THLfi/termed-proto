@@ -14,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
-import fi.thl.termed.util.LuceneConstants;
 import fi.thl.termed.util.ResourceIdMatches;
 
 @Indexed
@@ -62,6 +61,10 @@ public class Concept extends SchemeResource {
 
   public void setBroader(List<Concept> broader) {
     this.broader = broader;
+  }
+
+  public boolean hasNarrower() {
+    return narrower != null && !narrower.isEmpty();
   }
 
   public List<Concept> getNarrower() {

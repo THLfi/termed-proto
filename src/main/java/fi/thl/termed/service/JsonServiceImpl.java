@@ -46,7 +46,6 @@ public class JsonServiceImpl implements JsonService {
   private ConceptRepository conceptRepository;
   private ConceptIndex conceptIndex;
   private Gson gson;
-  private Gson simpleGson;
 
   @PersistenceContext
   private EntityManager em;
@@ -69,11 +68,6 @@ public class JsonServiceImpl implements JsonService {
                              new ConvertingSerializer<Concept, SerializedConcept>(
                                  SerializedConcept.class, new SerializedConceptConverter(em)))
         .registerTypeAdapterFactory(new HibernateProxyTypeAdapterFactory())
-        .registerTypeAdapter(PropertyValueListTransformer.PROPERTY_LIST_TYPE,
-                             new PropertyValueListTransformer())
-        .create();
-    this.simpleGson = new GsonBuilder().setPrettyPrinting()
-        .registerTypeAdapter(Date.class, new GsonDateConverter())
         .registerTypeAdapter(PropertyValueListTransformer.PROPERTY_LIST_TYPE,
                              new PropertyValueListTransformer())
         .create();
@@ -159,7 +153,7 @@ public class JsonServiceImpl implements JsonService {
 
   @Override
   public JsonArray getConceptTreesFor(String conceptId) {
-    return conceptRepository.exists(conceptId) ? simpleGson
+    return conceptRepository.exists(conceptId) ? gson
         .toJsonTree(ConceptTreeBuilder.buildConceptTreesFor(conceptRepository.findOne(conceptId)))
         .getAsJsonArray() : new JsonArray();
   }

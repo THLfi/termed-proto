@@ -1,3 +1,30 @@
+App.directive('thlConceptTree', function() {
+  return {
+    scope: {
+      'concept': '='
+    },
+    link: function(scope, elem, attrs) {
+      scope.$watch('concept', function(c) {
+        if (c) {
+          var url = '/api/schemes/' + c.scheme.id + '/concepts/' + c.id
+                  + '/trees';
+          elem.jstree({
+            core: {
+              data: {
+                url: url,
+                data: function(node) {
+                  return node;
+                }
+              }
+            },
+            "plugins": ["sort"]
+          });
+        }
+      });
+    }
+  };
+});
+
 App.directive('thlPropertyValues', function() {
   return {
     restrict: 'E',
