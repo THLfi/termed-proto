@@ -27,8 +27,7 @@ import fi.thl.termed.repository.CollectionRepository;
 import fi.thl.termed.repository.ConceptIndex;
 import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
-import fi.thl.termed.util.ConceptTreeBuilder;
-import fi.thl.termed.util.ConceptUtils;
+import fi.thl.termed.util.ConceptGraphUtils;
 import fi.thl.termed.util.ConvertingSerializer;
 import fi.thl.termed.util.GsonDateConverter;
 import fi.thl.termed.util.HibernateProxyTypeAdapterFactory;
@@ -148,7 +147,7 @@ public class JsonServiceImpl implements JsonService {
   @Override
   public JsonArray getConceptBroaderPaths(String id) {
     return conceptRepository.exists(id) ? gson
-        .toJsonTree(ConceptUtils.findBroaderPaths(conceptRepository.findOne(id)))
+        .toJsonTree(ConceptGraphUtils.findBroaderPaths(conceptRepository.findOne(id)))
         .getAsJsonArray() : new JsonArray();
   }
 

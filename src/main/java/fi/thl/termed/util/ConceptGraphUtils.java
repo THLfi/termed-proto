@@ -13,44 +13,6 @@ import fi.thl.termed.model.SchemeResource;
 
 public final class ConceptGraphUtils {
 
-  public static void main(String[] args) {
-    Concept root = new Concept("root");
-    Concept branch1 = new Concept("branch1");
-    Concept branch2 = new Concept("branch2");
-    Concept branch3 = new Concept("branch3");
-    Concept leaf1 = new Concept("leaf1");
-    Concept leaf2 = new Concept("leaf2");
-    Concept leaf3 = new Concept("leaf3");
-    Concept leaf4 = new Concept("leaf4");
-
-    root.setNarrower(Lists.newArrayList(branch1, branch2, branch3));
-
-    branch1.setBroader(Lists.newArrayList(root));
-    branch1.setNarrower(Lists.newArrayList(leaf1, leaf2));
-
-    branch2.setBroader(Lists.newArrayList(root));
-
-    branch3.setBroader(Lists.newArrayList(root));
-    branch3.setNarrower(Lists.newArrayList(leaf3, leaf4));
-
-    leaf1.setBroader(Lists.newArrayList(branch1));
-    leaf1.setNarrower(Lists.newArrayList(leaf2));
-
-    leaf2.setBroader(Lists.newArrayList(leaf1, branch1));
-    leaf3.setBroader(Lists.newArrayList(branch3));
-    leaf4.setBroader(Lists.newArrayList(branch3));
-
-    System.out.println(prettyPrintTree(root));
-
-    for (Concept tree : broaderTrees(leaf1)) {
-      System.out.println(prettyPrintTree(tree));
-    }
-
-    for (Concept tree : broaderTrees(leaf4)) {
-      System.out.println(prettyPrintTree(tree));
-    }
-  }
-
   private ConceptGraphUtils() {
   }
 
@@ -125,13 +87,12 @@ public final class ConceptGraphUtils {
 
   public static List<List<Concept>> findBroaderPaths(Concept concept) {
     List<List<Concept>> paths = Lists.newArrayList();
-    findBroaderPaths(concept, Lists.newArrayList(concept), paths);
+    findBroaderPaths(concept, Lists.<Concept>newArrayList(), paths);
     return paths;
   }
 
   private static void findBroaderPaths(Concept concept, List<Concept> path,
                                        List<List<Concept>> paths) {
-
     path.add(concept);
 
     if (concept.hasBroader()) {

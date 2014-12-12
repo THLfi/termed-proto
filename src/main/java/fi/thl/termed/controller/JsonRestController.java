@@ -80,13 +80,6 @@ public class JsonRestController {
         .queryConcepts(schemeId, query, first, max < 0 ? Integer.MAX_VALUE : max, orderBy);
   }
 
-  @RequestMapping(method = GET, value = {"schemes/{schemeId}/concepts/{conceptId}/trees",
-                                         "concepts/{conceptId}/trees"})
-  @ResponseBody
-  public JsonArray getConceptTreesFor(@PathVariable("conceptId") String conceptId) {
-    return service.getConceptTreesFor(conceptId);
-  }
-
   @RequestMapping(method = GET, value = {"schemes/{schemeId}/concepts/{conceptId}",
                                          "concepts/{conceptId}"})
   @ResponseBody
@@ -99,6 +92,13 @@ public class JsonRestController {
   @ResponseBody
   public JsonArray getConceptBroaderPaths(@PathVariable("conceptId") String conceptId) {
     return service.getConceptBroaderPaths(conceptId);
+  }
+
+  @RequestMapping(method = GET, value = {"schemes/{schemeId}/concepts/{conceptId}/trees",
+                                         "concepts/{conceptId}/trees"})
+  @ResponseBody
+  public JsonArray getConceptTreesFor(@PathVariable("conceptId") String conceptId) {
+    return service.getConceptTreesFor(conceptId);
   }
 
   // modifiers
