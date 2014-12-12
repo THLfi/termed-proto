@@ -13,9 +13,8 @@ App.directive('thlConceptTree', function($location) {
               },
               data: {
                 url: function(node) {
-                  return '/api/concepts/'
-                          + (node.id == '#' ? c.id : node.li_attr.conceptId)
-                          + '/trees';
+                  var id = node.id == '#' ? c.id : node.li_attr.conceptId
+                  return '/api/concepts/' + id + '/trees';
                 },
                 data: function(node) {
                   return node;
