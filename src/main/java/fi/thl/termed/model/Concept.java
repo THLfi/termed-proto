@@ -51,6 +51,14 @@ public class Concept extends SchemeResource {
     super(schemeResource);
   }
 
+  public Concept(Concept concept) {
+    super(concept);
+    this.broader = concept.broader;
+    this.narrower = concept.narrower;
+    this.related = concept.related;
+    this.collections = concept.collections;
+  }
+
   public boolean hasBroader() {
     return broader != null && !broader.isEmpty();
   }
