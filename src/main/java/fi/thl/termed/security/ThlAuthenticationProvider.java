@@ -66,13 +66,13 @@ public class ThlAuthenticationProvider implements AuthenticationProvider {
   private Authentication authenticate(String username, String password)
       throws GeneralSecurityException, IOException, ParserConfigurationException, SAXException {
 
-//    Document token = parseXmlDocument(decryptToken(httpPostForEncryptedToken(username, password)));
+    Document token = parseXmlDocument(decryptToken(httpPostForEncryptedToken(username, password)));
 
-//    if (documentHasElementWithContent(token, "email", username)) {
+    if (documentHasElementWithContent(token, "email", username)) {
       return new UsernamePasswordAuthenticationToken(username, password, admin());
-//    }
+    }
 
-//    throw new BadCredentialsException("Authentication failed for user " + username);
+    throw new BadCredentialsException("Authentication failed for user " + username);
   }
 
   private String httpPostForEncryptedToken(String username, String password) {
