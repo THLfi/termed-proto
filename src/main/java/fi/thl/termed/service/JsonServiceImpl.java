@@ -32,6 +32,7 @@ import fi.thl.termed.util.ConceptUtils;
 import fi.thl.termed.util.ConvertingSerializer;
 import fi.thl.termed.util.GsonDateConverter;
 import fi.thl.termed.util.HibernateProxyTypeAdapterFactory;
+import fi.thl.termed.util.JsTreeBuilder;
 import fi.thl.termed.util.LuceneQueryUtils;
 import fi.thl.termed.util.PropertyValueListTransformer;
 import fi.thl.termed.util.SerializedConcept;
@@ -154,7 +155,7 @@ public class JsonServiceImpl implements JsonService {
   @Override
   public JsonArray getConceptTreesFor(String conceptId) {
     return conceptRepository.exists(conceptId) ? gson
-        .toJsonTree(ConceptTreeBuilder.buildConceptTreesFor(conceptRepository.findOne(conceptId)))
+        .toJsonTree(JsTreeBuilder.buildTreesFor(conceptRepository.findOne(conceptId)))
         .getAsJsonArray() : new JsonArray();
   }
 

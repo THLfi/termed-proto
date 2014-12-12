@@ -17,7 +17,8 @@ import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/applicationContext.xml",
-                                   "file:src/main/webapp/WEB-INF/mvc-dispatcher-servlet.xml"})
+                                   "file:src/main/webapp/WEB-INF/mvc-dispatcher-servlet.xml",
+                                   "file:src/main/webapp/WEB-INF/spring-security.xml"})
 @TransactionConfiguration
 @Transactional
 public class ConceptRepositoryIT {

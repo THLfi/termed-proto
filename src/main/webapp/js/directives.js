@@ -1,4 +1,4 @@
-App.directive('thlConceptTree', function() {
+App.directive('thlConceptTree', function($location) {
   return {
     scope: {
       'concept': '='
@@ -6,20 +6,27 @@ App.directive('thlConceptTree', function() {
     link: function(scope, elem, attrs) {
       scope.$watch('concept', function(c) {
         if (c) {
-          var url = '/api/schemes/' + c.scheme.id + '/concepts/' + c.id
-                  + '/trees';
           elem.jstree({
             core: {
               data: {
-                url: url,
+                url: function(node) {
+                  return '/api/concepts/'
+                          + (node.id == '#' ? c.id : node.li_attr.conceptId)
+                          + '/trees';
+                },
                 data: function(node) {
                   return node;
                 }
               }
             },
-            "plugins": ["sort", "wholerow"]
+            plugins: ["sort", "wholerow"]
           });
         }
+      });
+      elem.on('activate_node.jstree', function(e, data) {
+        scope.$apply(function() {
+          $location.path(data.node.a_attr.href);
+        });
       });
     }
   };

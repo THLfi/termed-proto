@@ -19,8 +19,6 @@ App.factory('SchemeList', function($resource) {
   return $resource('api/schemes/:schemeId/concepts/:id');
 }).factory('ConceptBroaderPaths', function($resource) {
   return $resource('api/schemes/:schemeId/concepts/:id/broader');
-}).factory('ConceptTrees', function($resource) {
-  return $resource('api/schemes/:schemeId/concepts/:id/trees');
 });
 
 App.factory('PropertyUtils', function() {
@@ -224,8 +222,7 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
 });
 
 App.controller('ConceptCtrl', function($scope, $routeParams, $location,
-        ConceptTrees, Concept, ConceptBroaderPaths, ConceptList, PropertyUtils,
-        Scheme) {
+        Concept, ConceptBroaderPaths, ConceptList, PropertyUtils) {
 
   Concept.get({
     schemeId: $routeParams.schemeId,
@@ -233,10 +230,6 @@ App.controller('ConceptCtrl', function($scope, $routeParams, $location,
   }, function(concept) {
     $scope.concept = concept;
     $scope.broaderPaths = ConceptBroaderPaths.query({
-      schemeId: $routeParams.schemeId,
-      id: $routeParams.id
-    });
-    $scope.trees = ConceptTrees.query({
       schemeId: $routeParams.schemeId,
       id: $routeParams.id
     });

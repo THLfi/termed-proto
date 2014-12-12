@@ -4,7 +4,9 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gson.annotations.SerializedName;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,15 +19,15 @@ public class ConceptTreeBuilder {
   private static class TreeNode {
 
     private String id;
+    private String parent;
     private String text;
     private Object icon;
     private Map<String, Boolean> state;
     private Object children;
-
-    public TreeNode(String id, String text) {
-      this.id = id;
-      this.text = text;
-    }
+    @SerializedName("a_attr")
+    private Map<String, String> linkElementAttributes;
+    @SerializedName("li_attr")
+    private Map<String, String> listElementAttributes;
 
     public String getId() {
       return id;
@@ -33,6 +35,14 @@ public class ConceptTreeBuilder {
 
     public void setId(String id) {
       this.id = id;
+    }
+
+    public String getParent() {
+      return parent;
+    }
+
+    public void setParent(String parent) {
+      this.parent = parent;
     }
 
     public String getText() {
@@ -68,12 +78,36 @@ public class ConceptTreeBuilder {
     }
 
     @SuppressWarnings("unchecked")
+    public Set<TreeNode> getChildSet() {
+      if (children != null && children instanceof Set) {
+        return (Set<TreeNode>) children;
+      }
+      return Collections.emptySet();
+    }
+
+    @SuppressWarnings("unchecked")
     public void replaceChild(TreeNode child) {
       if (children != null && children instanceof Set) {
         Set<TreeNode> childSet = (Set<TreeNode>) children;
         childSet.remove(child);
         childSet.add(child);
       }
+    }
+
+    public Map<String, String> getLinkElementAttributes() {
+      return linkElementAttributes;
+    }
+
+    public void setLinkElementAttributes(Map<String, String> linkElementAttributes) {
+      this.linkElementAttributes = linkElementAttributes;
+    }
+
+    public Map<String, String> getListElementAttributes() {
+      return listElementAttributes;
+    }
+
+    public void setListElementAttributes(Map<String, String> listElementAttributes) {
+      this.listElementAttributes = listElementAttributes;
     }
 
     @Override
@@ -87,12 +121,12 @@ public class ConceptTreeBuilder {
 
       TreeNode that = (TreeNode) o;
 
-      return Objects.equal(id, that.id);
+      return Objects.equal(text, that.text);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hashCode(id);
+      return Objects.hashCode(text);
     }
 
   }
@@ -100,45 +134,54 @@ public class ConceptTreeBuilder {
   public static List<TreeNode> buildConceptTreesFor(Concept concept) {
     List<TreeNode> roots = Lists.newArrayList();
 
-    TreeNode node = truncateBroaderConcept(concept, roots);
+    TreeNode node = transformAndCollectRootNodes(concept, roots);
     node.setState(ImmutableMap.of("opened", true, "selected", true));
-    node.setChildren(toTreeNode(concept.getNarrower()));
+    node.setChildren(toTreeNode(node, concept.getNarrower()));
 
-    return roots;
+    return Lists.newArrayList(roots);
   }
 
-  private static TreeNode truncateBroaderConcept(Concept concept, List<TreeNode> roots) {
+  private static TreeNode transformAndCollectRootNodes(Concept concept, List<TreeNode> roots) {
     TreeNode node = toTreeNode(concept);
     node.setState(ImmutableMap.of("opened", true));
-    node.setChildren(toTreeNode(concept.getNarrower()));
 
     if (concept.hasBroader()) {
       for (Concept broader : concept.getBroader()) {
-        TreeNode broaderNode = truncateBroaderConcept(broader, roots);
+        TreeNode broaderNode = transformAndCollectRootNodes(broader, roots);
         broaderNode.replaceChild(node);
+        node.setId(broader.getId() + "." + node.getId());
       }
     } else {
       roots.add(node);
     }
 
+    node.setChildren(toTreeNode(node, concept.getNarrower()));
+
     return node;
   }
 
+  private static Set<TreeNode> toTreeNode(TreeNode broader, List<Concept> concepts) {
+    Set<TreeNode> treeNodes = Sets.newHashSet();
+    for (Concept concept : concepts) {
+      TreeNode node = toTreeNode(concept);
+      node.setId(broader.getId() + "." + node.getId());
+      treeNodes.add(node);
+    }
+    return treeNodes;
+  }
+
   private static TreeNode toTreeNode(Concept concept) {
-    TreeNode node = new TreeNode(concept.getId(), findProperty(concept, "prefLabel", "fi"));
+    TreeNode node = new TreeNode();
+    node.setId(concept.getId());
+    node.setText(findProperty(concept, "prefLabel", "fi"));
     node.setIcon(false);
     if (concept.hasNarrower()) {
       node.setChildren(true);
     }
+    String conceptUrl = "/schemes/" + concept.getScheme().getId() + "/concepts/" + concept.getId();
+    node.setLinkElementAttributes(ImmutableMap.of("href", conceptUrl));
+    node.setListElementAttributes(ImmutableMap.of("conceptId", concept.getId()));
     return node;
-  }
-
-  private static Set<TreeNode> toTreeNode(List<Concept> concepts) {
-    Set<TreeNode> treeNodes = Sets.newHashSet();
-    for (Concept concept : concepts) {
-      treeNodes.add(toTreeNode(concept));
-    }
-    return treeNodes;
   }
 
   private static String findProperty(Concept concept, String propertyId, String lang) {
