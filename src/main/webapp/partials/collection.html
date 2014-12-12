@@ -20,11 +20,11 @@
 
 <h1 class="page-header">
     <thl-property-values values="collection.properties.prefLabel" lang="fi"></thl-property-values>
-    <small>
-        <thl-property-values values="collection.properties.altLabel"
-                             lang="fi"></thl-property-values>
-    </small>
 </h1>
+
+<div class="text-muted" style="margin:-18px 0 18px">
+    <small>{{collection.uri}}</small>
+</div>
 
 <dl>
     <dt>Ensisijainen termi</dt>
@@ -52,10 +52,6 @@
 </dl>
 
 <hr>
-
-<div class="text-muted" style="margin:-18px 0 18px">
-    <small>{{collection.uri}}</small>
-</div>
 
 <span class="label label-default" ng-click="showJson = !showJson">json</span>
 

@@ -8,6 +8,9 @@ App.directive('thlConceptTree', function($location) {
         if (c) {
           elem.jstree({
             core: {
+              themes: {
+                variant: "small"
+              },
               data: {
                 url: function(node) {
                   return '/api/concepts/'
@@ -19,7 +22,7 @@ App.directive('thlConceptTree', function($location) {
                 }
               }
             },
-            plugins: ["sort", "wholerow"]
+            plugins: ["sort"]
           });
         }
       });

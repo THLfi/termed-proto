@@ -9,29 +9,38 @@
     </li>
 </ol>
 
-<div ng-show="user.role == 'admin'">
-    <a class="btn btn-sm btn-default"
-       ng-href="#/schemes/{{concept.scheme.id}}/concepts/{{concept.id}}/edit">
-        <span class="glyphicon glyphicon-edit"></span>
-        Muokkaa
-    </a>
-    <button class="btn btn-sm btn-default" ng-click="newConcept()">
-        <span class="glyphicon glyphicon-plus"></span>
-        Lisää alakäsite
-    </button>
-</div>
-
 <div class="row">
     <div class="col-sm-4">
-        <div style="overflow:hidden">
-            <thl-concept-tree concept="concept"></thl-concept-tree>
+        <div class="panel panel-default">
+            <div class="panel-heading" style="padding-top: 5px; padding-bottom: 5px">
+                Hierarkia
+            </div>
+            <div style="overflow:hidden" class="panel-body">
+                <thl-concept-tree concept="concept"></thl-concept-tree>
+            </div>
         </div>
     </div>
     <div class="col-sm-8">
-        <h2 class="page-header" style="margin-top:0">
+        <div ng-show="user.role == 'admin'">
+            <a class="btn btn-sm btn-default"
+               ng-href="#/schemes/{{concept.scheme.id}}/concepts/{{concept.id}}/edit">
+                <span class="glyphicon glyphicon-edit"></span>
+                Muokkaa
+            </a>
+            <button class="btn btn-sm btn-default" ng-click="newConcept()">
+                <span class="glyphicon glyphicon-plus"></span>
+                Lisää alakäsite
+            </button>
+        </div>
+
+        <h1 class="page-header">
             <thl-property-values values="concept.properties.prefLabel"
                                  lang="fi"></thl-property-values>
-        </h2>
+        </h1>
+
+        <div class="text-muted" style="margin:-18px 0 18px">
+            <small>{{concept.uri}}</small>
+        </div>
 
         <dl>
             <dt>Ensisijainen termi</dt>
@@ -65,66 +74,65 @@
             </dd>
         </dl>
 
-        <br>
-
         <dl>
             <dt ng-show="concept.broader && concept.broader.length > 0">Yläkäsitehierarkiat</dt>
             <dd ng-show="concept.broader && concept.broader.length > 0">
-        <span ng-show="concept.broader">
-            <span ng-repeat="path in broaderPaths">
-                <span ng-repeat="b in path">
-                    <span ng-if="!$last">
-                        <a ng-href="#/schemes/{{b.scheme.id}}/concepts/{{b.id}}" ng-if="!$last">
-                            <thl-property-values values="b.properties.prefLabel"
-                                                 lang="fi"></thl-property-values>
-                        </a>
-                        <span class="text-muted">&gt;</span>
+                <span ng-show="concept.broader">
+                    <span ng-repeat="path in broaderPaths">
+                        <span ng-repeat="b in path">
+                            <span ng-if="!$last">
+                                <a ng-href="#/schemes/{{b.scheme.id}}/concepts/{{b.id}}"
+                                   ng-if="!$last">
+                                    <thl-property-values values="b.properties.prefLabel"
+                                                         lang="fi"></thl-property-values>
+                                </a>
+                                <span class="text-muted">&gt;</span>
+                            </span>
+                            <span ng-if="$last">
+                                <thl-property-values values="b.properties.prefLabel"
+                                                     lang="fi"></thl-property-values>
+                            </span>
+                        </span><br>
                     </span>
-                    <span ng-if="$last">
-                        <thl-property-values values="b.properties.prefLabel"
-                                             lang="fi"></thl-property-values>
-                    </span>
-                </span><br>
-            </span>
-        </span>
+                </span>
             </dd>
             <dt ng-show="concept.broader && concept.broader.length > 0">Yläkäsitteet</dt>
             <dd ng-show="concept.broader && concept.broader.length > 0">
-        <span ng-repeat="n in concept.broader | orderBy:prefLabelFi">
-            <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
-                <thl-property-values values="n.properties.prefLabel"
-                                     lang="fi"></thl-property-values>
-            </a><br>
-        </span>
+                <span ng-repeat="n in concept.broader | orderBy:prefLabelFi">
+                    <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
+                        <thl-property-values values="n.properties.prefLabel"
+                                             lang="fi"></thl-property-values>
+                    </a><br>
+                </span>
             </dd>
             <dt ng-show="concept.narrower && concept.narrower.length > 0">Alakäsitteet</dt>
             <dd ng-show="concept.narrower && concept.narrower.length > 0">
-        <span ng-repeat="n in concept.narrower | orderBy:prefLabelFi">
-            <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
-                <thl-property-values values="n.properties.prefLabel"
-                                     lang="fi"></thl-property-values>
-            </a><br>
-        </span>
+                <span ng-repeat="n in concept.narrower | orderBy:prefLabelFi">
+                    <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
+                        <thl-property-values values="n.properties.prefLabel"
+                                             lang="fi"></thl-property-values>
+                    </a><br>
+                </span>
             </dd>
             <dt ng-show="concept.related && concept.related.length > 0">Assosiatiiviset käsitteet
             </dt>
             <dd ng-show="concept.related && concept.related.length > 0">
-        <span ng-repeat="r in concept.related | orderBy:prefLabelFi">
-            <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}">
-                <thl-property-values values="r.properties.prefLabel"
-                                     lang="fi"></thl-property-values>
-            </a><br>
-        </span>
+                <span ng-repeat="r in concept.related | orderBy:prefLabelFi">
+                    <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}">
+                        <thl-property-values values="r.properties.prefLabel"
+                                             lang="fi"></thl-property-values>
+                    </a><br>
+                </span>
             </dd>
             <dt ng-show="concept.collections && concept.collections.length > 0">Kuuluu kokoelmiin
             </dt>
             <dd ng-show="concept.collections && concept.collections.length > 0">
-        <span ng-repeat="c in concept.collections | orderBy:prefLabelFi">
-            <a ng-href="#/schemes/{{c.scheme.id}}/collections/{{c.id}}">
-                <thl-property-values values="c.properties.prefLabel"
-                                     lang="fi"></thl-property-values>
-            </a><br>
-        </span>
+                <span ng-repeat="c in concept.collections | orderBy:prefLabelFi">
+                    <a ng-href="#/schemes/{{c.scheme.id}}/collections/{{c.id}}">
+                        <thl-property-values values="c.properties.prefLabel"
+                                             lang="fi"></thl-property-values>
+                    </a><br>
+                </span>
             </dd>
         </dl>
 
@@ -138,10 +146,6 @@
 </div>
 
 <hr>
-
-<div class="text-muted" style="margin:-18px 0 18px">
-    <small>{{concept.uri}}</small>
-</div>
 
 <span class="label label-default" ng-click="showJson = !showJson">json</span>
 

@@ -37,7 +37,8 @@
 <h1 class="page-header">
     <thl-property-values values="collection.properties.prefLabel" lang="fi"></thl-property-values>
     <small>
-        <thl-property-values values="collection.properties.altLabel" lang="fi"></thl-property-values>
+        <thl-property-values values="collection.properties.altLabel"
+                             lang="fi"></thl-property-values>
     </small>
 </h1>
 
@@ -58,31 +59,6 @@
 
 <form role="form">
     <div class="form-group">
-        <label>Ensisijainen termi</label>
-        <thl-property-values-edit values="collection.properties.prefLabel"></thl-property-values-edit>
-
-    </div>
-    <div class="form-group">
-        <label>Vaihtoehtoiset termit</label>
-        <thl-property-values-edit values="collection.properties.altLabel"></thl-property-values-edit>
-    </div>
-
-    <br>
-
-    <div class="form-group">
-        <label>Kokoelmaan kuuluvat käsitteet</label>
-
-        <div class="row">
-            <div class="col-sm-11 col-xs-10">
-                <div thl-select-concept class="form-control" scheme-id="collection.scheme.id"
-                     ng-model="collection.members" multiple="true"></div>
-            </div>
-        </div>
-    </div>
-
-    <br>
-
-    <div class="form-group">
         <label>URI</label>
 
         <div class="row">
@@ -93,6 +69,27 @@
                 <button class="btn btn-default" ng-click="collection.uri = ''">
                     <span class="glyphicon glyphicon-remove"></span>
                 </button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Ensisijainen termi</label>
+        <thl-property-values-edit
+                values="collection.properties.prefLabel"></thl-property-values-edit>
+
+    </div>
+    <div class="form-group">
+        <label>Vaihtoehtoiset termit</label>
+        <thl-property-values-edit
+                values="collection.properties.altLabel"></thl-property-values-edit>
+    </div>
+    <div class="form-group">
+        <label>Kokoelmaan kuuluvat käsitteet</label>
+
+        <div class="row">
+            <div class="col-sm-11 col-xs-10">
+                <div thl-select-concept class="form-control" scheme-id="collection.scheme.id"
+                     ng-model="collection.members" multiple="true"></div>
             </div>
         </div>
     </div>

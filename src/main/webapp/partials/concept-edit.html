@@ -58,6 +58,21 @@
 
 <form role="form">
     <div class="form-group">
+        <label>URI</label>
+
+        <div class="row">
+            <div class="col-sm-11 col-xs-10">
+                <input type="text" class="form-control" ng-model="concept.uri">
+            </div>
+            <div class="col-sm-1 col-xs-2 text-right">
+                <button class="btn btn-default" ng-click="concept.uri = ''">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
         <label>Ensisijainen termi</label>
         <thl-property-values-edit values="concept.properties.prefLabel"></thl-property-values-edit>
 
@@ -65,6 +80,26 @@
     <div class="form-group">
         <label>Vaihtoehtoiset termit</label>
         <thl-property-values-edit values="concept.properties.altLabel"></thl-property-values-edit>
+    </div>
+    <div class="form-group">
+        <label>Yläkäsitteet</label>
+
+        <div class="row">
+            <div class="col-sm-11 col-xs-10">
+                <div thl-select-concept class="form-control" scheme-id="concept.scheme.id"
+                     ng-model="concept.broader" multiple="true"></div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Assosiatiiviset käsitteet</label>
+
+        <div class="row">
+            <div class="col-sm-11 col-xs-10">
+                <div thl-select-concept class="form-control" scheme-id="concept.scheme.id"
+                     ng-model="concept.related" multiple="true"></div>
+            </div>
+        </div>
     </div>
     <div class="form-group">
         <label>Piilotetut termit</label>
@@ -92,50 +127,9 @@
         <label>Kommentit</label>
         <thl-property-values-edit values="concept.properties.comment"></thl-property-values-edit>
     </div>
-
-    <br>
-
-    <div class="form-group">
-        <label>Yläkäsitteet</label>
-
-        <div class="row">
-            <div class="col-sm-11 col-xs-10">
-                <div thl-select-concept class="form-control" scheme-id="concept.scheme.id"
-                     ng-model="concept.broader" multiple="true"></div>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <label>Assosiatiiviset käsitteet</label>
-
-        <div class="row">
-            <div class="col-sm-11 col-xs-10">
-                <div thl-select-concept class="form-control" scheme-id="concept.scheme.id"
-                     ng-model="concept.related" multiple="true"></div>
-            </div>
-        </div>
-    </div>
-
-    <br>
-
     <div class="form-group">
         <label>Lähde</label>
         <thl-property-values-edit values="concept.properties.source"></thl-property-values-edit>
-    </div>
-
-    <div class="form-group">
-        <label>URI</label>
-
-        <div class="row">
-            <div class="col-sm-11 col-xs-10">
-                <input type="text" class="form-control" ng-model="concept.uri">
-            </div>
-            <div class="col-sm-1 col-xs-2 text-right">
-                <button class="btn btn-default" ng-click="concept.uri = ''">
-                    <span class="glyphicon glyphicon-remove"></span>
-                </button>
-            </div>
-        </div>
     </div>
 </form>
 

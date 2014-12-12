@@ -51,6 +51,10 @@
                          lang="fi"></thl-property-values>
 </h1>
 
+<div class="text-muted" style="margin:-18px 0 18px">
+    <small>{{scheme.uri}}</small>
+</div>
+
 <div ng-if="!tree">
     <div class="input-group input-group-sm">
         <div class="input-group-addon">
@@ -98,10 +102,6 @@
 </button>
 
 <hr>
-
-<div class="text-muted" style="margin:-18px 0 18px">
-    <small>{{scheme.uri}}</small>
-</div>
 
 <span class="label label-default" ng-click="showJson = !showJson">json</span>
 
