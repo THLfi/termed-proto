@@ -1,5 +1,6 @@
 package fi.thl.termed.model;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
@@ -56,7 +57,7 @@ public class PropertyResource extends UriResource {
     properties.add(new PropertyValue(propertyId, lang, value));
   }
 
-  public Objects.ToStringHelper toStringHelper() {
+  public MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("properties", properties);
   }
 

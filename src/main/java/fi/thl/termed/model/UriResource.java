@@ -1,5 +1,6 @@
 package fi.thl.termed.model;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
@@ -42,7 +43,7 @@ public class UriResource extends Resource {
   }
 
   @Override
-  public Objects.ToStringHelper toStringHelper() {
+  public MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("uri", uri);
   }
 

@@ -1,5 +1,6 @@
 package fi.thl.termed.model;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
@@ -49,8 +50,8 @@ public class Resource {
     }
   }
 
-  public Objects.ToStringHelper toStringHelper() {
-    return Objects.toStringHelper(getClass()).add("id", id);
+  public MoreObjects.ToStringHelper toStringHelper() {
+    return MoreObjects.toStringHelper(getClass()).add("id", id);
   }
 
   @Override

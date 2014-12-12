@@ -52,6 +52,10 @@ public class Concept extends SchemeResource {
     super(schemeResource);
   }
 
+  public boolean hasBroader() {
+    return broader != null && !broader.isEmpty();
+  }
+
   public List<Concept> getBroader() {
     return broader;
   }
@@ -66,6 +70,20 @@ public class Concept extends SchemeResource {
 
   public void setNarrower(List<Concept> narrower) {
     this.narrower = narrower;
+  }
+
+  public void addNarrower(Concept n) {
+    if (narrower == null) {
+      narrower = Lists.newArrayList();
+    }
+    narrower.add(n);
+  }
+
+  public void removeNarrower(Concept concept) {
+    if (narrower == null) {
+      return;
+    }
+    Iterators.removeIf(narrower.iterator(), new ResourceIdMatches(concept.getId()));
   }
 
   public List<Concept> getRelated() {
@@ -83,7 +101,7 @@ public class Concept extends SchemeResource {
     related.add(r);
   }
 
-  public void removeRelated(final Concept concept) {
+  public void removeRelated(Concept concept) {
     if (related == null) {
       return;
     }

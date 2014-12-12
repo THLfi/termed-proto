@@ -1,5 +1,6 @@
 package fi.thl.termed.model;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import org.hibernate.search.annotations.Indexed;
@@ -24,6 +25,10 @@ public class SchemeResource extends AuditedResource {
     super(id);
   }
 
+  public SchemeResource(AuditedResource auditedResource) {
+    super(auditedResource);
+  }
+
   public SchemeResource(SchemeResource schemeResource) {
     super(schemeResource);
     this.scheme = schemeResource.scheme;
@@ -38,7 +43,7 @@ public class SchemeResource extends AuditedResource {
   }
 
   @Override
-  public Objects.ToStringHelper toStringHelper() {
+  public MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("scheme", scheme);
   }
 

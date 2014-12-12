@@ -1,5 +1,6 @@
 package fi.thl.termed.model;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import org.hibernate.search.annotations.Field;
@@ -42,8 +43,16 @@ public class AuditedResource extends PropertyResource {
     super(id);
   }
 
-  public AuditedResource(AuditedResource schemeResource) {
-    super(schemeResource);
+  public AuditedResource(PropertyResource propertyResource) {
+    super(propertyResource);
+  }
+
+  public AuditedResource(AuditedResource auditedResource) {
+    super(auditedResource);
+    this.createdBy = auditedResource.createdBy;
+    this.lastModifiedBy = auditedResource.lastModifiedBy;
+    this.createdDate = auditedResource.createdDate;
+    this.lastModifiedDate = auditedResource.lastModifiedDate;
   }
 
   @PrePersist
@@ -98,7 +107,7 @@ public class AuditedResource extends PropertyResource {
   }
 
   @Override
-  public Objects.ToStringHelper toStringHelper() {
+  public MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper()
         .add("createdBy", createdBy)
         .add("lastModifiedBy", lastModifiedBy)
