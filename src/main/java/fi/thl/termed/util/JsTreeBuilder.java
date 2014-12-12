@@ -6,7 +6,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Collections;
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -129,8 +130,8 @@ public class JsTreeBuilder {
   }
 
   private static String pathId(Concept concept) {
-    return Joiner.on('.').join(Lists.transform(
-        ListUtils.flatten(ConceptGraphUtils.findBroaderPaths(concept)), new GetResourceId()));
+    return DigestUtils.sha1Hex(Joiner.on('.').join(Lists.transform(
+        ListUtils.flatten(ConceptGraphUtils.findBroaderPaths(concept)), new GetResourceId())));
   }
 
   private static String findProperty(Concept concept, String propertyId, String lang) {
