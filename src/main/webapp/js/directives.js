@@ -17,7 +17,7 @@ App.directive('thlConceptTree', function() {
                 }
               }
             },
-            "plugins": ["sort"]
+            "plugins": ["sort", "wholerow"]
           });
         }
       });

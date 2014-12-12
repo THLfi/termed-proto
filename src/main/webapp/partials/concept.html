@@ -21,64 +21,55 @@
     </button>
 </div>
 
-<thl-concept-tree concept="concept"></thl-concept-tree>
+<div class="row">
+    <div class="col-sm-4">
+        <div style="overflow:hidden">
+            <thl-concept-tree concept="concept"></thl-concept-tree>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <h2 class="page-header" style="margin-top:0">
+            <thl-property-values values="concept.properties.prefLabel"
+                                 lang="fi"></thl-property-values>
+        </h2>
 
-<!--<script type="text/ng-template" id="concept-narrower.html">-->
-    <!--<thl-property-values values="concept.properties.prefLabel" lang="fi"></thl-property-values>-->
-    <!--<ul style="list-style-type: none;" ng-repeat="root in trees">-->
-        <!--<li ng-repeat="concept in concept.narrower">-->
-            <!--<div ng-include="'concept-narrower.html'"></div>-->
-        <!--</li>-->
-    <!--</ul>-->
-<!--</script>-->
+        <dl>
+            <dt>Ensisijainen termi</dt>
+            <dd>
+                <thl-property-values values="concept.properties.prefLabel"></thl-property-values>
+            </dd>
+            <dt ng-show="concept.properties.altLabel">Vaihtoehtoiset termit</dt>
+            <dd ng-show="concept.properties.altLabel">
+                <thl-property-values values="concept.properties.altLabel"></thl-property-values>
+            </dd>
+            <dt ng-show="concept.properties.hiddenLabel">Piilotetut termit</dt>
+            <dd ng-show="concept.properties.hiddenLabel">
+                <thl-property-values values="concept.properties.hiddenLabel"></thl-property-values>
+            </dd>
+            <dt ng-show="concept.properties.deprecatedLabel">Korvatut termit</dt>
+            <dd ng-show="concept.properties.deprecatedLabel">
+                <thl-property-values
+                        values="concept.properties.deprecatedLabel"></thl-property-values>
+            </dd>
+            <dt ng-show="concept.properties.definition">Määritelmä</dt>
+            <dd ng-show="concept.properties.definition">
+                <thl-property-values values="concept.properties.definition"></thl-property-values>
+            </dd>
+            <dt ng-show="concept.properties.note">Huomautus</dt>
+            <dd ng-show="concept.properties.note">
+                <thl-property-values values="concept.properties.note"></thl-property-values>
+            </dd>
+            <dt ng-show="concept.properties.example">Esimerkki</dt>
+            <dd ng-show="concept.properties.example">
+                <thl-property-values values="concept.properties.example"></thl-property-values>
+            </dd>
+        </dl>
 
-<!--<ul style="list-style-type: none;" ng-repeat="concept in trees">-->
-    <!--<li ng-include="'concept-narrower.html'"></li>-->
-<!--</ul>-->
+        <br>
 
-<h1 class="page-header">
-    <thl-property-values values="concept.properties.prefLabel" lang="fi"></thl-property-values>
-    <small>
-        <thl-property-values values="concept.properties.altLabel" lang="fi"></thl-property-values>
-    </small>
-</h1>
-
-<dl>
-    <dt>Ensisijainen termi</dt>
-    <dd>
-        <thl-property-values values="concept.properties.prefLabel"></thl-property-values>
-    </dd>
-    <dt ng-show="concept.properties.altLabel">Vaihtoehtoiset termit</dt>
-    <dd ng-show="concept.properties.altLabel">
-        <thl-property-values values="concept.properties.altLabel"></thl-property-values>
-    </dd>
-    <dt ng-show="concept.properties.hiddenLabel">Piilotetut termit</dt>
-    <dd ng-show="concept.properties.hiddenLabel">
-        <thl-property-values values="concept.properties.hiddenLabel"></thl-property-values>
-    </dd>
-    <dt ng-show="concept.properties.deprecatedLabel">Korvatut termit</dt>
-    <dd ng-show="concept.properties.deprecatedLabel">
-        <thl-property-values values="concept.properties.deprecatedLabel"></thl-property-values>
-    </dd>
-    <dt ng-show="concept.properties.definition">Määritelmä</dt>
-    <dd ng-show="concept.properties.definition">
-        <thl-property-values values="concept.properties.definition"></thl-property-values>
-    </dd>
-    <dt ng-show="concept.properties.note">Huomautus</dt>
-    <dd ng-show="concept.properties.note">
-        <thl-property-values values="concept.properties.note"></thl-property-values>
-    </dd>
-    <dt ng-show="concept.properties.example">Esimerkki</dt>
-    <dd ng-show="concept.properties.example">
-        <thl-property-values values="concept.properties.example"></thl-property-values>
-    </dd>
-</dl>
-
-<br>
-
-<dl>
-    <dt ng-show="concept.broader && concept.broader.length > 0">Yläkäsitehierarkiat</dt>
-    <dd ng-show="concept.broader && concept.broader.length > 0">
+        <dl>
+            <dt ng-show="concept.broader && concept.broader.length > 0">Yläkäsitehierarkiat</dt>
+            <dd ng-show="concept.broader && concept.broader.length > 0">
         <span ng-show="concept.broader">
             <span ng-repeat="path in broaderPaths">
                 <span ng-repeat="b in path">
@@ -96,51 +87,55 @@
                 </span><br>
             </span>
         </span>
-    </dd>
-    <dt ng-show="concept.broader && concept.broader.length > 0">Yläkäsitteet</dt>
-    <dd ng-show="concept.broader && concept.broader.length > 0">
+            </dd>
+            <dt ng-show="concept.broader && concept.broader.length > 0">Yläkäsitteet</dt>
+            <dd ng-show="concept.broader && concept.broader.length > 0">
         <span ng-repeat="n in concept.broader | orderBy:prefLabelFi">
             <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
                 <thl-property-values values="n.properties.prefLabel"
                                      lang="fi"></thl-property-values>
             </a><br>
         </span>
-    </dd>
-    <dt ng-show="concept.narrower && concept.narrower.length > 0">Alakäsitteet</dt>
-    <dd ng-show="concept.narrower && concept.narrower.length > 0">
+            </dd>
+            <dt ng-show="concept.narrower && concept.narrower.length > 0">Alakäsitteet</dt>
+            <dd ng-show="concept.narrower && concept.narrower.length > 0">
         <span ng-repeat="n in concept.narrower | orderBy:prefLabelFi">
             <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
                 <thl-property-values values="n.properties.prefLabel"
                                      lang="fi"></thl-property-values>
             </a><br>
         </span>
-    </dd>
-    <dt ng-show="concept.related && concept.related.length > 0">Assosiatiiviset käsitteet</dt>
-    <dd ng-show="concept.related && concept.related.length > 0">
+            </dd>
+            <dt ng-show="concept.related && concept.related.length > 0">Assosiatiiviset käsitteet
+            </dt>
+            <dd ng-show="concept.related && concept.related.length > 0">
         <span ng-repeat="r in concept.related | orderBy:prefLabelFi">
             <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}">
                 <thl-property-values values="r.properties.prefLabel"
                                      lang="fi"></thl-property-values>
             </a><br>
         </span>
-    </dd>
-    <dt ng-show="concept.collections && concept.collections.length > 0">Kuuluu kokoelmiin</dt>
-    <dd ng-show="concept.collections && concept.collections.length > 0">
+            </dd>
+            <dt ng-show="concept.collections && concept.collections.length > 0">Kuuluu kokoelmiin
+            </dt>
+            <dd ng-show="concept.collections && concept.collections.length > 0">
         <span ng-repeat="c in concept.collections | orderBy:prefLabelFi">
             <a ng-href="#/schemes/{{c.scheme.id}}/collections/{{c.id}}">
                 <thl-property-values values="c.properties.prefLabel"
                                      lang="fi"></thl-property-values>
             </a><br>
         </span>
-    </dd>
-</dl>
+            </dd>
+        </dl>
 
-<dl>
-    <dt ng-show="concept.properties.source">Lähde</dt>
-    <dd ng-show="concept.properties.source">
-        <thl-property-values values="concept.properties.source"></thl-property-values>
-    </dd>
-</dl>
+        <dl>
+            <dt ng-show="concept.properties.source">Lähde</dt>
+            <dd ng-show="concept.properties.source">
+                <thl-property-values values="concept.properties.source"></thl-property-values>
+            </dd>
+        </dl>
+    </div>
+</div>
 
 <hr>
 
