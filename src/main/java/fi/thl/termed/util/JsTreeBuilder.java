@@ -103,7 +103,7 @@ public class JsTreeBuilder {
     JsTreeNode jsTreeNode = new JsTreeNode();
     jsTreeNode.setId(pathId(concept));
     jsTreeNode.setText(
-        findProperty(concept, "prefLabel", "fi") + " <small class='text-muted'>" + uriLocalNameOrId(
+        findProperty(concept, "prefLabel", "fi") + " <small class='text-muted'>" + localName(
             concept) + "</small>");
     jsTreeNode.setState(
         ImmutableMap.of("opened", opened.contains(concept), "selected", concept.equals(selected)));
@@ -122,8 +122,8 @@ public class JsTreeBuilder {
     return jsTreeNode;
   }
 
-  private static String uriLocalNameOrId(Concept concept) {
-    return concept.hasUri() ? localName(concept.getUri()) : concept.getId();
+  private static String localName(Concept concept) {
+    return concept.hasUri() ? localName(concept.getUri()) : "";
   }
 
   private static String localName(String uri) {
