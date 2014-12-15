@@ -14,7 +14,7 @@ App.directive('thlConceptTree', function($location) {
               data: {
                 url: function(node) {
                   var id = node.id == '#' ? c.id : node.li_attr.conceptId
-                  return '/api/concepts/' + id + '/trees';
+                  return 'api/concepts/' + id + '/trees';
                 },
                 data: function(node) {
                   return node;
