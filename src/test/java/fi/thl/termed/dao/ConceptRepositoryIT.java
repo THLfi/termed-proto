@@ -61,7 +61,7 @@ public class ConceptRepositoryIT {
   @Test
   public void shouldSaveConcept() {
     Concept concept = exampleConcept();
-    conceptRepository.save(concept);
+    conceptRepository.saveConcept(concept);
     assertConceptEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
   }
 
@@ -69,7 +69,7 @@ public class ConceptRepositoryIT {
   public void shouldDeleteConcept() {
     Concept concept = exampleConcept();
 
-    conceptRepository.save(concept);
+    conceptRepository.saveConcept(concept);
     assertConceptEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
 
     conceptRepository.delete(concept.getId());
@@ -80,7 +80,7 @@ public class ConceptRepositoryIT {
   public void shouldSaveConceptWithProperties() {
     Concept concept = exampleConceptWithProperties();
 
-    conceptRepository.save(concept);
+    conceptRepository.saveConcept(concept);
     assertConceptEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
 
     concept.setProperties(null);
@@ -91,7 +91,7 @@ public class ConceptRepositoryIT {
   public void shouldDeleteConceptWithProperties() {
     Concept concept = exampleConceptWithProperties();
 
-    conceptRepository.save(concept);
+    conceptRepository.saveConcept(concept);
     assertConceptEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
 
     conceptRepository.delete(concept.getId());
@@ -102,13 +102,13 @@ public class ConceptRepositoryIT {
   public void shouldSaveConceptPropertyValueInsertions() {
     Concept concept = exampleConceptWithProperties();
 
-    conceptRepository.save(concept);
+    conceptRepository.saveConcept(concept);
     assertConceptEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
 
     concept.addProperty("note", "en", "A New Property Value");
     assertConceptNotEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
 
-    conceptRepository.save(concept);
+    conceptRepository.saveConcept(concept);
     assertConceptEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
   }
 
@@ -116,13 +116,13 @@ public class ConceptRepositoryIT {
   public void shouldSaveConceptPropertyValueModifications() {
     Concept concept = exampleConceptWithProperties();
 
-    conceptRepository.save(concept);
+    conceptRepository.saveConcept(concept);
     assertConceptEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
 
     concept.addProperty("prefLabel", "en", "Edited Existing Concept Label");
     assertConceptNotEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
 
-    conceptRepository.save(concept);
+    conceptRepository.saveConcept(concept);
     assertConceptEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
   }
 
@@ -130,13 +130,13 @@ public class ConceptRepositoryIT {
   public void shouldSaveConceptPropertyValueRemoval() {
     Concept concept = exampleConceptWithProperties();
 
-    conceptRepository.save(concept);
+    conceptRepository.saveConcept(concept);
     assertConceptEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
 
     concept.getProperties().clear();
     assertConceptNotEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
 
-    conceptRepository.save(concept);
+    conceptRepository.saveConcept(concept);
     assertConceptEqualsIgnoreAuditData(concept, conceptRepository.findOne(concept.getId()));
   }
 

@@ -29,6 +29,7 @@ public class SerializedConceptConverter extends Converter<Concept, SerializedCon
     serializedConcept.setBroader(transform(concept.getBroader(), truncateConcept));
     serializedConcept.setNarrower(transform(concept.getNarrower(), truncateConcept));
     serializedConcept.setRelated(transform(concept.getRelated(), truncateConcept));
+    serializedConcept.setRelatedFrom(transform(concept.getRelatedFrom(), truncateConcept));
     serializedConcept.setCollections(transform(concept.getCollections(), truncateCollection));
     return serializedConcept;
   }
@@ -39,6 +40,7 @@ public class SerializedConceptConverter extends Converter<Concept, SerializedCon
     concept.setBroader(transform(serializedConcept.getBroader(), findConcept));
     concept.setNarrower(transform(serializedConcept.getNarrower(), findConcept));
     concept.setRelated(transform(serializedConcept.getRelated(), findConcept));
+    concept.setRelatedFrom(transform(serializedConcept.getRelatedFrom(), findConcept));
     concept.setCollections(transform(serializedConcept.getCollections(), findCollection));
     return concept;
   }

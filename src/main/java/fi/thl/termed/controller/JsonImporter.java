@@ -74,7 +74,7 @@ public class JsonImporter {
 
   private void saveConceptTree(Scheme scheme, Concept concept) {
     concept.setScheme(scheme);
-    conceptRepository.save(concept);
+    conceptRepository.saveConcept(concept);
 
     if (concept.getNarrower() != null) {
       for (Concept narrower : concept.getNarrower()) {

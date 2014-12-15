@@ -1,6 +1,5 @@
 package fi.thl.termed.model;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
@@ -33,8 +32,13 @@ public class Concept extends SchemeResource {
   // no need to track back references because related
   // should always be duplicated to both directions
   @ManyToMany
-  @JoinTable(name = "concept_related")
+  @JoinTable(name = "concept_related",
+      joinColumns = {@JoinColumn(name = "concept_id")},
+      inverseJoinColumns = {@JoinColumn(name = "related_id")})
   private List<Concept> related;
+
+  @ManyToMany(mappedBy = "related")
+  private List<Concept> relatedFrom;
 
   @ManyToMany(mappedBy = "members")
   private List<Collection> collections;
@@ -97,6 +101,10 @@ public class Concept extends SchemeResource {
     Iterators.removeIf(narrower.iterator(), new ResourceIdMatches(concept.getId()));
   }
 
+  public boolean hasRelated() {
+    return related != null && !related.isEmpty();
+  }
+
   public List<Concept> getRelated() {
     return related;
   }
@@ -117,6 +125,18 @@ public class Concept extends SchemeResource {
       return;
     }
     Iterators.removeIf(related.iterator(), new ResourceIdMatches(concept.getId()));
+  }
+
+  public List<Concept> getRelatedFrom() {
+    return relatedFrom;
+  }
+
+  public void setRelatedFrom(List<Concept> relatedFrom) {
+    this.relatedFrom = relatedFrom;
+  }
+
+  public boolean hasCollections() {
+    return collections != null && !collections.isEmpty();
   }
 
   public List<Collection> getCollections() {

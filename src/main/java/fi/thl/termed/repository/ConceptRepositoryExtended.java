@@ -4,8 +4,8 @@ import fi.thl.termed.model.Concept;
 
 public interface ConceptRepositoryExtended {
 
-  Concept saveAndUpdateRelated(Concept concept);
+  Concept saveConcept(Concept concept);
 
-  void deleteAndUpdateRelatedAndCollections(Concept concept);
+  void deleteConcept(Concept concept);
 
 }
