@@ -24,9 +24,10 @@ import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.Scheme;
 import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
-import fi.thl.termed.util.GsonDateConverter;
-import fi.thl.termed.util.PropertyValueListTransformer;
+import fi.thl.termed.serializer.DateConverter;
+import fi.thl.termed.serializer.PropertyListConverter;
 
+import static fi.thl.termed.serializer.ConvertingSerializer.registerConverter;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
@@ -35,22 +36,22 @@ public class JsonImporter {
 
   @SuppressWarnings("all")
   private Logger log = LoggerFactory.getLogger(getClass());
-  private TypeToken<List<Concept>> conceptListTypeToken = new TypeToken<List<Concept>>() {
-  };
-  private Gson gson = new GsonBuilder()
-      .registerTypeAdapter(Date.class, new GsonDateConverter())
-      .registerTypeAdapter(PropertyValueListTransformer.PROPERTY_LIST_TYPE,
-                           new PropertyValueListTransformer()).create();
-
 
   private SchemeRepository schemeRepository;
   private ConceptRepository conceptRepository;
+  private Gson gson;
 
   @Autowired
   public JsonImporter(SchemeRepository schemeRepository,
                       ConceptRepository conceptRepository) {
     this.schemeRepository = schemeRepository;
     this.conceptRepository = conceptRepository;
+
+    GsonBuilder builder = new GsonBuilder();
+    registerConverter(builder, Date.class, String.class, new DateConverter()).create();
+    registerConverter(builder, PropertyListConverter.PROPERTY_LIST_TYPE,
+                      PropertyListConverter.PROPERTY_MAP_TYPE, new PropertyListConverter());
+    this.gson = builder.create();
   }
 
   @RequestMapping(method = POST, value = "import/schemes/{schemeId}/concepts",
@@ -64,6 +65,8 @@ public class JsonImporter {
       return;
     }
 
+    TypeToken<List<Concept>> conceptListTypeToken = new TypeToken<List<Concept>>() {
+    };
     List<Concept> rootConcepts = gson.fromJson(input, conceptListTypeToken.getType());
     Scheme scheme = schemeRepository.findOne(schemeId);
 

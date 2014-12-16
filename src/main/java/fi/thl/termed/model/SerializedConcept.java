@@ -1,10 +1,7 @@
-package fi.thl.termed.util;
-
-import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.SchemeResource;
+package fi.thl.termed.model;
 
 /**
- * Type to represent serialized concept. Serialized concept is typically somehow truncated to avoid
+ * Type to represent serialized concept. Serialized concept is typically truncated to avoid
  * serialization loops.
  */
 public class SerializedConcept extends Concept {

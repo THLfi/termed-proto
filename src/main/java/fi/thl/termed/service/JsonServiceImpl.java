@@ -23,19 +23,21 @@ import fi.thl.termed.model.AuditedResource;
 import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.Scheme;
+import fi.thl.termed.model.SchemeResource;
+import fi.thl.termed.model.SerializedConcept;
 import fi.thl.termed.repository.CollectionRepository;
 import fi.thl.termed.repository.ConceptIndex;
 import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
+import fi.thl.termed.serializer.ConceptLoadingConverter;
+import fi.thl.termed.serializer.DateConverter;
+import fi.thl.termed.serializer.PropertyListConverter;
+import fi.thl.termed.serializer.TruncatedConceptConverter;
 import fi.thl.termed.util.ConceptGraphUtils;
-import fi.thl.termed.util.ConvertingSerializer;
-import fi.thl.termed.util.GsonDateConverter;
-import fi.thl.termed.util.HibernateProxyTypeAdapterFactory;
 import fi.thl.termed.util.JsTreeBuilder;
 import fi.thl.termed.util.LuceneQueryUtils;
-import fi.thl.termed.util.PropertyValueListTransformer;
-import fi.thl.termed.util.SerializedConcept;
-import fi.thl.termed.util.SerializedConceptConverter;
+
+import static fi.thl.termed.serializer.ConvertingSerializer.registerConverter;
 
 @Service
 @Transactional
@@ -45,7 +47,9 @@ public class JsonServiceImpl implements JsonService {
   private CollectionRepository collectionRepository;
   private ConceptRepository conceptRepository;
   private ConceptIndex conceptIndex;
+
   private Gson gson;
+  private Gson fastGson;
 
   @PersistenceContext
   private EntityManager em;
@@ -62,16 +66,20 @@ public class JsonServiceImpl implements JsonService {
 
   @PostConstruct
   public void init() {
-    this.gson = new GsonBuilder().setPrettyPrinting()
-        .registerTypeAdapter(Date.class, new GsonDateConverter())
-        .registerTypeAdapter(Concept.class,
-                             new ConvertingSerializer<Concept, SerializedConcept>(
-                                 SerializedConcept.class, new SerializedConceptConverter(em)))
-        .registerTypeAdapterFactory(new HibernateProxyTypeAdapterFactory())
-        .registerTypeAdapter(PropertyValueListTransformer.PROPERTY_LIST_TYPE,
-                             new PropertyValueListTransformer())
-        .create();
     this.conceptIndex = new ConceptIndex(em);
+
+    GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
+    registerConverter(builder, Date.class, String.class, new DateConverter());
+    registerConverter(builder,
+                      PropertyListConverter.PROPERTY_LIST_TYPE,
+                      PropertyListConverter.PROPERTY_MAP_TYPE,
+                      new PropertyListConverter());
+    registerConverter(builder, Concept.class, SerializedConcept.class,
+                      new ConceptLoadingConverter(em));
+    this.gson = builder.create();
+    registerConverter(builder, Concept.class, SchemeResource.class,
+                      new TruncatedConceptConverter());
+    this.fastGson = builder.create();
   }
 
   private <T> JsonObject toJson(T object) {
@@ -160,13 +168,13 @@ public class JsonServiceImpl implements JsonService {
 
   @Override
   public JsonArray queryConcepts(String query, int first, int max, List<String> orderBy) {
-    return gson.toJsonTree(conceptIndex.query(query, first, max, orderBy)).getAsJsonArray();
+    return fastGson.toJsonTree(conceptIndex.query(query, first, max, orderBy)).getAsJsonArray();
   }
 
   @Override
   public JsonArray queryConcepts(String schemeId, String query, int first, int max,
                                  List<String> orderBy) {
-    return gson.toJsonTree(conceptIndex.query(
+    return fastGson.toJsonTree(conceptIndex.query(
         addSchemeIdToQuery(schemeId, query), first, max, orderBy)).getAsJsonArray();
   }
 

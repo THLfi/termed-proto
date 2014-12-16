@@ -1,4 +1,4 @@
-package fi.thl.termed.util;
+package fi.thl.termed.serializer;
 
 import com.google.common.base.Converter;
 import com.google.common.base.Function;
@@ -13,12 +13,18 @@ import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.Resource;
 import fi.thl.termed.model.SchemeResource;
+import fi.thl.termed.model.SerializedConcept;
 
-public class SerializedConceptConverter extends Converter<Concept, SerializedConcept> {
+/**
+ * Converts {@code Concept} into json serializable version where references to other concepts and
+ * collections are truncated into {@code SchemeResource}. In reverse conversion, referenced values
+ * are restored from database using on value IDs.
+ */
+public class ConceptLoadingConverter extends Converter<Concept, SerializedConcept> {
 
   private final EntityManager em;
 
-  public SerializedConceptConverter(EntityManager em) {
+  public ConceptLoadingConverter(EntityManager em) {
     Preconditions.checkNotNull(em);
     this.em = em;
   }
