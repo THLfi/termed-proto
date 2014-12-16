@@ -1,7 +1,7 @@
 <div class="row" ng-repeat="value in values | orderBy:langPriority">
     <div class="col-sm-11 col-xs-10">
         <div class="input-group">
-            <div class="input-group-btn">
+            <div class="input-group-btn" style="{{!textArea || 'vertical-align: top;'}}">
                 <button type="button" class="btn btn-default dropdown-toggle"
                         data-toggle="dropdown">
                     <code class="text-muted">{{value.lang}}</code>
@@ -13,7 +13,11 @@
                     <li><a ng-click="value.lang = 'en'">en</a></li>
                 </ul>
             </div>
-            <input type="text" class="form-control" ng-model="value.value">
+            <input type="text" class="form-control" ng-model="value.value" ng-if="!textArea">
+            <textarea class="form-control" ng-model="value.value" ng-show="textArea"
+                      style="border-bottom-right-radius:5px"
+                      rows="1" ng-if="textArea">
+            </textarea>
         </div>
     </div>
     <div class="col-sm-1 col-xs-2 text-right">

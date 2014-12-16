@@ -52,7 +52,8 @@ App.directive('thlPropertyValuesEdit', function() {
   return {
     restrict: 'E',
     scope: {
-      values: '='
+      values: '=',
+      textArea: '='
     },
     templateUrl: 'partials/property-values-edit.html',
     controller: function($scope, PropertyUtils) {
