@@ -16,6 +16,9 @@ public final class ConceptGraphUtils {
   private ConceptGraphUtils() {
   }
 
+  /**
+   * Pretty print concept narrower graph as tree.
+   */
   public static String prettyPrintTree(Concept concept) {
     StringBuilder builder = new StringBuilder();
     prettyPrintTree("", concept, builder);
@@ -31,6 +34,12 @@ public final class ConceptGraphUtils {
     }
   }
 
+  /**
+   * Find trees containing concept. Each tree is built from concept's broader path to root. Concepts
+   * in the path are expanded (their narrower are included).
+   *
+   * @return roots of trees
+   */
   public static List<Concept> broaderTrees(Concept concept) {
     List<List<Concept>> broaderPaths = findBroaderPaths(concept);
 
@@ -45,7 +54,11 @@ public final class ConceptGraphUtils {
     return copyTree(findRoots(broaderPaths), Predicates.in(accepted));
   }
 
-  private static List<Concept> copyTree(List<Concept> roots, Predicate<Concept> accepted) {
+  public static List<Concept> copyTree(List<Concept> roots) {
+    return copyTree(roots, Predicates.<Concept>alwaysTrue());
+  }
+
+  public static List<Concept> copyTree(List<Concept> roots, Predicate<Concept> accepted) {
     return copyTree(null, roots, accepted);
   }
 
