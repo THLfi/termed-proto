@@ -48,7 +48,7 @@ public class JsonImporter {
     this.conceptRepository = conceptRepository;
 
     GsonBuilder builder = new GsonBuilder();
-    registerConverter(builder, Date.class, String.class, new DateConverter()).create();
+    registerConverter(builder, Date.class, String.class, new DateConverter());
     registerConverter(builder, PropertyListConverter.PROPERTY_LIST_TYPE,
                       PropertyListConverter.PROPERTY_MAP_TYPE, new PropertyListConverter());
     this.gson = builder.create();

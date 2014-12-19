@@ -23,17 +23,28 @@ import fi.thl.termed.model.SerializedConcept;
 public class ConceptLoadingConverter extends Converter<Concept, SerializedConcept> {
 
   private final EntityManager em;
+  private boolean truncateNarrower;
+
+  public ConceptLoadingConverter(boolean truncateNarrower) {
+    this(null, truncateNarrower);
+  }
 
   public ConceptLoadingConverter(EntityManager em) {
-    Preconditions.checkNotNull(em);
+    this(em, false);
+  }
+
+  public ConceptLoadingConverter(EntityManager em, boolean truncateNarrower) {
     this.em = em;
+    this.truncateNarrower = truncateNarrower;
   }
 
   @Override
   protected SerializedConcept doForward(Concept concept) {
     SerializedConcept serializedConcept = new SerializedConcept(new SchemeResource(concept));
     serializedConcept.setBroader(transform(concept.getBroader(), truncateConcept));
-    serializedConcept.setNarrower(transform(concept.getNarrower(), truncateConcept));
+    serializedConcept.setNarrower(
+        truncateNarrower ? transform(concept.getNarrower(), truncateConcept)
+                         : concept.getNarrower());
     serializedConcept.setRelated(transform(concept.getRelated(), truncateConcept));
     serializedConcept.setRelatedFrom(transform(concept.getRelatedFrom(), truncateConcept));
     serializedConcept.setCollections(transform(concept.getCollections(), truncateCollection));
@@ -42,9 +53,12 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
 
   @Override
   protected Concept doBackward(SerializedConcept serializedConcept) {
+    Preconditions.checkNotNull(em, "Can't restore references without entity manager.");
+
     Concept concept = new Concept(new SchemeResource(serializedConcept));
     concept.setBroader(transform(serializedConcept.getBroader(), findConcept));
-    concept.setNarrower(transform(serializedConcept.getNarrower(), findConcept));
+    concept.setNarrower(truncateNarrower ? transform(serializedConcept.getNarrower(), findConcept)
+                                         : serializedConcept.getNarrower());
     concept.setRelated(transform(serializedConcept.getRelated(), findConcept));
     concept.setRelatedFrom(transform(serializedConcept.getRelatedFrom(), findConcept));
     concept.setCollections(transform(serializedConcept.getCollections(), findCollection));
@@ -55,20 +69,20 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
     return fromList != null ? Lists.transform(fromList, function) : null;
   }
 
-  private Concept findConcept(Resource r) {
-    return r != null && r.getId() != null ? em.find(Concept.class, r.getId()) : null;
-  }
-
-  private Collection findCollection(Resource r) {
-    return r != null && r.getId() != null ? em.find(Collection.class, r.getId()) : null;
-  }
-
   private Concept truncateConcept(Concept concept) {
     return concept != null ? new Concept(new SchemeResource(concept)) : null;
   }
 
   private Collection truncateCollection(Collection collection) {
     return collection != null ? new Collection(new SchemeResource(collection)) : null;
+  }
+
+  private Concept findConcept(Resource r) {
+    return r != null && r.getId() != null ? em.find(Concept.class, r.getId()) : null;
+  }
+
+  private Collection findCollection(Resource r) {
+    return r != null && r.getId() != null ? em.find(Collection.class, r.getId()) : null;
   }
 
   private final Function<Concept, Concept> truncateConcept =

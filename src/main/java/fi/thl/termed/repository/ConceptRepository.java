@@ -11,4 +11,6 @@ public interface ConceptRepository extends JpaRepository<Concept, String>,
 
   List<Concept> findBySchemeId(String schemeId);
 
+  List<Concept> findBySchemeIdAndBroaderIsNull(String schemeId);
+
 }
