@@ -13,36 +13,32 @@ public class PropertyValueListBridge implements FieldBridge {
 
   @SuppressWarnings("unchecked")
   @Override
-  public void set(String name, Object value, Document document,
-                  LuceneOptions luceneOptions) {
+  public void set(String name, Object value, Document doc, LuceneOptions luceneOptions) {
     if (value == null) {
       return;
     }
 
-    List<PropertyValue> propertyValues = (List<PropertyValue>) value;
-    for (PropertyValue propertyValue : propertyValues) {
+    for (PropertyValue propertyValue : (List<PropertyValue>) value) {
       luceneOptions.addFieldToDocument(
           propertyValue.getPropertyId() + "." + propertyValue.getLang(),
-          propertyValue.getValue(), document);
+          propertyValue.getValue(), doc);
 
-      // index also a non-localized version
+      // non-localized search field
       luceneOptions.addFieldToDocument(
           propertyValue.getPropertyId(),
-          propertyValue.getValue(), document);
+          propertyValue.getValue(), doc);
 
       // for searching from all fields
-      luceneOptions.addFieldToDocument(LuceneConstants.ALL, propertyValue.getValue(), document);
+      luceneOptions.addFieldToDocument(
+          LuceneConstants.ALL,
+          propertyValue.getValue(), doc);
 
       // non-analyzed fields for sorting
-      document.add(
-          new Field(propertyValue.getPropertyId() + "." + propertyValue.getLang() + ".sortable",
-                    propertyValue.getValue().toLowerCase(), Field.Store.NO,
-                    Field.Index.NOT_ANALYZED)
-      );
-      document.add(
-          new Field(propertyValue.getPropertyId() + ".sortable",
-                    propertyValue.getValue(), Field.Store.NO, Field.Index.NOT_ANALYZED)
-      );
+      doc.add(new Field(propertyValue.getPropertyId() + "." + propertyValue.getLang() + ".sortable",
+                        propertyValue.getValue().toLowerCase(), Field.Store.NO,
+                        Field.Index.NOT_ANALYZED));
+      doc.add(new Field(propertyValue.getPropertyId() + ".sortable",
+                        propertyValue.getValue(), Field.Store.NO, Field.Index.NOT_ANALYZED));
     }
   }
 
