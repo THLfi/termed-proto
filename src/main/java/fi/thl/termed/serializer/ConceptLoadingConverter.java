@@ -30,7 +30,7 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
   }
 
   public ConceptLoadingConverter(EntityManager em) {
-    this(em, false);
+    this(em, true);
   }
 
   public ConceptLoadingConverter(EntityManager em, boolean truncateNarrower) {
