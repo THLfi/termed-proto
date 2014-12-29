@@ -154,7 +154,7 @@ public class JsonServiceImpl implements JsonService {
 
   @Override
   public JsonArray getConceptBroaderPaths(String id) {
-    return conceptRepository.exists(id) ? gson
+    return conceptRepository.exists(id) ? fastGson
         .toJsonTree(ConceptGraphUtils.findBroaderPaths(conceptRepository.findOne(id)))
         .getAsJsonArray() : new JsonArray();
   }
