@@ -1,5 +1,6 @@
 package fi.thl.termed.model;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import org.hibernate.search.annotations.Indexed;
@@ -67,7 +68,7 @@ public class PropertyValue {
   }
 
   public String toString() {
-    return Objects.toStringHelper(getClass())
+    return MoreObjects.toStringHelper(getClass())
         .add("propertyId", getPropertyId())
         .add("lang", lang)
         .add("value", value).toString();
