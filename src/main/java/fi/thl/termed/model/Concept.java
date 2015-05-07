@@ -41,9 +41,9 @@ public class Concept extends SchemeResource {
 
   @IndexedEmbedded(includePaths = {"id"})
   @ManyToMany
-  @JoinTable(name = "concept_broader_narrower",
-      joinColumns = {@JoinColumn(name = "broader_id")},
-      inverseJoinColumns = {@JoinColumn(name = "narrower_id")})
+  @JoinTable(name = "concept_broader",
+      joinColumns = {@JoinColumn(name = "concept_id")},
+      inverseJoinColumns = {@JoinColumn(name = "broader_id")})
   private List<Concept> broader;
 
   @ManyToMany(mappedBy = "broader")
