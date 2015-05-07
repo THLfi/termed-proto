@@ -66,6 +66,7 @@ public class RdfImporter {
       .put(SKOS.altLabel, "altLabel")
       .put(SKOS.hiddenLabel, "hiddenLabel")
       .put(SKOS.note, "note")
+      .put(SKOS.changeNote, "changeNote")
       .put(SKOS.definition, "definition")
       .put(SKOS.example, "example")
       .build();

@@ -83,6 +83,7 @@ public class RdfExporter {
         .put("altLabel", SKOS.altLabel)
         .put("hiddenLabel", SKOS.hiddenLabel)
         .put("note", SKOS.note)
+        .put("changeNote", SKOS.changeNote)
         .put("definition", SKOS.definition)
         .put("example", SKOS.example)
         .put("source", DC.source)

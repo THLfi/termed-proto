@@ -21,6 +21,7 @@ public final class SKOS {
   public static final Property altLabel = skosProperty("altLabel");
   public static final Property hiddenLabel = skosProperty("hiddenLabel");
   public static final Property note = skosProperty("note");
+  public static final Property changeNote = skosProperty("changeNote");
   public static final Property definition = skosProperty("definition");
   public static final Property example = skosProperty("example");
 
