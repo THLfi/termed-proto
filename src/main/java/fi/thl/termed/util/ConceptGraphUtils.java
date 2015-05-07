@@ -89,6 +89,20 @@ public final class ConceptGraphUtils {
                          getRelatedFunction,
                          getRelatedFromFunction);
 
+  public static final Function<Concept, List<Concept>> getAllNeighboursFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          Set<Concept> neighbours = Sets.newLinkedHashSet();
+
+          for (Function<Concept, List<Concept>> f : getNeighboursFunctions) {
+            neighbours.addAll(ListUtils.nullToEmpty(f.apply(c)));
+          }
+
+          return Lists.newArrayList(neighbours);
+        }
+      };
+
   /**
    * Pretty print concept graph as tree using neighbour function.
    */
@@ -123,15 +137,13 @@ public final class ConceptGraphUtils {
    * Collect all concepts reachable from root concepts using neighbour functions.
    */
   public static Set<Concept> collectConcepts(List<Concept> roots,
-                                             List<Function<Concept, List<Concept>>> getNeighboursFunctions) {
+                                             Function<Concept, List<Concept>> getNeighboursFunction) {
     Set<Concept> results = Sets.newHashSet();
 
     for (Concept root : roots) {
-      for (Function<Concept, List<Concept>> neighboursFunction : getNeighboursFunctions) {
-        Set<Concept> r = Sets.newHashSet();
-        collectConcepts(root, neighboursFunction, r);
-        results.addAll(r);
-      }
+      Set<Concept> r = Sets.newHashSet();
+      collectConcepts(root, getNeighboursFunction, r);
+      results.addAll(r);
     }
 
     return results;

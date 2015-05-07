@@ -78,14 +78,14 @@ public class JsonImporter {
     List<Concept> rootConcepts = gson.fromJson(input, CONCEPT_LIST_TYPE);
 
     Scheme scheme = schemeRepository.findOne(schemeId);
-    Set<Concept> concepts =
-        ConceptGraphUtils.collectConcepts(rootConcepts, ConceptGraphUtils.getNeighboursFunctions);
+    Set<Concept> allConcepts =
+        ConceptGraphUtils.collectConcepts(rootConcepts, ConceptGraphUtils.getAllNeighboursFunction);
 
-    log.info("Importing {} concepts", concepts.size());
+    log.info("Importing {} concepts", allConcepts.size());
     log.info("Saving concept properties");
 
-    // save identities and properties
-    for (Concept concept : concepts) {
+    // save all identities
+    for (Concept concept : allConcepts) {
       concept.ensureId();
       concept.setScheme(scheme);
       conceptRepository.save(new Concept(new SchemeResource(concept)));
@@ -93,8 +93,8 @@ public class JsonImporter {
 
     log.info("Linking concepts");
 
-    // populate fields that are stored
-    for (Concept concept : concepts) {
+    // populate stored fields
+    for (Concept concept : allConcepts) {
       for (Concept narrower : ListUtils.nullToEmpty(concept.getNarrower())) {
         narrower.addBroader(concept);
       }
@@ -106,9 +106,21 @@ public class JsonImporter {
       }
     }
 
-    // save links
-    for (Concept concept : concepts) {
-      conceptRepository.save(concept);
+    for (Concept concept: rootConcepts) {
+      saveConceptTree(concept);
+    }
+  }
+
+  private void saveConceptTree(Concept concept) {
+    conceptRepository.save(concept);
+    for (Concept c : ListUtils.nullToEmpty(concept.getNarrower())) {
+      saveConceptTree(c);
+    }
+    for (Concept c : ListUtils.nullToEmpty(concept.getParts())) {
+      saveConceptTree(c);
+    }
+    for (Concept c : ListUtils.nullToEmpty(concept.getInstances())) {
+      saveConceptTree(c);
     }
   }
 
