@@ -43,6 +43,8 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
     SerializedConcept serializedConcept = new SerializedConcept(new SchemeResource(concept));
     serializedConcept.setTypes(transform(concept.getTypes(), truncateConcept));
     serializedConcept.setInstances(transform(concept.getInstances(), truncateConcept));
+    serializedConcept.setPartOf(transform(concept.getPartOf(), truncateConcept));
+    serializedConcept.setParts(transform(concept.getParts(), truncateConcept));
     serializedConcept.setBroader(transform(concept.getBroader(), truncateConcept));
     serializedConcept.setNarrower(
         truncateNarrower ? transform(concept.getNarrower(), truncateConcept)
@@ -60,6 +62,8 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
     Concept concept = new Concept(new SchemeResource(serializedConcept));
     concept.setTypes(transform(serializedConcept.getTypes(), findConcept));
     concept.setInstances(transform(serializedConcept.getInstances(), findConcept));
+    concept.setPartOf(transform(serializedConcept.getPartOf(), findConcept));
+    concept.setParts(transform(serializedConcept.getParts(), findConcept));
     concept.setBroader(transform(serializedConcept.getBroader(), findConcept));
     concept.setNarrower(truncateNarrower ? transform(serializedConcept.getNarrower(), findConcept)
                                          : serializedConcept.getNarrower());

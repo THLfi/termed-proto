@@ -80,7 +80,7 @@ public class ConceptGraphUtilsTest {
     List<List<Concept>> expectedPaths = Lists.newArrayList();
     expectedPaths.add(Lists.newArrayList(root, branch, leaf));
 
-    assertEquals(expectedPaths, ConceptGraphUtils.findBroaderPaths(leaf));
+    assertEquals(expectedPaths, ConceptGraphUtils.collectBroaderPaths(leaf));
   }
 
   @Test
@@ -98,7 +98,7 @@ public class ConceptGraphUtilsTest {
     expectedPaths.add(Lists.newArrayList(root, branch1, leaf));
     expectedPaths.add(Lists.newArrayList(root, branch2, leaf));
 
-    assertEquals(expectedPaths, ConceptGraphUtils.findBroaderPaths(leaf));
+    assertEquals(expectedPaths, ConceptGraphUtils.collectBroaderPaths(leaf));
   }
 
 }

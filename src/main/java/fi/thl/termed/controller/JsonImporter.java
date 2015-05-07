@@ -1,5 +1,6 @@
 package fi.thl.termed.controller;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,15 +18,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.Scheme;
+import fi.thl.termed.model.SchemeResource;
 import fi.thl.termed.repository.ConceptRepository;
 import fi.thl.termed.repository.SchemeRepository;
 import fi.thl.termed.serializer.DateConverter;
 import fi.thl.termed.serializer.PropertyListConverter;
+import fi.thl.termed.util.ConceptGraphUtils;
+import fi.thl.termed.util.ListUtils;
 
 import static fi.thl.termed.serializer.ConvertingSerializer.registerConverter;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -33,6 +39,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Controller
 @RequestMapping(value = "/")
 public class JsonImporter {
+
+  private static final Type CONCEPT_LIST_TYPE = new TypeToken<List<Concept>>() {
+  }.getType();
 
   @SuppressWarnings("all")
   private Logger log = LoggerFactory.getLogger(getClass());
@@ -49,12 +58,15 @@ public class JsonImporter {
 
     GsonBuilder builder = new GsonBuilder();
     registerConverter(builder, Date.class, String.class, new DateConverter());
-    registerConverter(builder, PropertyListConverter.PROPERTY_LIST_TYPE,
-                      PropertyListConverter.PROPERTY_MAP_TYPE, new PropertyListConverter());
+    registerConverter(builder,
+                      PropertyListConverter.PROPERTY_LIST_TYPE,
+                      PropertyListConverter.PROPERTY_MAP_TYPE,
+                      new PropertyListConverter());
     this.gson = builder.create();
   }
 
-  @RequestMapping(method = POST, value = "import/schemes/{schemeId}/concepts",
+  @RequestMapping(method = POST,
+      value = "import/schemes/{schemeId}/concepts",
       consumes = "application/json;charset=UTF-8")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @Transactional
@@ -65,26 +77,53 @@ public class JsonImporter {
       return;
     }
 
-    TypeToken<List<Concept>> conceptListTypeToken = new TypeToken<List<Concept>>() {
-    };
-    List<Concept> rootConcepts = gson.fromJson(input, conceptListTypeToken.getType());
+    List<Concept> rootConcepts = gson.fromJson(input, CONCEPT_LIST_TYPE);
+
     Scheme scheme = schemeRepository.findOne(schemeId);
+    Set<Concept> concepts =
+        ConceptGraphUtils.collectConcepts(rootConcepts, ConceptGraphUtils.getNeighboursFunctions);
 
-    for (Concept concept : rootConcepts) {
-      saveConceptTree(scheme, concept);
+    log.info("Importing {} concepts", concepts.size());
+    log.info("Saving concept properties");
+
+    // save identities and properties
+    for (Concept concept : concepts) {
+      concept.ensureId();
+      concept.setScheme(scheme);
+      conceptRepository.save(new Concept(new SchemeResource(concept)));
     }
-  }
 
-  private void saveConceptTree(Scheme scheme, Concept concept) {
-    concept.setScheme(scheme);
-    conceptRepository.saveConcept(concept);
+    log.info("Linking concepts");
 
-    if (concept.getNarrower() != null) {
-      for (Concept narrower : concept.getNarrower()) {
-        narrower.setBroader(Lists.newArrayList(concept));
-        saveConceptTree(scheme, narrower);
+    // populate broader
+    for (Concept concept : concepts) {
+      for (Concept narrower : ListUtils.nullToEmpty(concept.getNarrower())) {
+        narrower.addBroader(concept);
       }
     }
+
+    // save links
+    for (Concept concept : concepts) {
+      conceptRepository.save(concept);
+    }
   }
+
+//  private void checkTypes(Set<Concept> concepts) {
+//    final Set<String> validTypes = Sets.newHashSet(
+//        Lists.transform(conceptRepository.findAll(), new GetResourceId()));
+//
+//    // check types
+//    for (Concept concept : concepts) {
+//      if (concept.hasTypes()) {
+//        concept.setTypes(
+//            Lists.newArrayList(Iterables.filter(concept.getTypes(), new Predicate<Concept>() {
+//              @Override
+//              public boolean apply(Concept input) {
+//                return validTypes.contains(input.getId());
+//              }
+//            })));
+//      }
+//    }
+//  }
 
 }

@@ -94,6 +94,13 @@ public class JsonRestController {
     return service.getConceptBroaderPaths(conceptId);
   }
 
+  @RequestMapping(method = GET, value = {"schemes/{schemeId}/concepts/{conceptId}/partOf",
+                                         "concepts/{conceptId}/partOf"})
+  @ResponseBody
+  public JsonArray getConceptPartOfPaths(@PathVariable("conceptId") String conceptId) {
+    return service.getConceptPartOfPaths(conceptId);
+  }
+
   @RequestMapping(method = GET, value = {"schemes/{schemeId}/concepts/{conceptId}/trees",
                                          "concepts/{conceptId}/trees"})
   @ResponseBody

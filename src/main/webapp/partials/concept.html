@@ -152,6 +152,24 @@
                     </a><br>
                 </span>
             </dd>
+            <dt ng-show="concept.partOf && concept.partOf.length > 0">Osa kokonaisuutta</dt>
+            <dd ng-show="concept.partOf && concept.partOf.length > 0">
+                <span ng-repeat="n in concept.partOf | orderBy:prefLabelFi">
+                    <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
+                        <thl-property-values values="n.properties.prefLabel"
+                                             lang="fi"></thl-property-values>
+                    </a><br>
+                </span>
+            </dd>
+            <dt ng-show="concept.parts && concept.parts.length > 0">Osat</dt>
+            <dd ng-show="concept.parts && concept.parts.length > 0">
+                <span ng-repeat="n in concept.parts | orderBy:prefLabelFi">
+                    <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
+                        <thl-property-values values="n.properties.prefLabel"
+                                             lang="fi"></thl-property-values>
+                    </a><br>
+                </span>
+            </dd>
         </dl>
 
         <dl>

@@ -2,6 +2,7 @@ package fi.thl.termed.util;
 
 import com.google.common.collect.Lists;
 
+import java.util.Collections;
 import java.util.List;
 
 public final class ListUtils {
@@ -19,6 +20,10 @@ public final class ListUtils {
     }
 
     return result;
+  }
+
+  public static <T> List<T> nullToEmpty(List<T> list) {
+    return list == null ? Collections.<T>emptyList() : list;
   }
 
 }

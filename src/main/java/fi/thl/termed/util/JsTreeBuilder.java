@@ -90,7 +90,7 @@ public class JsTreeBuilder {
     List<JsTreeNode> trees = Lists.newArrayList();
 
     Set<Concept> opened =
-        Sets.newHashSet(ListUtils.flatten(ConceptGraphUtils.findBroaderPaths(concept)));
+        Sets.newHashSet(ListUtils.flatten(ConceptGraphUtils.collectBroaderPaths(concept)));
 
     for (Concept tree : ConceptGraphUtils.broaderTrees(concept)) {
       trees.add(toJsTreeNode(tree, opened, concept));
@@ -143,7 +143,7 @@ public class JsTreeBuilder {
 
   private static String pathId(Concept concept) {
     return DigestUtils.sha1Hex(Joiner.on('.').join(Lists.transform(
-        ListUtils.flatten(ConceptGraphUtils.findBroaderPaths(concept)), new GetResourceId())));
+        ListUtils.flatten(ConceptGraphUtils.collectBroaderPaths(concept)), new GetResourceId())));
   }
 
   private static String findProperty(Concept concept, String propertyId, String lang) {

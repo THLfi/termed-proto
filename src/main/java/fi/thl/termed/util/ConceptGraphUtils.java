@@ -1,5 +1,6 @@
 package fi.thl.termed.util;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
@@ -15,6 +16,52 @@ public final class ConceptGraphUtils {
 
   private ConceptGraphUtils() {
   }
+
+  public static final Function<Concept, List<Concept>> getNarrowerFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          return c.getNarrower();
+        }
+      };
+
+  public static final Function<Concept, List<Concept>> getBroaderFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          return c.getBroader();
+        }
+      };
+
+  public static final Function<Concept, List<Concept>> getTypesFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          return c.getTypes();
+        }
+      };
+
+  public static final Function<Concept, List<Concept>> getPartOfFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          return c.getPartOf();
+        }
+      };
+
+  public static final Function<Concept, List<Concept>> getRelatedFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          return c.getRelated();
+        }
+      };
+
+  public static final List<Function<Concept, List<Concept>>> getNeighboursFunctions =
+      Lists.newArrayList(getNarrowerFunction,
+                         getBroaderFunction,
+                         getTypesFunction,
+                         getRelatedFunction);
 
   /**
    * Pretty print concept narrower graph as tree.
@@ -41,7 +88,7 @@ public final class ConceptGraphUtils {
    * @return roots of trees
    */
   public static List<Concept> broaderTrees(Concept concept) {
-    List<List<Concept>> broaderPaths = findBroaderPaths(concept);
+    List<List<Concept>> broaderPaths = collectBroaderPaths(concept);
 
     Set<Concept> accepted = Sets.newHashSet();
     for (Concept pathConcept : ListUtils.flatten(broaderPaths)) {
@@ -54,8 +101,14 @@ public final class ConceptGraphUtils {
     return copyTree(findRoots(broaderPaths), Predicates.in(accepted));
   }
 
-  public static List<Concept> copyTree(List<Concept> roots) {
-    return copyTree(roots, Predicates.<Concept>alwaysTrue());
+  private static List<Concept> findRoots(List<List<Concept>> broaderPaths) {
+    Set<Concept> roots = Sets.newHashSet();
+
+    for (List<Concept> broaderPath : broaderPaths) {
+      roots.add(broaderPath.get(0));
+    }
+
+    return Lists.newArrayList(roots);
   }
 
   public static List<Concept> copyTree(List<Concept> roots, Predicate<Concept> accepted) {
@@ -88,33 +141,79 @@ public final class ConceptGraphUtils {
     return treeConcept;
   }
 
-  private static List<Concept> findRoots(List<List<Concept>> broaderPaths) {
-    Set<Concept> roots = Sets.newHashSet();
-
-    for (List<Concept> broaderPath : broaderPaths) {
-      roots.add(broaderPath.get(0));
-    }
-
-    return Lists.newArrayList(roots);
-  }
-
-  public static List<List<Concept>> findBroaderPaths(Concept concept) {
+  public static List<List<Concept>> collectBroaderPaths(Concept concept) {
     List<List<Concept>> paths = Lists.newArrayList();
-    findBroaderPaths(concept, Lists.<Concept>newArrayList(), paths);
+    collectPaths(concept, getBroaderFunction, Sets.<Concept>newLinkedHashSet(), paths);
     return paths;
   }
 
-  private static void findBroaderPaths(Concept concept, List<Concept> path,
-                                       List<List<Concept>> paths) {
-    path.add(concept);
 
-    if (concept.hasBroader()) {
-      for (Concept broader : concept.getBroader()) {
-        findBroaderPaths(broader, Lists.newArrayList(path), paths);
+  public static List<List<Concept>> collectPartOfPaths(Concept concept) {
+    List<List<Concept>> paths = Lists.newArrayList();
+    collectPaths(concept, getPartOfFunction, Sets.<Concept>newLinkedHashSet(), paths);
+    return paths;
+  }
+
+
+  /**
+   * Collect all concepts reachable from root concepts using neighbour functions.
+   */
+  public static Set<Concept> collectConcepts(List<Concept> roots,
+                                             List<Function<Concept, List<Concept>>> getNeighboursFunctions) {
+    Set<Concept> results = Sets.newHashSet();
+
+    for (Concept root : roots) {
+      for (Function<Concept, List<Concept>> neighboursFunction : getNeighboursFunctions) {
+        Set<Concept> r = Sets.newHashSet();
+        collectConcepts(root, neighboursFunction, r);
+        results.addAll(r);
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Enumerate all concepts reachable from the concept. Flattening results from collectPaths yields
+   * the same results as this but is slightly less efficient.
+   */
+  private static void collectConcepts(Concept concept,
+                                      Function<Concept, List<Concept>> getNeighbours,
+                                      Set<Concept> results) {
+    if (!results.contains(concept)) {
+      results.add(concept);
+      for (Concept neighbour : ListUtils.nullToEmpty(getNeighbours.apply(concept))) {
+        collectConcepts(neighbour, getNeighbours, results);
+      }
+    }
+  }
+
+  /**
+   * Enumerate all paths from the concept
+   */
+  private static void collectPaths(Concept concept, Function<Concept, List<Concept>> getNeighbours,
+                                   Set<Concept> path, List<List<Concept>> results) {
+
+    if (!path.contains(concept)) {
+      path.add(concept);
+    } else {
+      results.add(toReversedList(path));
+      return;
+    }
+
+    List<Concept> neighbours = ListUtils.nullToEmpty(getNeighbours.apply(concept));
+
+    if (!neighbours.isEmpty()) {
+      for (Concept neighbour : neighbours) {
+        collectPaths(neighbour, getNeighbours, Sets.newLinkedHashSet(path), results);
       }
     } else {
-      paths.add(Lists.reverse(path));
+      results.add(toReversedList(path));
     }
+  }
+
+  private static List<Concept> toReversedList(Set<Concept> concepts) {
+    return Lists.reverse(Lists.newArrayList(concepts));
   }
 
 }

@@ -31,6 +31,16 @@ public class Concept extends SchemeResource {
 
   @IndexedEmbedded(includePaths = {"id"})
   @ManyToMany
+  @JoinTable(name = "concept_part_of",
+      joinColumns = {@JoinColumn(name = "concept_id")},
+      inverseJoinColumns = {@JoinColumn(name = "part_of_id")})
+  private List<Concept> partOf;
+
+  @ManyToMany(mappedBy = "partOf")
+  private List<Concept> parts;
+
+  @IndexedEmbedded(includePaths = {"id"})
+  @ManyToMany
   @JoinTable(name = "concept_broader_narrower",
       joinColumns = {@JoinColumn(name = "broader_id")},
       inverseJoinColumns = {@JoinColumn(name = "narrower_id")})
@@ -67,11 +77,17 @@ public class Concept extends SchemeResource {
     super(concept);
     this.types = concept.types;
     this.instances = concept.instances;
+    this.partOf = concept.partOf;
+    this.parts = concept.parts;
     this.broader = concept.broader;
     this.narrower = concept.narrower;
     this.related = concept.related;
     this.relatedFrom = concept.relatedFrom;
     this.collections = concept.collections;
+  }
+
+  public boolean hasTypes() {
+    return types != null && !types.isEmpty();
   }
 
   public List<Concept> getTypes() {
@@ -90,6 +106,22 @@ public class Concept extends SchemeResource {
     this.instances = instances;
   }
 
+  public List<Concept> getPartOf() {
+    return partOf;
+  }
+
+  public void setPartOf(List<Concept> partOf) {
+    this.partOf = partOf;
+  }
+
+  public List<Concept> getParts() {
+    return parts;
+  }
+
+  public void setParts(List<Concept> parts) {
+    this.parts = parts;
+  }
+
   public boolean hasBroader() {
     return broader != null && !broader.isEmpty();
   }
@@ -100,6 +132,13 @@ public class Concept extends SchemeResource {
 
   public void setBroader(List<Concept> broader) {
     this.broader = broader;
+  }
+
+  public void addBroader(Concept concept) {
+    if (broader == null) {
+      broader = Lists.newArrayList();
+    }
+    broader.add(concept);
   }
 
   public boolean hasNarrower() {
