@@ -1,7 +1,5 @@
 package fi.thl.termed.controller;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -95,10 +93,16 @@ public class JsonImporter {
 
     log.info("Linking concepts");
 
-    // populate broader
+    // populate fields that are stored
     for (Concept concept : concepts) {
       for (Concept narrower : ListUtils.nullToEmpty(concept.getNarrower())) {
         narrower.addBroader(concept);
+      }
+      for (Concept instance : ListUtils.nullToEmpty(concept.getInstances())) {
+        instance.addType(concept);
+      }
+      for (Concept part : ListUtils.nullToEmpty(concept.getParts())) {
+        part.addPartOf(concept);
       }
     }
 
@@ -107,23 +111,5 @@ public class JsonImporter {
       conceptRepository.save(concept);
     }
   }
-
-//  private void checkTypes(Set<Concept> concepts) {
-//    final Set<String> validTypes = Sets.newHashSet(
-//        Lists.transform(conceptRepository.findAll(), new GetResourceId()));
-//
-//    // check types
-//    for (Concept concept : concepts) {
-//      if (concept.hasTypes()) {
-//        concept.setTypes(
-//            Lists.newArrayList(Iterables.filter(concept.getTypes(), new Predicate<Concept>() {
-//              @Override
-//              public boolean apply(Concept input) {
-//                return validTypes.contains(input.getId());
-//              }
-//            })));
-//      }
-//    }
-//  }
 
 }

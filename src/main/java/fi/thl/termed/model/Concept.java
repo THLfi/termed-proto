@@ -98,6 +98,13 @@ public class Concept extends SchemeResource {
     this.types = types;
   }
 
+  public void addType(Concept concept) {
+    if (types == null) {
+      types = Lists.newArrayList();
+    }
+    types.add(concept);
+  }
+
   public List<Concept> getInstances() {
     return instances;
   }
@@ -112,6 +119,13 @@ public class Concept extends SchemeResource {
 
   public void setPartOf(List<Concept> partOf) {
     this.partOf = partOf;
+  }
+
+  public void addPartOf(Concept concept) {
+    if (partOf == null) {
+      partOf = Lists.newArrayList();
+    }
+    partOf.add(concept);
   }
 
   public List<Concept> getParts() {
@@ -212,5 +226,6 @@ public class Concept extends SchemeResource {
   public void setCollections(List<Collection> collections) {
     this.collections = collections;
   }
+
 
 }

@@ -57,10 +57,12 @@ public final class ConceptGraphUtils {
         }
       };
 
+  @SuppressWarnings("unchecked")
   public static final List<Function<Concept, List<Concept>>> getNeighboursFunctions =
       Lists.newArrayList(getNarrowerFunction,
                          getBroaderFunction,
                          getTypesFunction,
+                         getPartOfFunction,
                          getRelatedFunction);
 
   /**
@@ -141,19 +143,6 @@ public final class ConceptGraphUtils {
     return treeConcept;
   }
 
-  public static List<List<Concept>> collectBroaderPaths(Concept concept) {
-    List<List<Concept>> paths = Lists.newArrayList();
-    collectPaths(concept, getBroaderFunction, Sets.<Concept>newLinkedHashSet(), paths);
-    return paths;
-  }
-
-
-  public static List<List<Concept>> collectPartOfPaths(Concept concept) {
-    List<List<Concept>> paths = Lists.newArrayList();
-    collectPaths(concept, getPartOfFunction, Sets.<Concept>newLinkedHashSet(), paths);
-    return paths;
-  }
-
 
   /**
    * Collect all concepts reachable from root concepts using neighbour functions.
@@ -186,6 +175,24 @@ public final class ConceptGraphUtils {
         collectConcepts(neighbour, getNeighbours, results);
       }
     }
+  }
+
+  /**
+   * Enumerate all paths starting from concept using getNeighbours function.
+   */
+  public static List<List<Concept>> collectPaths(Concept concept,
+                                                 Function<Concept, List<Concept>> getNeighbours) {
+    List<List<Concept>> paths = Lists.newArrayList();
+    collectPaths(concept, getNeighbours, Sets.<Concept>newLinkedHashSet(), paths);
+    return paths;
+  }
+
+  public static List<List<Concept>> collectBroaderPaths(Concept concept) {
+    return collectPaths(concept, getBroaderFunction);
+  }
+
+  public static List<List<Concept>> collectPartOfPaths(Concept concept) {
+    return collectPaths(concept, getPartOfFunction);
   }
 
   /**
