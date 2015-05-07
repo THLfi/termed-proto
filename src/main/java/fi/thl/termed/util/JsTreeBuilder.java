@@ -131,7 +131,8 @@ public class JsTreeBuilder {
     jsTreeNode.setIcon(false);
     String conceptUrl = "/schemes/" + concept.getScheme().getId() + "/concepts/" + concept.getId();
     jsTreeNode.setLinkElementAttributes(ImmutableMap.of("href", conceptUrl));
-    jsTreeNode.setListElementAttributes(ImmutableMap.of("conceptId", concept.getId()));
+    jsTreeNode.setListElementAttributes(ImmutableMap.of("conceptId", concept.getId(), "index",
+                                                        findProperty(concept, "index", "fi")));
     List<Concept> neighbours = ListUtils.nullToEmpty(getNeighbours.apply(concept));
 
     if (neighbours.isEmpty()) {

@@ -21,6 +21,15 @@ App.directive('thlConceptTree', function($location) {
                 }
               }
             },
+            sort: function(a, b) {
+              var a = this.get_node(a);
+              var b = this.get_node(b);
+
+              if (a.li_attr.index !== "" && b.li_attr.index !== "") {
+                return a.li_attr.index > b.li_attr.index ? 1 : -1;
+              } else
+                return a.text > b.text ? 1 : -1;
+            },
             plugins: ["sort"]
           });
         }

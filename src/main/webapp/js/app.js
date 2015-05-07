@@ -281,7 +281,7 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
   }, function(concept) {
     PropertyUtils.ensurePropertiesFiValue(concept.properties, ['prefLabel',
         'altLabel', 'definition', 'note', 'example', 'hiddenLabel',
-        'deprecatedLabel', 'comment', 'source']);
+        'deprecatedLabel', 'comment', 'source', 'index']);
     $scope.concept = concept;
   });
 
