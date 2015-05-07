@@ -141,6 +141,7 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
   }
 
   $scope.searchConcepts = function(query) {
+    $scope.query = query;
     ConceptList.query({
       schemeId: $routeParams.schemeId,
       query: query,
@@ -152,17 +153,6 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
         q: query
       }).replace();
     });
-  }
-
-  $scope.toggleTree = function() {
-    if ($scope.tree) {
-      $scope.tree = false;
-      $scope.query = "";
-    } else {
-      $scope.tree = true;
-      $scope.query = "*:* -broader.id:[* TO *]";
-    }
-    $scope.searchConcepts($scope.query);
   }
 
   $scope.loadNarrower = function(concept) {
@@ -280,8 +270,9 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
     id: $routeParams.id
   }, function(concept) {
     PropertyUtils.ensurePropertiesFiValue(concept.properties, ['prefLabel',
-        'altLabel', 'definition', 'note', 'example', 'hiddenLabel',
-        'deprecatedLabel', 'comment', 'source', 'index']);
+        'altLabel', 'definition', 'note', 'scopeNote', 'changeNote', 'example',
+        'hiddenLabel', 'deprecatedLabel', 'comment', 'source', 'index',
+        'required', 'repeatable', 'classification']);
     $scope.concept = concept;
   });
 

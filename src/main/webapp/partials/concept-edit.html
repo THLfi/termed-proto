@@ -142,6 +142,10 @@
                                   text-area="true"></thl-property-values-edit>
     </div>
     <div class="form-group">
+        <label>Käyttöala</label>
+        <thl-property-values-edit values="concept.properties.scopeNote"></thl-property-values-edit>
+    </div>
+    <div class="form-group">
         <label>Esimerkki</label>
         <thl-property-values-edit values="concept.properties.example"
                                   text-area="true"></thl-property-values-edit>
@@ -156,9 +160,27 @@
         <thl-property-values-edit values="concept.properties.source"></thl-property-values-edit>
     </div>
 
+    <br>
+
+    <div class="form-group">
+        <label>Muutokset</label>
+        <thl-property-values-edit values="concept.properties.changeNote"></thl-property-values-edit>
+    </div>
+    <div class="form-group">
+        <label>Koodisto</label>
+        <thl-property-values-edit values="concept.properties.classification" text-area="true">
+        </thl-property-values-edit>
+    </div>
+    <div class="form-group">
+        <label>Toistuva</label>
+        <thl-property-values-edit values="concept.properties.repeatable"></thl-property-values-edit>
+    </div>
+    <div class="form-group">
+        <label>Pakollinen</label>
+        <thl-property-values-edit values="concept.properties.required"></thl-property-values-edit>
+    </div>
     <div class="form-group">
         <label>Järjestysnumero</label>
-
         <thl-property-values-edit values="concept.properties.index"></thl-property-values-edit>
     </div>
 </form>

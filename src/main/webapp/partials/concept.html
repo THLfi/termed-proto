@@ -68,9 +68,17 @@
             <dd ng-show="concept.properties.note">
                 <thl-property-values values="concept.properties.note"></thl-property-values>
             </dd>
+            <dt ng-show="concept.properties.scopeNote">Käyttöala</dt>
+            <dd ng-show="concept.properties.scopeNote">
+                <thl-property-values values="concept.properties.scopeNote"></thl-property-values>
+            </dd>
             <dt ng-show="concept.properties.example">Esimerkki</dt>
             <dd ng-show="concept.properties.example">
                 <thl-property-values values="concept.properties.example"></thl-property-values>
+            </dd>
+            <dt ng-show="concept.properties.comment && user.role == 'admin'">Kommentti</dt>
+            <dd ng-show="concept.properties.comment && user.role == 'admin'">
+                <thl-property-values values="concept.properties.comment"></thl-property-values>
             </dd>
         </dl>
 
@@ -178,9 +186,34 @@
         </dl>
 
         <dl>
-            <dt ng-show="concept.properties.source">Lähde</dt>
-            <dd ng-show="concept.properties.source">
-                <thl-property-values values="concept.properties.source"></thl-property-values>
+            <dt ng-show="concept.properties.changeNote">Muutokset</dt>
+            <dd ng-show="concept.properties.changeNote">
+                <thl-property-values values="concept.properties.changeNote"></thl-property-values>
+            </dd>
+        </dl>
+        <dl>
+            <dt ng-show="concept.properties.classification">Koodisto</dt>
+            <dd ng-show="concept.properties.classification">
+                <thl-property-values
+                        values="concept.properties.classification"></thl-property-values>
+            </dd>
+        </dl>
+        <dl>
+            <dt ng-show="concept.properties.repeatable">Toistuva</dt>
+            <dd ng-show="concept.properties.repeatable">
+                <thl-property-values values="concept.properties.repeatable"></thl-property-values>
+            </dd>
+        </dl>
+        <dl>
+            <dt ng-show="concept.properties.required">Pakollinen</dt>
+            <dd ng-show="concept.properties.required">
+                <thl-property-values values="concept.properties.required"></thl-property-values>
+            </dd>
+        </dl>
+        <dl>
+            <dt ng-show="concept.properties.index">Järjestysnumero</dt>
+            <dd ng-show="concept.properties.index">
+                <thl-property-values values="concept.properties.index"></thl-property-values>
             </dd>
         </dl>
     </div>
