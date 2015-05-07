@@ -108,6 +108,10 @@
                 <td>Haetaan suomenkielisestä ensisijaisesta termistä</td>
             </tr>
             <tr>
+                <td><a ng-click="searchConcepts('prefLabel.fi.sortable:A*')">prefLabel.fi.sortable:A*</a></td>
+                <td>Haetaan käsitteet, joiden suomenkielinen ensisijainen termi alkaa A-kirjaimella</td>
+            </tr>
+            <tr>
                 <td><a ng-click="searchConcepts('definition:[* TO *]')">definition:[* TO *]</a></td>
                 <td>Haetaan käsitteet, joiden määritelmäkentässä on jokin arvo.
                 </td>
@@ -139,6 +143,13 @@
                     *] +aika</a></td>
                 <td>Haetaan käsitteet, jotka eivät ole osa mitään kokonaisuutta ja joissa esiintyy
                     sana aika.
+                </td>
+            </tr>
+            <tr>
+                <td><a ng-click="searchConcepts('-partOf.id:[* TO *] prefLabel.fi.sortable:A*')">
+                    -partOf.id:[* TO *] prefLabel.fi.sortable:A*</a></td>
+                <td>Haetaan käsitteet, jotka eivät ole osa mitään kokonaisuutta ja jotka alkavat
+                    A-kirjaimella.
                 </td>
             </tr>
             </tbody>
