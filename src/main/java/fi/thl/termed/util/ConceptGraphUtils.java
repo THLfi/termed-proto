@@ -1,8 +1,6 @@
 package fi.thl.termed.util;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -10,20 +8,11 @@ import java.util.List;
 import java.util.Set;
 
 import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.SchemeResource;
 
 public final class ConceptGraphUtils {
 
   private ConceptGraphUtils() {
   }
-
-  public static final Function<Concept, List<Concept>> getNarrowerFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getNarrower();
-        }
-      };
 
   public static final Function<Concept, List<Concept>> getBroaderFunction =
       new Function<Concept, List<Concept>>() {
@@ -33,11 +22,27 @@ public final class ConceptGraphUtils {
         }
       };
 
+  public static final Function<Concept, List<Concept>> getNarrowerFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          return c.getNarrower();
+        }
+      };
+
   public static final Function<Concept, List<Concept>> getTypesFunction =
       new Function<Concept, List<Concept>>() {
         @Override
         public List<Concept> apply(Concept c) {
           return c.getTypes();
+        }
+      };
+
+  public static final Function<Concept, List<Concept>> getInstancesFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          return c.getInstances();
         }
       };
 
@@ -65,29 +70,41 @@ public final class ConceptGraphUtils {
         }
       };
 
+  public static final Function<Concept, List<Concept>> getRelatedFromFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          return c.getRelatedFrom();
+        }
+      };
+
   @SuppressWarnings("unchecked")
   public static final List<Function<Concept, List<Concept>>> getNeighboursFunctions =
-      Lists.newArrayList(getNarrowerFunction,
-                         getBroaderFunction,
+      Lists.newArrayList(getBroaderFunction,
+                         getNarrowerFunction,
                          getTypesFunction,
+                         getInstancesFunction,
                          getPartOfFunction,
-                         getRelatedFunction);
+                         getPartsFunction,
+                         getRelatedFunction,
+                         getRelatedFromFunction);
 
   /**
-   * Pretty print concept narrower graph as tree.
+   * Pretty print concept graph as tree using neighbour function.
    */
-  public static String prettyPrintTree(Concept concept) {
+  public static String prettyPrintTree(Concept concept,
+                                       Function<Concept, List<Concept>> getNeighbours) {
     StringBuilder builder = new StringBuilder();
-    prettyPrintTree("", concept, builder);
+    prettyPrintTree("", concept, getNeighbours, builder);
     return builder.toString();
   }
 
-  private static void prettyPrintTree(String indent, Concept concept, StringBuilder builder) {
+  private static void prettyPrintTree(String indent, Concept concept,
+                                      Function<Concept, List<Concept>> getNeighbours,
+                                      StringBuilder builder) {
     builder.append(String.format("%s - %s\n", indent, concept.getId()));
-    if (concept.hasNarrower()) {
-      for (Concept narrower : concept.getNarrower()) {
-        prettyPrintTree(indent + "\t", narrower, builder);
-      }
+    for (Concept neighbour : ListUtils.nullToEmpty(getNeighbours.apply(concept))) {
+      prettyPrintTree(indent + "\t", neighbour, getNeighbours, builder);
     }
   }
 

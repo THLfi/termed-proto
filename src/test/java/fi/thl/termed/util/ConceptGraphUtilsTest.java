@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class ConceptGraphUtilsTest {
 
   @Test
-  public void shouldPrintBroaderTree() {
+  public void shouldPrintNarrowerTree() {
     Concept root = new Concept("root");
     Concept branch1 = new Concept("branch1");
     Concept branch2 = new Concept("branch2");
@@ -44,7 +44,8 @@ public class ConceptGraphUtilsTest {
                           + "\t - branch3\n"
                           + "\t\t - leaf3\n"
                           + "\t\t - leaf4\n";
-    assertEquals(exampleGraph, ConceptGraphUtils.prettyPrintTree(root));
+    assertEquals(exampleGraph,
+                 ConceptGraphUtils.prettyPrintTree(root, ConceptGraphUtils.getNarrowerFunction));
   }
 
   @Test
