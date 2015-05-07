@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class ConceptGraphUtilsTest {
 
   @Test
-  public void shouldFindBroaderTree() {
+  public void shouldPrintBroaderTree() {
     Concept root = new Concept("root");
     Concept branch1 = new Concept("branch1");
     Concept branch2 = new Concept("branch2");
@@ -45,27 +45,6 @@ public class ConceptGraphUtilsTest {
                           + "\t\t - leaf3\n"
                           + "\t\t - leaf4\n";
     assertEquals(exampleGraph, ConceptGraphUtils.prettyPrintTree(root));
-
-    String broaderTreeForLeaf1 = " - root\n"
-                                 + "\t - branch1\n"
-                                 + "\t\t - leaf1\n"
-                                 + "\t\t\t - leaf2\n"
-                                 + "\t\t - leaf2\n"
-                                 + "\t - branch2\n"
-                                 + "\t - branch3\n";
-    for (Concept tree : ConceptGraphUtils.broaderTrees(leaf1)) {
-      assertEquals(broaderTreeForLeaf1, ConceptGraphUtils.prettyPrintTree(tree));
-    }
-
-    String broaderTreeForLeaf4 = " - root\n"
-                                 + "\t - branch1\n"
-                                 + "\t - branch2\n"
-                                 + "\t - branch3\n"
-                                 + "\t\t - leaf3\n"
-                                 + "\t\t - leaf4\n";
-    for (Concept tree : ConceptGraphUtils.broaderTrees(leaf4)) {
-      assertEquals(broaderTreeForLeaf4, ConceptGraphUtils.prettyPrintTree(tree));
-    }
   }
 
   @Test

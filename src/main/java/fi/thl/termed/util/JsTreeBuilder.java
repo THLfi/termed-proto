@@ -1,5 +1,6 @@
 package fi.thl.termed.util;
 
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -87,19 +88,39 @@ public class JsTreeBuilder {
   }
 
   public static List<JsTreeNode> buildTreesFor(Concept concept) {
-    List<JsTreeNode> trees = Lists.newArrayList();
-
-    Set<Concept> opened =
-        Sets.newHashSet(ListUtils.flatten(ConceptGraphUtils.collectBroaderPaths(concept)));
-
-    for (Concept tree : ConceptGraphUtils.broaderTrees(concept)) {
-      trees.add(toJsTreeNode(tree, opened, concept));
+    if (concept.hasPartOf() || concept.hasParts()) {
+      return buildTreesFor(concept, ConceptGraphUtils.getPartsFunction,
+                           ConceptGraphUtils.getPartOfFunction);
     }
-
-    return trees;
+    return buildTreesFor(concept, ConceptGraphUtils.getNarrowerFunction,
+                         ConceptGraphUtils.getBroaderFunction);
   }
 
-  private static JsTreeNode toJsTreeNode(Concept concept, Set<Concept> opened, Concept selected) {
+  public static List<JsTreeNode> buildTreesFor(Concept concept,
+                                               Function<Concept, List<Concept>> getNeighbour,
+                                               Function<Concept, List<Concept>> getNeighbourInverse) {
+
+    List<List<Concept>> paths = ConceptGraphUtils.collectPaths(concept, getNeighbourInverse);
+
+    List<Concept> roots = ConceptGraphUtils.findRoots(paths);
+    Set<Concept> opened = Sets.newHashSet(ListUtils.flatten(paths));
+
+    return toJsTreeNode(roots, getNeighbour, opened, concept);
+  }
+
+  private static List<JsTreeNode> toJsTreeNode(List<Concept> concepts,
+                                               Function<Concept, List<Concept>> getNeighbours,
+                                               Set<Concept> opened, Concept selected) {
+    List<JsTreeNode> jsTreeNodes = Lists.newArrayList();
+    for (Concept concept : concepts) {
+      jsTreeNodes.add(toJsTreeNode(concept, getNeighbours, opened, selected));
+    }
+    return jsTreeNodes;
+  }
+
+  private static JsTreeNode toJsTreeNode(Concept concept,
+                                         Function<Concept, List<Concept>> getNeighbours,
+                                         Set<Concept> opened, Concept selected) {
     JsTreeNode jsTreeNode = new JsTreeNode();
     jsTreeNode.setId(pathId(concept));
     jsTreeNode.setText(
@@ -111,14 +132,16 @@ public class JsTreeBuilder {
     String conceptUrl = "/schemes/" + concept.getScheme().getId() + "/concepts/" + concept.getId();
     jsTreeNode.setLinkElementAttributes(ImmutableMap.of("href", conceptUrl));
     jsTreeNode.setListElementAttributes(ImmutableMap.of("conceptId", concept.getId()));
-    List<Concept> narrower = concept.getNarrower();
-    if (narrower != null) {
-      if (narrower.isEmpty()) {
-        jsTreeNode.setChildren(true);
-      } else {
-        jsTreeNode.setChildren(toJsTreeNode(narrower, opened, selected));
-      }
+    List<Concept> neighbours = ListUtils.nullToEmpty(getNeighbours.apply(concept));
+
+    if (neighbours.isEmpty()) {
+      jsTreeNode.setChildren(false);
+    } else if (opened.contains(concept)) {
+      jsTreeNode.setChildren(toJsTreeNode(neighbours, getNeighbours, opened, selected));
+    } else {
+      jsTreeNode.setChildren(true);
     }
+
     return jsTreeNode;
   }
 
@@ -130,15 +153,6 @@ public class JsTreeBuilder {
     int i = uri.lastIndexOf("#");
     i = i == -1 ? uri.lastIndexOf("/") : -1;
     return uri.substring(i + 1);
-  }
-
-  private static List<JsTreeNode> toJsTreeNode(List<Concept> concepts, Set<Concept> opened,
-                                               Concept selected) {
-    List<JsTreeNode> jsTreeNodes = Lists.newArrayList();
-    for (Concept concept : concepts) {
-      jsTreeNodes.add(toJsTreeNode(concept, opened, selected));
-    }
-    return jsTreeNodes;
   }
 
   private static String pathId(Concept concept) {

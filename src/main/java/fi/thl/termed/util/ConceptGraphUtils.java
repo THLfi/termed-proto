@@ -49,6 +49,14 @@ public final class ConceptGraphUtils {
         }
       };
 
+  public static final Function<Concept, List<Concept>> getPartsFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          return c.getParts();
+        }
+      };
+
   public static final Function<Concept, List<Concept>> getRelatedFunction =
       new Function<Concept, List<Concept>>() {
         @Override
@@ -83,27 +91,7 @@ public final class ConceptGraphUtils {
     }
   }
 
-  /**
-   * Find trees containing concept. Each tree is built from concept's broader path to root. Concepts
-   * in the path are expanded (their narrower are included).
-   *
-   * @return roots of trees
-   */
-  public static List<Concept> broaderTrees(Concept concept) {
-    List<List<Concept>> broaderPaths = collectBroaderPaths(concept);
-
-    Set<Concept> accepted = Sets.newHashSet();
-    for (Concept pathConcept : ListUtils.flatten(broaderPaths)) {
-      accepted.add(pathConcept);
-      if (pathConcept.hasNarrower()) {
-        accepted.addAll(pathConcept.getNarrower());
-      }
-    }
-
-    return copyTree(findRoots(broaderPaths), Predicates.in(accepted));
-  }
-
-  private static List<Concept> findRoots(List<List<Concept>> broaderPaths) {
+  public static List<Concept> findRoots(List<List<Concept>> broaderPaths) {
     Set<Concept> roots = Sets.newHashSet();
 
     for (List<Concept> broaderPath : broaderPaths) {
@@ -111,36 +99,6 @@ public final class ConceptGraphUtils {
     }
 
     return Lists.newArrayList(roots);
-  }
-
-  public static List<Concept> copyTree(List<Concept> roots, Predicate<Concept> accepted) {
-    return copyTree(null, roots, accepted);
-  }
-
-  private static List<Concept> copyTree(Concept broaderTreeConcept, List<Concept> concepts,
-                                        Predicate<Concept> accepted) {
-
-    List<Concept> treeConcepts = Lists.newArrayList();
-
-    for (Concept concept : concepts) {
-      if (accepted.apply(concept)) {
-        treeConcepts.add(copyTree(broaderTreeConcept, concept, accepted));
-      }
-    }
-
-    return treeConcepts;
-  }
-
-  private static Concept copyTree(Concept broaderTreeConcept, Concept concept,
-                                  Predicate<Concept> accepted) {
-    Concept treeConcept = new Concept(new SchemeResource(concept));
-    if (broaderTreeConcept != null) {
-      treeConcept.setBroader(Lists.newArrayList(broaderTreeConcept));
-    }
-    if (concept.hasNarrower()) {
-      treeConcept.setNarrower(copyTree(treeConcept, concept.getNarrower(), accepted));
-    }
-    return treeConcept;
   }
 
 

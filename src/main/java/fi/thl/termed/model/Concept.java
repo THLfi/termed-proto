@@ -113,6 +113,10 @@ public class Concept extends SchemeResource {
     this.instances = instances;
   }
 
+  public boolean hasPartOf() {
+    return partOf != null && !partOf.isEmpty();
+  }
+
   public List<Concept> getPartOf() {
     return partOf;
   }
@@ -126,6 +130,10 @@ public class Concept extends SchemeResource {
       partOf = Lists.newArrayList();
     }
     partOf.add(concept);
+  }
+
+  public boolean hasParts() {
+    return parts != null && !parts.isEmpty();
   }
 
   public List<Concept> getParts() {
@@ -226,6 +234,5 @@ public class Concept extends SchemeResource {
   public void setCollections(List<Collection> collections) {
     this.collections = collections;
   }
-
 
 }
