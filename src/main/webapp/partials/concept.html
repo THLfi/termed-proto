@@ -145,11 +145,16 @@
             </dd>
             <dt ng-show="concept.instances && concept.instances.length > 0">Ilmentymät</dt>
             <dd ng-show="concept.instances && concept.instances.length > 0">
-                <span ng-repeat="n in concept.instances | orderBy:prefLabelFi">
-                    <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
-                        <thl-property-values values="n.properties.prefLabel"
-                                             lang="fi"></thl-property-values>
-                    </a><br>
+                <span ng-repeat="instancePartOfPaths in instancesPartOfPaths">
+                    <span ng-repeat="path in instancePartOfPaths">
+                        <span ng-repeat="b in path">
+                            <a ng-href="#/schemes/{{b.scheme.id}}/concepts/{{b.id}}">
+                                <thl-property-values values="b.properties.prefLabel"
+                                                     lang="fi"></thl-property-values>
+                            </a>
+                            <span class="text-muted" ng-if="!$last">&gt;</span>
+                        </span><br>
+                    </span>
                 </span>
             </dd>
             <dt ng-show="concept.partOf && concept.partOf.length > 0">Osa kokonaisuutta</dt>

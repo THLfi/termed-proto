@@ -19,6 +19,8 @@ App.factory('SchemeList', function($resource) {
   return $resource('api/schemes/:schemeId/concepts/:id');
 }).factory('ConceptBroaderPaths', function($resource) {
   return $resource('api/schemes/:schemeId/concepts/:id/broader');
+}).factory('ConceptPartOfPaths', function($resource) {
+  return $resource('api/schemes/:schemeId/concepts/:id/partOf');
 });
 
 App.factory('PropertyUtils', function() {
@@ -222,7 +224,8 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
 });
 
 App.controller('ConceptCtrl', function($scope, $routeParams, $location,
-        Concept, ConceptBroaderPaths, ConceptList, PropertyUtils) {
+        Concept, ConceptBroaderPaths, ConceptPartOfPaths, ConceptList,
+        PropertyUtils) {
 
   Concept.get({
     schemeId: $routeParams.schemeId,
@@ -233,6 +236,13 @@ App.controller('ConceptCtrl', function($scope, $routeParams, $location,
       schemeId: $routeParams.schemeId,
       id: $routeParams.id
     });
+    $scope.instancesPartOfPaths = [];
+    for (var i = 0; i < concept.instances.length; i++) {
+      $scope.instancesPartOfPaths.push(ConceptPartOfPaths.query({
+        schemeId: $routeParams.schemeId,
+        id: concept.instances[i].id
+      }))
+    }
   });
 
   $scope.langPriority = PropertyUtils.langPriority;
