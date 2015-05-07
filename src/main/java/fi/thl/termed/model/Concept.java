@@ -29,8 +29,6 @@ public class Concept extends SchemeResource {
   @ManyToMany(mappedBy = "broader")
   private List<Concept> narrower;
 
-  // no need to track back references because related
-  // should always be duplicated to both directions
   @ManyToMany
   @JoinTable(name = "concept_related",
       joinColumns = {@JoinColumn(name = "concept_id")},
