@@ -21,6 +21,16 @@ public class Concept extends SchemeResource {
 
   @IndexedEmbedded(includePaths = {"id"})
   @ManyToMany
+  @JoinTable(name = "concept_type",
+      joinColumns = {@JoinColumn(name = "concept_id")},
+      inverseJoinColumns = {@JoinColumn(name = "type_id")})
+  private List<Concept> types;
+
+  @ManyToMany(mappedBy = "types")
+  private List<Concept> instances;
+
+  @IndexedEmbedded(includePaths = {"id"})
+  @ManyToMany
   @JoinTable(name = "concept_broader_narrower",
       joinColumns = {@JoinColumn(name = "broader_id")},
       inverseJoinColumns = {@JoinColumn(name = "narrower_id")})
@@ -55,10 +65,29 @@ public class Concept extends SchemeResource {
 
   public Concept(Concept concept) {
     super(concept);
+    this.types = concept.types;
+    this.instances = concept.instances;
     this.broader = concept.broader;
     this.narrower = concept.narrower;
     this.related = concept.related;
+    this.relatedFrom = concept.relatedFrom;
     this.collections = concept.collections;
+  }
+
+  public List<Concept> getTypes() {
+    return types;
+  }
+
+  public void setTypes(List<Concept> types) {
+    this.types = types;
+  }
+
+  public List<Concept> getInstances() {
+    return instances;
+  }
+
+  public void setInstances(List<Concept> instances) {
+    this.instances = instances;
   }
 
   public boolean hasBroader() {

@@ -134,6 +134,24 @@
                     </a><br>
                 </span>
             </dd>
+            <dt ng-show="concept.types && concept.types.length > 0">Tyypit</dt>
+            <dd ng-show="concept.types && concept.types.length > 0">
+                <span ng-repeat="n in concept.types | orderBy:prefLabelFi">
+                    <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
+                        <thl-property-values values="n.properties.prefLabel"
+                                             lang="fi"></thl-property-values>
+                    </a><br>
+                </span>
+            </dd>
+            <dt ng-show="concept.instances && concept.instances.length > 0">Ilmentymät</dt>
+            <dd ng-show="concept.instances && concept.instances.length > 0">
+                <span ng-repeat="n in concept.instances | orderBy:prefLabelFi">
+                    <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
+                        <thl-property-values values="n.properties.prefLabel"
+                                             lang="fi"></thl-property-values>
+                    </a><br>
+                </span>
+            </dd>
         </dl>
 
         <dl>

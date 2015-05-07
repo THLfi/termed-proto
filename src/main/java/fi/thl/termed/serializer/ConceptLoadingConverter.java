@@ -41,6 +41,8 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
   @Override
   protected SerializedConcept doForward(Concept concept) {
     SerializedConcept serializedConcept = new SerializedConcept(new SchemeResource(concept));
+    serializedConcept.setTypes(transform(concept.getTypes(), truncateConcept));
+    serializedConcept.setInstances(transform(concept.getInstances(), truncateConcept));
     serializedConcept.setBroader(transform(concept.getBroader(), truncateConcept));
     serializedConcept.setNarrower(
         truncateNarrower ? transform(concept.getNarrower(), truncateConcept)
@@ -56,6 +58,8 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
     Preconditions.checkNotNull(em, "Can't restore references without entity manager.");
 
     Concept concept = new Concept(new SchemeResource(serializedConcept));
+    concept.setTypes(transform(serializedConcept.getTypes(), findConcept));
+    concept.setInstances(transform(serializedConcept.getInstances(), findConcept));
     concept.setBroader(transform(serializedConcept.getBroader(), findConcept));
     concept.setNarrower(truncateNarrower ? transform(serializedConcept.getNarrower(), findConcept)
                                          : serializedConcept.getNarrower());
