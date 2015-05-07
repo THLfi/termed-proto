@@ -51,35 +51,6 @@
             <dd ng-show="concept.properties.altLabel">
                 <thl-property-values values="concept.properties.altLabel"></thl-property-values>
             </dd>
-            <dt ng-show="concept.properties.hiddenLabel">Piilotetut termit</dt>
-            <dd ng-show="concept.properties.hiddenLabel">
-                <thl-property-values values="concept.properties.hiddenLabel"></thl-property-values>
-            </dd>
-            <dt ng-show="concept.properties.deprecatedLabel">Korvatut termit</dt>
-            <dd ng-show="concept.properties.deprecatedLabel">
-                <thl-property-values
-                        values="concept.properties.deprecatedLabel"></thl-property-values>
-            </dd>
-            <dt ng-show="concept.properties.definition">Määritelmä</dt>
-            <dd ng-show="concept.properties.definition">
-                <thl-property-values values="concept.properties.definition"></thl-property-values>
-            </dd>
-            <dt ng-show="concept.properties.note">Huomautus</dt>
-            <dd ng-show="concept.properties.note">
-                <thl-property-values values="concept.properties.note"></thl-property-values>
-            </dd>
-            <dt ng-show="concept.properties.scopeNote">Käyttöala</dt>
-            <dd ng-show="concept.properties.scopeNote">
-                <thl-property-values values="concept.properties.scopeNote"></thl-property-values>
-            </dd>
-            <dt ng-show="concept.properties.example">Esimerkki</dt>
-            <dd ng-show="concept.properties.example">
-                <thl-property-values values="concept.properties.example"></thl-property-values>
-            </dd>
-            <dt ng-show="concept.properties.comment && user.role == 'admin'">Kommentti</dt>
-            <dd ng-show="concept.properties.comment && user.role == 'admin'">
-                <thl-property-values values="concept.properties.comment"></thl-property-values>
-            </dd>
         </dl>
 
         <dl>
@@ -185,6 +156,39 @@
             </dd>
         </dl>
 
+        <dt ng-show="concept.properties.hiddenLabel">Piilotetut termit</dt>
+        <dd ng-show="concept.properties.hiddenLabel">
+            <thl-property-values values="concept.properties.hiddenLabel"></thl-property-values>
+        </dd>
+        <dt ng-show="concept.properties.deprecatedLabel">Korvatut termit</dt>
+        <dd ng-show="concept.properties.deprecatedLabel">
+            <thl-property-values
+                    values="concept.properties.deprecatedLabel"></thl-property-values>
+        </dd>
+        <dt ng-show="concept.properties.definition">Määritelmä</dt>
+        <dd ng-show="concept.properties.definition">
+            <thl-property-values values="concept.properties.definition"></thl-property-values>
+        </dd>
+        <dt ng-show="concept.properties.note">Huomautus</dt>
+        <dd ng-show="concept.properties.note">
+            <thl-property-values values="concept.properties.note"></thl-property-values>
+        </dd>
+        <dt ng-show="concept.properties.scopeNote">Käyttöala</dt>
+        <dd ng-show="concept.properties.scopeNote">
+            <thl-property-values values="concept.properties.scopeNote"></thl-property-values>
+        </dd>
+        <dt ng-show="concept.properties.example">Esimerkki</dt>
+        <dd ng-show="concept.properties.example">
+            <thl-property-values values="concept.properties.example"></thl-property-values>
+        </dd>
+        <dt ng-show="concept.properties.comment && user.role == 'admin'">Kommentti</dt>
+        <dd ng-show="concept.properties.comment && user.role == 'admin'">
+            <thl-property-values values="concept.properties.comment"></thl-property-values>
+        </dd>
+        <dt ng-show="concept.properties.source">Lähde</dt>
+        <dd ng-show="concept.properties.source">
+            <thl-property-values values="concept.properties.source"></thl-property-values>
+        </dd>
         <dl>
             <dt ng-show="concept.properties.changeNote">Muutokset</dt>
             <dd ng-show="concept.properties.changeNote">
