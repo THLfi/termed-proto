@@ -88,7 +88,9 @@ public class JsonImporter {
     for (Concept concept : allConcepts) {
       concept.ensureId();
       concept.setScheme(scheme);
-      conceptRepository.save(new Concept(new SchemeResource(concept)));
+      if (!conceptRepository.exists(concept.getId())) {
+        conceptRepository.save(new Concept(new SchemeResource(concept)));
+      }
     }
 
     log.info("Linking concepts");
