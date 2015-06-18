@@ -227,10 +227,10 @@ App.controller('ConceptCtrl', function($scope, $routeParams, $location,
       id: $routeParams.id
     });
     $scope.instancesPartOfPaths = [];
-    for (var i = 0; i < concept.instances.length; i++) {
+    for (var i = 0; i < concept.referrers.type.length; i++) {
       $scope.instancesPartOfPaths.push(ConceptPartOfPaths.query({
         schemeId: $routeParams.schemeId,
-        id: concept.instances[i].id
+        id: concept.referrers.type[i].id
       }))
     }
   });

@@ -1,106 +1,74 @@
 package fi.thl.termed.util;
 
+import java.util.List;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
-import java.util.List;
-import java.util.Set;
 
 import fi.thl.termed.model.Concept;
+import fi.thl.termed.model.ConceptReference;
 
 public final class ConceptReferenceFunctions {
 
   private ConceptReferenceFunctions() {
   }
 
+  public static Function<Concept, List<Concept>> buildReferenceFunctionByType(final String referenceTypeId) {
+    return new Function<Concept, List<Concept>>() {
+      @Override
+      public List<Concept> apply(Concept c) {
+        return c.getReferencesByType(referenceTypeId);
+      }
+    };
+  }
+
+  public static Function<Concept, List<Concept>> buildReferrerFunctionByType(final String referenceTypeId) {
+    return new Function<Concept, List<Concept>>() {
+      @Override
+      public List<Concept> apply(Concept c) {
+        return c.getReferrersByType(referenceTypeId);
+      }
+    };
+  }
 
   public static final Function<Concept, List<Concept>> getBroaderFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getReferencesByType("broader");
-        }
-      };
-
+      buildReferenceFunctionByType("broader");
   public static final Function<Concept, List<Concept>> getNarrowerFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getReferrersByType("broader");
-        }
-      };
-
-  public static final Function<Concept, List<Concept>> getTypesFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getReferencesByType("type");
-        }
-      };
-
-  public static final Function<Concept, List<Concept>> getInstancesFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getReferrersByType("type");
-        }
-      };
-
+      buildReferrerFunctionByType("broader");
   public static final Function<Concept, List<Concept>> getPartOfFunction =
+      buildReferenceFunctionByType("partOf");
+  public static final Function<Concept,List<Concept>> getPartsFunction =
+      buildReferrerFunctionByType("partOf");
+  public static final Function<Concept, List<Concept>> getTypesFunction =
+      buildReferenceFunctionByType("type");
+  public static final Function<Concept,List<Concept>> getInstancesFunction =
+      buildReferrerFunctionByType("type");
+
+  public static final Function<Concept, List<Concept>> getReferencesFunction =
       new Function<Concept, List<Concept>>() {
         @Override
         public List<Concept> apply(Concept c) {
-          return c.getReferencesByType("partOf");
-        }
-      };
+          List<Concept> results = Lists.newArrayList();
 
-  public static final Function<Concept, List<Concept>> getPartsFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getReferrersByType("partOf");
-        }
-      };
-
-  public static final Function<Concept, List<Concept>> getRelatedFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getReferencesByType("related");
-        }
-      };
-
-  public static final Function<Concept, List<Concept>> getRelatedFromFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getReferrersByType("related");
-        }
-      };
-
-  @SuppressWarnings("unchecked")
-  public static final List<Function<Concept, List<Concept>>> getNeighboursFunctions =
-      Lists.newArrayList(getBroaderFunction,
-                         getNarrowerFunction,
-                         getTypesFunction,
-                         getInstancesFunction,
-                         getPartOfFunction,
-                         getPartsFunction,
-                         getRelatedFunction,
-                         getRelatedFromFunction);
-
-  public static final Function<Concept, List<Concept>> getAllNeighboursFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          Set<Concept> neighbours = Sets.newLinkedHashSet();
-
-          for (Function<Concept, List<Concept>> f : getNeighboursFunctions) {
-            neighbours.addAll(ListUtils.nullToEmpty(f.apply(c)));
+          for (ConceptReference reference : ListUtils.nullToEmpty(c.getReferences())) {
+              results.add(reference.getTarget());
           }
 
-          return Lists.newArrayList(neighbours);
+          return results;
+        }
+      };
+
+  public static final Function<Concept, List<Concept>> getReferrersFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          List<Concept> results = Lists.newArrayList();
+
+          for (ConceptReference referrer : ListUtils.nullToEmpty(c.getReferrers())) {
+              results.add(referrer.getSource());
+          }
+
+          return results;
         }
       };
 

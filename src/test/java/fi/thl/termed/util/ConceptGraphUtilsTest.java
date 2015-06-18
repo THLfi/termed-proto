@@ -1,15 +1,15 @@
 package fi.thl.termed.util;
 
-import com.google.common.collect.Lists;
-
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.junit.Test;
+
+import com.google.common.collect.Lists;
+
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.ConceptReferenceType;
-
-import static org.junit.Assert.assertEquals;
 
 public class ConceptGraphUtilsTest {
 

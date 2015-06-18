@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.ConceptReference;
+import fi.thl.termed.model.ConceptReferenceType;
 import fi.thl.termed.model.Resource;
 import fi.thl.termed.model.SchemeResource;
 import fi.thl.termed.model.SerializedConcept;
@@ -109,7 +110,8 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
 
     for (Map.Entry<String, List<SchemeResource>> entry : referenceMap.entrySet()) {
       for (SchemeResource target : entry.getValue()) {
-        references.add(new ConceptReference(entry.getKey(), source, loadConcept(target)));
+        references.add(
+            new ConceptReference(loadReferenceType(entry.getKey()), source, loadConcept(target)));
       }
     }
 
@@ -123,11 +125,16 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
 
     for (Map.Entry<String, List<SchemeResource>> entry : referrerMap.entrySet()) {
       for (SchemeResource source : entry.getValue()) {
-        referrers.add(new ConceptReference(entry.getKey(), loadConcept(source), target));
+        referrers.add(
+            new ConceptReference(loadReferenceType(entry.getKey()), loadConcept(source), target));
       }
     }
 
     return referrers;
+  }
+
+  private ConceptReferenceType loadReferenceType(String referenceTypeId) {
+    return em.find(ConceptReferenceType.class, referenceTypeId);
   }
 
   private Concept loadConcept(Resource resource) {

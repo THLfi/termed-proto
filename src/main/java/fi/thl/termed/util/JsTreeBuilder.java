@@ -18,78 +18,22 @@ import fi.thl.termed.model.PropertyValue;
 
 public class JsTreeBuilder {
 
-  private static class JsTreeNode {
-
-    private String id;
-    private String text;
-    private Object icon;
-    private Map<String, Boolean> state;
-    private Object children;
-    @SerializedName("a_attr")
-    private Map<String, String> linkElementAttributes;
-    @SerializedName("li_attr")
-    private Map<String, String> listElementAttributes;
-
-    public String getId() {
-      return id;
+  public static List<JsTreeNode> buildTreesFor(Concept concept) {
+    if (hasParts(concept)) {
+      return buildTreesFor(concept,
+                           ConceptReferenceFunctions.getPartsFunction,
+                           ConceptReferenceFunctions.getPartOfFunction);
     }
-
-    public void setId(String id) {
-      this.id = id;
-    }
-
-    public String getText() {
-      return text;
-    }
-
-    public void setText(String text) {
-      this.text = text;
-    }
-
-    public void setIcon(Object icon) {
-      this.icon = icon;
-    }
-
-    public Object getIcon() {
-      return icon;
-    }
-
-    public Map<String, Boolean> getState() {
-      return state;
-    }
-
-    public void setState(Map<String, Boolean> state) {
-      this.state = state;
-    }
-
-    public void setChildren(Object children) {
-      this.children = children;
-    }
-
-    public Object getChildren() {
-      return children;
-    }
-
-    public Map<String, String> getLinkElementAttributes() {
-      return linkElementAttributes;
-    }
-
-    public void setLinkElementAttributes(Map<String, String> linkElementAttributes) {
-      this.linkElementAttributes = linkElementAttributes;
-    }
-
-    public Map<String, String> getListElementAttributes() {
-      return listElementAttributes;
-    }
-
-    public void setListElementAttributes(Map<String, String> listElementAttributes) {
-      this.listElementAttributes = listElementAttributes;
-    }
+    return buildTreesFor(concept,
+                         ConceptReferenceFunctions.getNarrowerFunction,
+                         ConceptReferenceFunctions.getBroaderFunction);
   }
 
-  public static List<JsTreeNode> buildTreesFor(Concept concept) {
-    return buildTreesFor(concept, ConceptReferenceFunctions.getNarrowerFunction,
-                         ConceptReferenceFunctions.getBroaderFunction);
+  private static boolean hasParts(Concept concept) {
+    List<Concept> parts = ConceptReferenceFunctions.getPartsFunction.apply(concept);
+    List<Concept> partOf = ConceptReferenceFunctions.getPartOfFunction.apply(concept);
+
+    return !ListUtils.nullToEmpty(parts).isEmpty() || !ListUtils.nullToEmpty(partOf).isEmpty();
   }
 
   public static List<JsTreeNode> buildTreesFor(Concept concept,
@@ -118,10 +62,8 @@ public class JsTreeBuilder {
                                          Function<Concept, List<Concept>> getNeighbours,
                                          Set<Concept> opened, Concept selected) {
     JsTreeNode jsTreeNode = new JsTreeNode();
-    jsTreeNode.setId(pathId(concept));
-    jsTreeNode.setText(
-        findProperty(concept, "prefLabel", "fi") + " <small class='text-muted'>" + localName(
-            concept) + "</small>");
+    jsTreeNode.setId(pathId(concept, getNeighbours));
+    jsTreeNode.setText(findProperty(concept, "prefLabel", "fi") + smallMuted(localName(concept)));
     jsTreeNode.setState(
         ImmutableMap.of("opened", opened.contains(concept), "selected", concept.equals(selected)));
     jsTreeNode.setIcon(false);
@@ -142,6 +84,10 @@ public class JsTreeBuilder {
     return jsTreeNode;
   }
 
+  private static String smallMuted(String text) {
+    return " <small class='text-muted'>" + text + "</small>";
+  }
+
   private static String localName(Concept concept) {
     return concept.hasUri() ? localName(concept.getUri()) : "";
   }
@@ -152,9 +98,10 @@ public class JsTreeBuilder {
     return uri.substring(i + 1);
   }
 
-  private static String pathId(Concept concept) {
+  private static String pathId(Concept concept, Function<Concept, List<Concept>> getNeighbours) {
     return DigestUtils.sha1Hex(Joiner.on('.').join(Lists.transform(
-        ListUtils.flatten(ConceptGraphUtils.collectBroaderPaths(concept)), new GetResourceId())));
+        ListUtils.flatten(ConceptGraphUtils.collectPaths(concept, getNeighbours)),
+        new GetResourceId())));
   }
 
   private static String findProperty(Concept concept, String propertyId, String lang) {
@@ -164,6 +111,75 @@ public class JsTreeBuilder {
       }
     }
     return "";
+  }
+
+  private static class JsTreeNode {
+
+    private String id;
+    private String text;
+    private Object icon;
+    private Map<String, Boolean> state;
+    private Object children;
+    @SerializedName("a_attr")
+    private Map<String, String> linkElementAttributes;
+    @SerializedName("li_attr")
+    private Map<String, String> listElementAttributes;
+
+    public String getId() {
+      return id;
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    public String getText() {
+      return text;
+    }
+
+    public void setText(String text) {
+      this.text = text;
+    }
+
+    public Object getIcon() {
+      return icon;
+    }
+
+    public void setIcon(Object icon) {
+      this.icon = icon;
+    }
+
+    public Map<String, Boolean> getState() {
+      return state;
+    }
+
+    public void setState(Map<String, Boolean> state) {
+      this.state = state;
+    }
+
+    public Object getChildren() {
+      return children;
+    }
+
+    public void setChildren(Object children) {
+      this.children = children;
+    }
+
+    public Map<String, String> getLinkElementAttributes() {
+      return linkElementAttributes;
+    }
+
+    public void setLinkElementAttributes(Map<String, String> linkElementAttributes) {
+      this.linkElementAttributes = linkElementAttributes;
+    }
+
+    public Map<String, String> getListElementAttributes() {
+      return listElementAttributes;
+    }
+
+    public void setListElementAttributes(Map<String, String> listElementAttributes) {
+      this.listElementAttributes = listElementAttributes;
+    }
   }
 
 }

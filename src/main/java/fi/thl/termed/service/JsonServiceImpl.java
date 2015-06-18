@@ -1,5 +1,6 @@
 package fi.thl.termed.service;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -22,6 +23,7 @@ import javax.persistence.PersistenceContext;
 import fi.thl.termed.model.AuditedResource;
 import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
+import fi.thl.termed.model.ConceptReference;
 import fi.thl.termed.model.Scheme;
 import fi.thl.termed.model.SchemeResource;
 import fi.thl.termed.model.SerializedConcept;
@@ -110,9 +112,34 @@ public class JsonServiceImpl implements JsonService {
     return JsonNull.INSTANCE;
   }
 
-  private JsonObject saveConcept(JsonObject concept) {
-    return toJson(conceptIndex.index(
-        conceptRepository.save(resourceUpdated(fromJson(concept, Concept.class)))));
+  private JsonObject saveConcept(JsonObject jsonConcept) {
+    Concept concept = resourceUpdated(fromJson(jsonConcept, Concept.class));
+
+    if (concept.getReferences() != null) {
+      concept = saveConceptReferences(concept);
+    }
+
+    return toJson(conceptIndex.index(conceptRepository.save(concept)));
+  }
+
+  // workaround for saving references as they didn't cascade nicely with concept
+  private Concept saveConceptReferences(Concept concept) {
+    List<ConceptReference> references = Lists.newArrayList(concept.getReferences());
+
+    // first save concept w/o refs
+    concept.getReferences().clear();
+    concept = conceptRepository.save(concept);
+
+    // merge refs separately
+    List<ConceptReference> mergedReferences = Lists.newArrayList();
+    for (ConceptReference reference : references) {
+      reference.setSource(concept);
+      mergedReferences.add(em.merge(reference));
+    }
+
+    // restore merged refs and return concept for final saving and indexing
+    concept.getReferences().addAll(mergedReferences);
+    return concept;
   }
 
   private JsonPrimitive saveConcept(JsonArray concepts) {

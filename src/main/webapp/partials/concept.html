@@ -120,19 +120,19 @@
                     </a><br>
                 </span>
             </dd>
-            <dt ng-show="concept.references.types && concept.references.types.length > 0">Tyypit
+            <dt ng-show="concept.references.type && concept.references.type.length > 0">Tyypit
             </dt>
-            <dd ng-show="concept.references.types && concept.references.types.length > 0">
-                <span ng-repeat="n in concept.references.types | orderBy:prefLabelFi">
+            <dd ng-show="concept.references.type && concept.references.type.length > 0">
+                <span ng-repeat="n in concept.references.type | orderBy:prefLabelFi">
                     <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
                         <thl-property-values values="n.properties.prefLabel"
                                              lang="fi"></thl-property-values>
                     </a><br>
                 </span>
             </dd>
-            <dt ng-show="concept.referrers.types && concept.referrers.types.length > 0">Ilmentymät
+            <dt ng-show="concept.referrers.type && concept.referrers.type.length > 0">Ilmentymät
             </dt>
-            <dd ng-show="concept.referrers.types && concept.referrers.types.length > 0">
+            <dd ng-show="concept.referrers.type && concept.referrers.type.length > 0">
                 <span ng-repeat="instancePartOfPaths in instancesPartOfPaths">
                     <span ng-repeat="path in instancePartOfPaths">
                         <span ng-repeat="b in path">
@@ -145,18 +145,20 @@
                     </span>
                 </span>
             </dd>
-            <dt ng-show="concept.partOf && concept.partOf.length > 0">Osa kokonaisuutta</dt>
-            <dd ng-show="concept.partOf && concept.partOf.length > 0">
-                <span ng-repeat="n in concept.partOf | orderBy:prefLabelFi">
+            <dt ng-show="concept.references.partOf && concept.references.partOf.length > 0">Osa
+                kokonaisuutta
+            </dt>
+            <dd ng-show="concept.references.partOf && concept.references.partOf.length > 0">
+                <span ng-repeat="n in concept.references.partOf | orderBy:prefLabelFi">
                     <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
                         <thl-property-values values="n.properties.prefLabel"
                                              lang="fi"></thl-property-values>
                     </a><br>
                 </span>
             </dd>
-            <dt ng-show="concept.parts && concept.parts.length > 0">Osat</dt>
-            <dd ng-show="concept.parts && concept.parts.length > 0">
-                <span ng-repeat="n in concept.parts | orderBy:prefLabelFi">
+            <dt ng-show="concept.referrers.partOf && concept.referrers.partOf.length > 0">Osat</dt>
+            <dd ng-show="concept.referrers.partOf && concept.referrers.partOf.length > 0">
+                <span ng-repeat="n in concept.referrers.partOf | orderBy:prefLabelFi">
                     <a ng-href="#/schemes/{{n.scheme.id}}/concepts/{{n.id}}">
                         <thl-property-values values="n.properties.prefLabel"
                                              lang="fi"></thl-property-values>
