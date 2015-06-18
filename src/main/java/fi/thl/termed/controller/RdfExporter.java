@@ -145,27 +145,27 @@ public class RdfExporter {
   }
 
   private void exportConcepts(String schemeId, Model model) {
-    for (Concept concept : conceptRepository.findBySchemeId(schemeId)) {
-      Resource r = createResource(uri(concept));
-      model.add(r, RDF.type, SKOS.Concept);
-      model.add(r, SKOS.inScheme, createResource(uri(concept.getScheme())));
-      exportProperties(concept, r, model);
-      if (concept.getBroader() != null) {
-        for (Concept broader : concept.getBroader()) {
-          model.add(r, SKOS.broader, createResource(uri(broader)));
-        }
-      }
-      if (concept.getNarrower() != null) {
-        for (Concept narrower : concept.getNarrower()) {
-          model.add(r, SKOS.narrower, createResource(uri(narrower)));
-        }
-      }
-      if (concept.getRelated() != null) {
-        for (Concept related : concept.getRelated()) {
-          model.add(r, SKOS.related, createResource(uri(related)));
-        }
-      }
-    }
+//    for (Concept concept : conceptRepository.findBySchemeId(schemeId)) {
+//      Resource r = createResource(uri(concept));
+//      model.add(r, RDF.type, SKOS.Concept);
+//      model.add(r, SKOS.inScheme, createResource(uri(concept.getScheme())));
+//      exportProperties(concept, r, model);
+//      if (concept.getBroader() != null) {
+//        for (Concept broader : concept.getBroader()) {
+//          model.add(r, SKOS.broader, createResource(uri(broader)));
+//        }
+//      }
+//      if (concept.getNarrower() != null) {
+//        for (Concept narrower : concept.getNarrower()) {
+//          model.add(r, SKOS.narrower, createResource(uri(narrower)));
+//        }
+//      }
+//      if (concept.getRelated() != null) {
+//        for (Concept related : concept.getRelated()) {
+//          model.add(r, SKOS.related, createResource(uri(related)));
+//        }
+//      }
+//    }
   }
 
 }

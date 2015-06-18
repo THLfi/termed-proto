@@ -112,7 +112,7 @@ public class JsonServiceImpl implements JsonService {
 
   private JsonObject saveConcept(JsonObject concept) {
     return toJson(conceptIndex.index(
-        conceptRepository.saveConcept(resourceUpdated(fromJson(concept, Concept.class)))));
+        conceptRepository.save(resourceUpdated(fromJson(concept, Concept.class)))));
   }
 
   private JsonPrimitive saveConcept(JsonArray concepts) {
@@ -211,7 +211,7 @@ public class JsonServiceImpl implements JsonService {
 
   @Override
   public void removeConcept(String id) {
-    conceptRepository.deleteConcept(conceptRepository.findOne(id));
+    conceptRepository.delete(conceptRepository.findOne(id));
   }
 
 }

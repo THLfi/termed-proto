@@ -50,7 +50,7 @@ public class JsonExporter {
                       PropertyListConverter.PROPERTY_MAP_TYPE,
                       new PropertyListConverter());
     registerConverter(builder, Concept.class, SerializedConcept.class,
-                      new ConceptLoadingConverter(false));
+                      new ConceptLoadingConverter());
 
     this.gson = builder.create();
   }
@@ -61,15 +61,16 @@ public class JsonExporter {
   @Transactional
   public JsonArray exportJson(@PathVariable("schemeId") String schemeId)
       throws IOException {
-    log.info("Exporting {}", schemeId);
-
-    if (!schemeRepository.exists(schemeId)) {
-      log.error("Scheme {} does not exist.", schemeId);
-      return new JsonArray();
-    }
-
-    return gson.toJsonTree(conceptRepository.findBySchemeIdAndBroaderIsNull(
-        schemeId)).getAsJsonArray();
+//    log.info("Exporting {}", schemeId);
+//
+//    if (!schemeRepository.exists(schemeId)) {
+//      log.error("Scheme {} does not exist.", schemeId);
+//      return new JsonArray();
+//    }
+//
+//    return gson.toJsonTree(conceptRepository.findBySchemeIdAndBroaderIsNull(
+//        schemeId)).getAsJsonArray();
+    return null;
   }
 
 

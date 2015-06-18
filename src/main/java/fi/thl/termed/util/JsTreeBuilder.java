@@ -88,12 +88,8 @@ public class JsTreeBuilder {
   }
 
   public static List<JsTreeNode> buildTreesFor(Concept concept) {
-    if (concept.hasPartOf() || concept.hasParts()) {
-      return buildTreesFor(concept, ConceptGraphUtils.getPartsFunction,
-                           ConceptGraphUtils.getPartOfFunction);
-    }
-    return buildTreesFor(concept, ConceptGraphUtils.getNarrowerFunction,
-                         ConceptGraphUtils.getBroaderFunction);
+    return buildTreesFor(concept, ConceptReferenceFunctions.getNarrowerFunction,
+                         ConceptReferenceFunctions.getBroaderFunction);
   }
 
   public static List<JsTreeNode> buildTreesFor(Concept concept,

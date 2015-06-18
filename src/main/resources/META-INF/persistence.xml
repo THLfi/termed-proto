@@ -12,6 +12,7 @@
             <property name="hibernate.search.lucene_version" value="LUCENE_36"/>
             <property name="hibernate.default_schema" value="termed"/>
             <property name="hibernate.hbm2ddl.auto" value="verify"/>
+            <property name="hibernate.show_sql" value="false"/>
         </properties>
     </persistence-unit>
 

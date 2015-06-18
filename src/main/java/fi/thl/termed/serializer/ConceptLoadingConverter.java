@@ -1,19 +1,23 @@
 package fi.thl.termed.serializer;
 
 import com.google.common.base.Converter;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
 import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
+import fi.thl.termed.model.ConceptReference;
 import fi.thl.termed.model.Resource;
 import fi.thl.termed.model.SchemeResource;
 import fi.thl.termed.model.SerializedConcept;
+import fi.thl.termed.util.ListUtils;
+import fi.thl.termed.util.MapUtils;
 
 /**
  * Converts {@code Concept} into json serializable version where references to other concepts and
@@ -23,36 +27,63 @@ import fi.thl.termed.model.SerializedConcept;
 public class ConceptLoadingConverter extends Converter<Concept, SerializedConcept> {
 
   private final EntityManager em;
-  private boolean truncateNarrower;
-
-  public ConceptLoadingConverter(boolean truncateNarrower) {
-    this(null, truncateNarrower);
-  }
 
   public ConceptLoadingConverter(EntityManager em) {
-    this(em, true);
+    this.em = em;
   }
 
-  public ConceptLoadingConverter(EntityManager em, boolean truncateNarrower) {
-    this.em = em;
-    this.truncateNarrower = truncateNarrower;
+  public ConceptLoadingConverter() {
+    this.em = null;
   }
 
   @Override
   protected SerializedConcept doForward(Concept concept) {
     SerializedConcept serializedConcept = new SerializedConcept(new SchemeResource(concept));
-    serializedConcept.setTypes(transform(concept.getTypes(), truncateConcept));
-    serializedConcept.setInstances(transform(concept.getInstances(), truncateConcept));
-    serializedConcept.setPartOf(transform(concept.getPartOf(), truncateConcept));
-    serializedConcept.setParts(transform(concept.getParts(), truncateConcept));
-    serializedConcept.setBroader(transform(concept.getBroader(), truncateConcept));
-    serializedConcept.setNarrower(
-        truncateNarrower ? transform(concept.getNarrower(), truncateConcept)
-                         : concept.getNarrower());
-    serializedConcept.setRelated(transform(concept.getRelated(), truncateConcept));
-    serializedConcept.setRelatedFrom(transform(concept.getRelatedFrom(), truncateConcept));
-    serializedConcept.setCollections(transform(concept.getCollections(), truncateCollection));
+
+    serializedConcept.setReferences(toSerializableReferences(ListUtils.nullToEmpty(
+        concept.getReferences())));
+    serializedConcept.setReferrers(toSerializableReferrers(ListUtils.nullToEmpty(
+        concept.getReferrers())));
+    serializedConcept.setCollections(toSerializableCollections(ListUtils.nullToEmpty(
+        concept.getCollections())));
+
     return serializedConcept;
+  }
+
+  private Map<String, List<SchemeResource>> toSerializableReferences(
+      List<ConceptReference> references) {
+    Map<String, List<SchemeResource>> referenceMap = Maps.newHashMap();
+
+    for (ConceptReference reference : references) {
+      MapUtils.put(referenceMap, reference.getTypeId(), truncateConcept(reference.getTarget()));
+    }
+
+    return referenceMap;
+  }
+
+  private Map<String, List<SchemeResource>> toSerializableReferrers(
+      List<ConceptReference> referrers) {
+    Map<String, List<SchemeResource>> referrerMap = Maps.newHashMap();
+
+    for (ConceptReference referrer : referrers) {
+      MapUtils.put(referrerMap, referrer.getTypeId(), truncateConcept(referrer.getSource()));
+    }
+
+    return referrerMap;
+  }
+
+  private SchemeResource truncateConcept(Concept concept) {
+    return concept != null ? new SchemeResource(concept) : null;
+  }
+
+  private List<SchemeResource> toSerializableCollections(List<Collection> collections) {
+    List<SchemeResource> results = Lists.newArrayList();
+
+    for (Collection collection : collections) {
+      results.add(new SchemeResource(collection));
+    }
+
+    return results;
   }
 
   @Override
@@ -60,69 +91,61 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
     Preconditions.checkNotNull(em, "Can't restore references without entity manager.");
 
     Concept concept = new Concept(new SchemeResource(serializedConcept));
-    concept.setTypes(transform(serializedConcept.getTypes(), findConcept));
-    concept.setInstances(transform(serializedConcept.getInstances(), findConcept));
-    concept.setPartOf(transform(serializedConcept.getPartOf(), findConcept));
-    concept.setParts(transform(serializedConcept.getParts(), findConcept));
-    concept.setBroader(transform(serializedConcept.getBroader(), findConcept));
-    concept.setNarrower(truncateNarrower ? transform(serializedConcept.getNarrower(), findConcept)
-                                         : serializedConcept.getNarrower());
-    concept.setRelated(transform(serializedConcept.getRelated(), findConcept));
-    concept.setRelatedFrom(transform(serializedConcept.getRelatedFrom(), findConcept));
-    concept.setCollections(transform(serializedConcept.getCollections(), findCollection));
+
+    concept.setReferences(fromSerializableReferences(concept, MapUtils.nullToEmpty(
+        serializedConcept.getReferences())));
+    concept.setReferrers(fromSerializableReferrers(concept, MapUtils.nullToEmpty(
+        serializedConcept.getReferrers())));
+    concept.setCollections(fromSerializableCollections(ListUtils.nullToEmpty(
+        serializedConcept.getCollections())));
+
     return concept;
   }
 
-  public <F, T> List<T> transform(List<F> fromList, Function<F, T> function) {
-    return fromList != null ? Lists.transform(fromList, function) : null;
+  private List<ConceptReference> fromSerializableReferences(
+      Concept source, Map<String, List<SchemeResource>> referenceMap) {
+
+    List<ConceptReference> references = Lists.newArrayList();
+
+    for (Map.Entry<String, List<SchemeResource>> entry : referenceMap.entrySet()) {
+      for (SchemeResource target : entry.getValue()) {
+        references.add(new ConceptReference(entry.getKey(), source, loadConcept(target)));
+      }
+    }
+
+    return references;
   }
 
-  private Concept truncateConcept(Concept concept) {
-    return concept != null ? new Concept(new SchemeResource(concept)) : null;
+  private List<ConceptReference> fromSerializableReferrers(
+      Concept target, Map<String, List<SchemeResource>> referrerMap) {
+
+    List<ConceptReference> referrers = Lists.newArrayList();
+
+    for (Map.Entry<String, List<SchemeResource>> entry : referrerMap.entrySet()) {
+      for (SchemeResource source : entry.getValue()) {
+        referrers.add(new ConceptReference(entry.getKey(), loadConcept(source), target));
+      }
+    }
+
+    return referrers;
   }
 
-  private Collection truncateCollection(Collection collection) {
-    return collection != null ? new Collection(new SchemeResource(collection)) : null;
+  private Concept loadConcept(Resource resource) {
+    return em.find(Concept.class, resource.getId());
   }
 
-  private Concept findConcept(Resource r) {
-    return r != null && r.getId() != null ? em.find(Concept.class, r.getId()) : null;
+  private List<Collection> fromSerializableCollections(List<SchemeResource> collections) {
+    List<Collection> results = Lists.newArrayList();
+
+    for (SchemeResource collection : collections) {
+      results.add(loadCollection(collection));
+    }
+
+    return results;
   }
 
-  private Collection findCollection(Resource r) {
-    return r != null && r.getId() != null ? em.find(Collection.class, r.getId()) : null;
+  private Collection loadCollection(Resource resource) {
+    return em.find(Collection.class, resource.getId());
   }
-
-  private final Function<Concept, Concept> truncateConcept =
-      new Function<Concept, Concept>() {
-        @Override
-        public Concept apply(Concept concept) {
-          return truncateConcept(concept);
-        }
-      };
-
-  private final Function<Collection, Collection> truncateCollection =
-      new Function<Collection, Collection>() {
-        @Override
-        public Collection apply(Collection collection) {
-          return truncateCollection(collection);
-        }
-      };
-
-  private final Function<Concept, Concept> findConcept =
-      new Function<Concept, Concept>() {
-        @Override
-        public Concept apply(Concept propertyResource) {
-          return findConcept(propertyResource);
-        }
-      };
-
-  private final Function<Collection, Collection> findCollection =
-      new Function<Collection, Collection>() {
-        @Override
-        public Collection apply(Collection propertyResource) {
-          return findCollection(propertyResource);
-        }
-      };
 
 }

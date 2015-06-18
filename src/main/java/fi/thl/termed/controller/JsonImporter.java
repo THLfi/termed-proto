@@ -62,68 +62,68 @@ public class JsonImporter {
                       new PropertyListConverter());
     this.gson = builder.create();
   }
-
-  @RequestMapping(method = POST,
-      value = "import/schemes/{schemeId}/concepts",
-      consumes = "application/json;charset=UTF-8")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  @Transactional
-  public void importConcepts(@PathVariable("schemeId") String schemeId,
-                             @RequestBody JsonArray input) {
-    if (!schemeRepository.exists(schemeId)) {
-      log.error("Scheme {} does not exist.", schemeId);
-      return;
-    }
-
-    List<Concept> rootConcepts = gson.fromJson(input, CONCEPT_LIST_TYPE);
-
-    Scheme scheme = schemeRepository.findOne(schemeId);
-    Set<Concept> allConcepts =
-        ConceptGraphUtils.collectConcepts(rootConcepts, ConceptGraphUtils.getAllNeighboursFunction);
-
-    log.info("Importing {} concepts", allConcepts.size());
-    log.info("Saving concept properties");
-
-    // save all identities
-    for (Concept concept : allConcepts) {
-      concept.ensureId();
-      concept.setScheme(scheme);
-      if (!conceptRepository.exists(concept.getId())) {
-        conceptRepository.save(new Concept(new SchemeResource(concept)));
-      }
-    }
-
-    log.info("Linking concepts");
-
-    // populate stored fields
-    for (Concept concept : allConcepts) {
-      for (Concept narrower : ListUtils.nullToEmpty(concept.getNarrower())) {
-        narrower.addBroader(concept);
-      }
-      for (Concept instance : ListUtils.nullToEmpty(concept.getInstances())) {
-        instance.addType(concept);
-      }
-      for (Concept part : ListUtils.nullToEmpty(concept.getParts())) {
-        part.addPartOf(concept);
-      }
-    }
-
-    for (Concept concept: rootConcepts) {
-      saveConceptTree(concept);
-    }
-  }
-
-  private void saveConceptTree(Concept concept) {
-    conceptRepository.save(concept);
-    for (Concept c : ListUtils.nullToEmpty(concept.getNarrower())) {
-      saveConceptTree(c);
-    }
-    for (Concept c : ListUtils.nullToEmpty(concept.getParts())) {
-      saveConceptTree(c);
-    }
-    for (Concept c : ListUtils.nullToEmpty(concept.getInstances())) {
-      saveConceptTree(c);
-    }
-  }
+//
+//  @RequestMapping(method = POST,
+//      value = "import/schemes/{schemeId}/concepts",
+//      consumes = "application/json;charset=UTF-8")
+//  @ResponseStatus(HttpStatus.NO_CONTENT)
+//  @Transactional
+//  public void importConcepts(@PathVariable("schemeId") String schemeId,
+//                             @RequestBody JsonArray input) {
+//    if (!schemeRepository.exists(schemeId)) {
+//      log.error("Scheme {} does not exist.", schemeId);
+//      return;
+//    }
+//
+//    List<Concept> rootConcepts = gson.fromJson(input, CONCEPT_LIST_TYPE);
+//
+//    Scheme scheme = schemeRepository.findOne(schemeId);
+//    Set<Concept> allConcepts =
+//        ConceptGraphUtils.collectConcepts(rootConcepts, ConceptGraphUtils.getAllNeighboursFunction);
+//
+//    log.info("Importing {} concepts", allConcepts.size());
+//    log.info("Saving concept properties");
+//
+//    // save all identities
+//    for (Concept concept : allConcepts) {
+//      concept.ensureId();
+//      concept.setScheme(scheme);
+//      if (!conceptRepository.exists(concept.getId())) {
+//        conceptRepository.save(new Concept(new SchemeResource(concept)));
+//      }
+//    }
+//
+//    log.info("Linking concepts");
+//
+//    // populate stored fields
+//    for (Concept concept : allConcepts) {
+//      for (Concept narrower : ListUtils.nullToEmpty(concept.getNarrower())) {
+//        narrower.addBroader(concept);
+//      }
+//      for (Concept instance : ListUtils.nullToEmpty(concept.getInstances())) {
+//        instance.addType(concept);
+//      }
+//      for (Concept part : ListUtils.nullToEmpty(concept.getParts())) {
+//        part.addPartOf(concept);
+//      }
+//    }
+//
+//    for (Concept concept: rootConcepts) {
+//      saveConceptTree(concept);
+//    }
+//  }
+//
+//  private void saveConceptTree(Concept concept) {
+//    conceptRepository.save(concept);
+//    for (Concept c : ListUtils.nullToEmpty(concept.getNarrower())) {
+//      saveConceptTree(c);
+//    }
+//    for (Concept c : ListUtils.nullToEmpty(concept.getParts())) {
+//      saveConceptTree(c);
+//    }
+//    for (Concept c : ListUtils.nullToEmpty(concept.getInstances())) {
+//      saveConceptTree(c);
+//    }
+//  }
 
 }

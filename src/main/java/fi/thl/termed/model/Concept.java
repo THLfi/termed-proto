@@ -1,62 +1,36 @@
 package fi.thl.termed.model;
 
-import com.google.common.collect.Iterators;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
+import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
-import fi.thl.termed.util.ResourceIdMatches;
+import fi.thl.termed.util.ConceptReferenceListBridge;
+import fi.thl.termed.util.ListUtils;
 
 @Indexed
 @Entity
-public class Concept extends SchemeResource {
+public class Concept extends SchemeResource implements Serializable {
 
-  @IndexedEmbedded(includePaths = {"id"})
-  @ManyToMany
-  @JoinTable(name = "concept_type",
-      joinColumns = {@JoinColumn(name = "concept_id")},
-      inverseJoinColumns = {@JoinColumn(name = "type_id")})
-  private List<Concept> types;
+  @Field
+  @FieldBridge(impl = ConceptReferenceListBridge.class)
+  @IndexedEmbedded
+  @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ConceptReference> references;
 
-  @ManyToMany(mappedBy = "types")
-  private List<Concept> instances;
-
-  @IndexedEmbedded(includePaths = {"id"})
-  @ManyToMany
-  @JoinTable(name = "concept_part_of",
-      joinColumns = {@JoinColumn(name = "concept_id")},
-      inverseJoinColumns = {@JoinColumn(name = "part_of_id")})
-  private List<Concept> partOf;
-
-  @ManyToMany(mappedBy = "partOf")
-  private List<Concept> parts;
-
-  @IndexedEmbedded(includePaths = {"id"})
-  @ManyToMany
-  @JoinTable(name = "concept_broader",
-      joinColumns = {@JoinColumn(name = "concept_id")},
-      inverseJoinColumns = {@JoinColumn(name = "broader_id")})
-  private List<Concept> broader;
-
-  @ManyToMany(mappedBy = "broader")
-  private List<Concept> narrower;
-
-  @ManyToMany
-  @JoinTable(name = "concept_related",
-      joinColumns = {@JoinColumn(name = "concept_id")},
-      inverseJoinColumns = {@JoinColumn(name = "related_id")})
-  private List<Concept> related;
-
-  @ManyToMany(mappedBy = "related")
-  private List<Concept> relatedFrom;
+  @OneToMany(mappedBy = "target")
+  private List<ConceptReference> referrers;
 
   @ManyToMany(mappedBy = "members")
   private List<Collection> collections;
@@ -75,156 +49,69 @@ public class Concept extends SchemeResource {
 
   public Concept(Concept concept) {
     super(concept);
-    this.types = concept.types;
-    this.instances = concept.instances;
-    this.partOf = concept.partOf;
-    this.parts = concept.parts;
-    this.broader = concept.broader;
-    this.narrower = concept.narrower;
-    this.related = concept.related;
-    this.relatedFrom = concept.relatedFrom;
+    this.references = concept.references;
+    this.referrers = concept.referrers;
     this.collections = concept.collections;
   }
 
-  public boolean hasTypes() {
-    return types != null && !types.isEmpty();
+  public List<ConceptReference> getReferences() {
+    return references;
   }
 
-  public List<Concept> getTypes() {
-    return types;
-  }
+  public List<Concept> getReferencesByType(String typeId) {
+    List<Concept> results = Lists.newArrayList();
 
-  public void setTypes(List<Concept> types) {
-    this.types = types;
-  }
-
-  public void addType(Concept concept) {
-    if (types == null) {
-      types = Lists.newArrayList();
+    for (ConceptReference reference : ListUtils.nullToEmpty(references)) {
+      if (typeId.equals(reference.getTypeId())) {
+        results.add(reference.getTarget());
+      }
     }
-    types.add(concept);
+
+    return results;
   }
 
-  public List<Concept> getInstances() {
-    return instances;
+  public void setReferences(List<ConceptReference> references) {
+    this.references = references;
   }
 
-  public void setInstances(List<Concept> instances) {
-    this.instances = instances;
-  }
-
-  public boolean hasPartOf() {
-    return partOf != null && !partOf.isEmpty();
-  }
-
-  public List<Concept> getPartOf() {
-    return partOf;
-  }
-
-  public void setPartOf(List<Concept> partOf) {
-    this.partOf = partOf;
-  }
-
-  public void addPartOf(Concept concept) {
-    if (partOf == null) {
-      partOf = Lists.newArrayList();
+  public void addReferences(ConceptReferenceType type, Concept... targets) {
+    if (references == null) {
+      references = Lists.newArrayList();
     }
-    partOf.add(concept);
-  }
 
-  public boolean hasParts() {
-    return parts != null && !parts.isEmpty();
-  }
-
-  public List<Concept> getParts() {
-    return parts;
-  }
-
-  public void setParts(List<Concept> parts) {
-    this.parts = parts;
-  }
-
-  public boolean hasBroader() {
-    return broader != null && !broader.isEmpty();
-  }
-
-  public List<Concept> getBroader() {
-    return broader;
-  }
-
-  public void setBroader(List<Concept> broader) {
-    this.broader = broader;
-  }
-
-  public void addBroader(Concept concept) {
-    if (broader == null) {
-      broader = Lists.newArrayList();
+    for (Concept target : targets) {
+      references.add(new ConceptReference(type, this, target));
     }
-    broader.add(concept);
   }
 
-  public boolean hasNarrower() {
-    return narrower != null && !narrower.isEmpty();
+  public List<ConceptReference> getReferrers() {
+    return referrers;
   }
 
-  public List<Concept> getNarrower() {
-    return narrower;
-  }
+  public List<Concept> getReferrersByType(String typeId) {
+    List<Concept> results = Lists.newArrayList();
 
-  public void setNarrower(List<Concept> narrower) {
-    this.narrower = narrower;
-  }
-
-  public void addNarrower(Concept n) {
-    if (narrower == null) {
-      narrower = Lists.newArrayList();
+    for (ConceptReference referrer : ListUtils.nullToEmpty(referrers)) {
+      if (typeId.equals(referrer.getTypeId())) {
+        results.add(referrer.getSource());
+      }
     }
-    narrower.add(n);
+
+    return results;
   }
 
-  public void removeNarrower(Concept concept) {
-    if (narrower == null) {
-      return;
+  public void setReferrers(List<ConceptReference> referrers) {
+    this.referrers = referrers;
+  }
+
+  public void addReferrers(ConceptReferenceType type, Concept... sources) {
+    if (referrers == null) {
+      referrers = Lists.newArrayList();
     }
-    Iterators.removeIf(narrower.iterator(), new ResourceIdMatches(concept.getId()));
-  }
 
-  public boolean hasRelated() {
-    return related != null && !related.isEmpty();
-  }
-
-  public List<Concept> getRelated() {
-    return related;
-  }
-
-  public void setRelated(List<Concept> related) {
-    this.related = related;
-  }
-
-  public void addRelated(Concept r) {
-    if (related == null) {
-      related = Lists.newArrayList();
+    for (Concept source : sources) {
+      referrers.add(new ConceptReference(type, source, this));
     }
-    related.add(r);
-  }
-
-  public void removeRelated(Concept concept) {
-    if (related == null) {
-      return;
-    }
-    Iterators.removeIf(related.iterator(), new ResourceIdMatches(concept.getId()));
-  }
-
-  public List<Concept> getRelatedFrom() {
-    return relatedFrom;
-  }
-
-  public void setRelatedFrom(List<Concept> relatedFrom) {
-    this.relatedFrom = relatedFrom;
-  }
-
-  public boolean hasCollections() {
-    return collections != null && !collections.isEmpty();
   }
 
   public List<Collection> getCollections() {
@@ -233,6 +120,11 @@ public class Concept extends SchemeResource {
 
   public void setCollections(List<Collection> collections) {
     this.collections = collections;
+  }
+
+  @Override
+  public MoreObjects.ToStringHelper toStringHelper() {
+    return super.toStringHelper().add("references", references);
   }
 
 }

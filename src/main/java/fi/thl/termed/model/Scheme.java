@@ -9,11 +9,15 @@ import javax.persistence.Entity;
 public class Scheme extends AuditedResource {
 
   public Scheme() {
-    this(null);
+    super();
   }
 
   public Scheme(String id) {
     super(id);
+  }
+
+  public Scheme(Scheme scheme) {
+    super(scheme);
   }
 
 }

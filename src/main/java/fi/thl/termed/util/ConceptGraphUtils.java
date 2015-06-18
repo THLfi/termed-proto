@@ -14,111 +14,22 @@ public final class ConceptGraphUtils {
   private ConceptGraphUtils() {
   }
 
-  public static final Function<Concept, List<Concept>> getBroaderFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getBroader();
-        }
-      };
-
-  public static final Function<Concept, List<Concept>> getNarrowerFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getNarrower();
-        }
-      };
-
-  public static final Function<Concept, List<Concept>> getTypesFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getTypes();
-        }
-      };
-
-  public static final Function<Concept, List<Concept>> getInstancesFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getInstances();
-        }
-      };
-
-  public static final Function<Concept, List<Concept>> getPartOfFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getPartOf();
-        }
-      };
-
-  public static final Function<Concept, List<Concept>> getPartsFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getParts();
-        }
-      };
-
-  public static final Function<Concept, List<Concept>> getRelatedFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getRelated();
-        }
-      };
-
-  public static final Function<Concept, List<Concept>> getRelatedFromFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          return c.getRelatedFrom();
-        }
-      };
-
-  @SuppressWarnings("unchecked")
-  public static final List<Function<Concept, List<Concept>>> getNeighboursFunctions =
-      Lists.newArrayList(getBroaderFunction,
-                         getNarrowerFunction,
-                         getTypesFunction,
-                         getInstancesFunction,
-                         getPartOfFunction,
-                         getPartsFunction,
-                         getRelatedFunction,
-                         getRelatedFromFunction);
-
-  public static final Function<Concept, List<Concept>> getAllNeighboursFunction =
-      new Function<Concept, List<Concept>>() {
-        @Override
-        public List<Concept> apply(Concept c) {
-          Set<Concept> neighbours = Sets.newLinkedHashSet();
-
-          for (Function<Concept, List<Concept>> f : getNeighboursFunctions) {
-            neighbours.addAll(ListUtils.nullToEmpty(f.apply(c)));
-          }
-
-          return Lists.newArrayList(neighbours);
-        }
-      };
-
   /**
    * Pretty print concept graph as tree using neighbour function.
    */
   public static String prettyPrintTree(Concept concept,
-                                       Function<Concept, List<Concept>> getNeighbours) {
+                                       Function<Concept, List<Concept>> neighbourFunction) {
     StringBuilder builder = new StringBuilder();
-    prettyPrintTree("", concept, getNeighbours, builder);
+    prettyPrintTree("", concept, neighbourFunction, builder);
     return builder.toString();
   }
 
   private static void prettyPrintTree(String indent, Concept concept,
-                                      Function<Concept, List<Concept>> getNeighbours,
+                                      Function<Concept, List<Concept>> neighbourFunction,
                                       StringBuilder builder) {
     builder.append(String.format("%s - %s\n", indent, concept.getId()));
-    for (Concept neighbour : ListUtils.nullToEmpty(getNeighbours.apply(concept))) {
-      prettyPrintTree(indent + "\t", neighbour, getNeighbours, builder);
+    for (Concept neighbour : ListUtils.nullToEmpty(neighbourFunction.apply(concept))) {
+      prettyPrintTree(indent + "\t", neighbour, neighbourFunction, builder);
     }
   }
 
@@ -137,12 +48,12 @@ public final class ConceptGraphUtils {
    * Collect all concepts reachable from root concepts using neighbour functions.
    */
   public static Set<Concept> collectConcepts(List<Concept> roots,
-                                             Function<Concept, List<Concept>> getNeighboursFunction) {
+                                             Function<Concept, List<Concept>> neighbourFunctionFunction) {
     Set<Concept> results = Sets.newHashSet();
 
     for (Concept root : roots) {
       Set<Concept> r = Sets.newHashSet();
-      collectConcepts(root, getNeighboursFunction, r);
+      collectConcepts(root, neighbourFunctionFunction, r);
       results.addAll(r);
     }
 
@@ -154,39 +65,41 @@ public final class ConceptGraphUtils {
    * the same results as this but is slightly less efficient.
    */
   private static void collectConcepts(Concept concept,
-                                      Function<Concept, List<Concept>> getNeighbours,
+                                      Function<Concept, List<Concept>> neighbourFunction,
                                       Set<Concept> results) {
     if (!results.contains(concept)) {
       results.add(concept);
-      for (Concept neighbour : ListUtils.nullToEmpty(getNeighbours.apply(concept))) {
-        collectConcepts(neighbour, getNeighbours, results);
+      for (Concept neighbour : ListUtils.nullToEmpty(neighbourFunction.apply(concept))) {
+        collectConcepts(neighbour, neighbourFunction, results);
       }
     }
   }
 
   /**
-   * Enumerate all paths starting from concept using getNeighbours function.
+   * Enumerate all paths starting from concept using neighbourFunction function.
    */
   public static List<List<Concept>> collectPaths(Concept concept,
-                                                 Function<Concept, List<Concept>> getNeighbours) {
+                                                 Function<Concept, List<Concept>> neighbourFunction) {
     List<List<Concept>> paths = Lists.newArrayList();
-    collectPaths(concept, getNeighbours, Sets.<Concept>newLinkedHashSet(), paths);
+    collectPaths(concept, neighbourFunction, Sets.<Concept>newLinkedHashSet(), paths);
     return paths;
   }
 
   public static List<List<Concept>> collectBroaderPaths(Concept concept) {
-    return collectPaths(concept, getBroaderFunction);
+    return collectPaths(concept, ConceptReferenceFunctions.getBroaderFunction);
   }
 
   public static List<List<Concept>> collectPartOfPaths(Concept concept) {
-    return collectPaths(concept, getPartOfFunction);
+    return collectPaths(concept, ConceptReferenceFunctions.getPartOfFunction);
   }
 
   /**
    * Enumerate all paths from the concept
    */
-  private static void collectPaths(Concept concept, Function<Concept, List<Concept>> getNeighbours,
-                                   Set<Concept> path, List<List<Concept>> results) {
+  private static void collectPaths(Concept concept,
+                                   Function<Concept, List<Concept>> neighbourFunction,
+                                   Set<Concept> path,
+                                   List<List<Concept>> results) {
 
     if (!path.contains(concept)) {
       path.add(concept);
@@ -195,11 +108,11 @@ public final class ConceptGraphUtils {
       return;
     }
 
-    List<Concept> neighbours = ListUtils.nullToEmpty(getNeighbours.apply(concept));
+    List<Concept> neighbours = ListUtils.nullToEmpty(neighbourFunction.apply(concept));
 
     if (!neighbours.isEmpty()) {
       for (Concept neighbour : neighbours) {
-        collectPaths(neighbour, getNeighbours, Sets.newLinkedHashSet(path), results);
+        collectPaths(neighbour, neighbourFunction, Sets.newLinkedHashSet(path), results);
       }
     } else {
       results.add(toReversedList(path));
