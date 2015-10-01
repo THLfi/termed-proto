@@ -4,23 +4,21 @@ var App = angular.module('termed', ['ngResource', 'ngRoute',
     'http-auth-interceptor']);
 
 App.factory('SchemeList', function($resource) {
-  return $resource('api/schemes');
+  return $resource('api/crud/schemes');
 }).factory('Scheme', function($resource) {
-  return $resource('api/schemes/:schemeId');
+  return $resource('api/crud/schemes/:schemeId');
 }).factory('CollectionList', function($resource) {
-  return $resource('api/schemes/:schemeId/collections');
+  return $resource('api/crud/collections');
 }).factory('Collection', function($resource) {
-  return $resource('api/schemes/:schemeId/collections/:id');
-}).factory('ConceptListAll', function($resource) {
-  return $resource('api/concepts');
+  return $resource('api/crud/collections/:id');
 }).factory('ConceptList', function($resource) {
-  return $resource('api/schemes/:schemeId/concepts');
+  return $resource('api/crud/concepts');
 }).factory('Concept', function($resource) {
-  return $resource('api/schemes/:schemeId/concepts/:id');
+  return $resource('api/crud/concepts/:id');
 }).factory('ConceptBroaderPaths', function($resource) {
-  return $resource('api/schemes/:schemeId/concepts/:id/broader');
+  return $resource('api/concepts/:id/broader');
 }).factory('ConceptPartOfPaths', function($resource) {
-  return $resource('api/schemes/:schemeId/concepts/:id/partOf');
+  return $resource('api/concepts/:id/partOf');
 });
 
 App.factory('PropertyUtils', function() {
@@ -52,7 +50,7 @@ App.factory('PropertyUtils', function() {
 });
 
 App.controller('SchemeListCtrl', function($scope, $location, SchemeList,
-        ConceptListAll) {
+        ConceptList) {
 
   $scope.query = ($location.search()).q || "";
   $scope.max = 50;
@@ -63,7 +61,7 @@ App.controller('SchemeListCtrl', function($scope, $location, SchemeList,
   }
 
   $scope.searchConcepts = function(query) {
-    ConceptListAll.query({
+    ConceptList.query({
       query: query,
       max: $scope.max,
       orderBy: 'prefLabel.fi.sortable'

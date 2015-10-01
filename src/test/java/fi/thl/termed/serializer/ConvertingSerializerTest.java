@@ -29,8 +29,10 @@ public class ConvertingSerializerTest {
   @Before
   public void setUp() {
     GsonBuilder builder = new GsonBuilder();
-    ConvertingSerializer.registerConverter(builder, Boolean.class, Integer.class,
-                                           new BooleanToIntegerConverter());
+
+    builder.registerTypeAdapter(Boolean.class, ConvertingSerializer.create(
+        Integer.class, new BooleanToIntegerConverter()));
+
     this.gson = builder.create();
   }
 

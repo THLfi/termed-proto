@@ -1,14 +1,16 @@
-package fi.thl.termed.repository;
+package fi.thl.termed.model;
 
 import com.google.common.collect.Lists;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
@@ -22,32 +24,26 @@ import static org.junit.Assert.assertEquals;
                                    "file:src/main/webapp/WEB-INF/spring-security.xml"})
 @TransactionConfiguration
 @Transactional
-public class CollectionRepositoryIT {
+public class CollectionIT {
 
-  @Autowired
-  private SchemeRepository schemeRepository;
-
-  @Autowired
-  private ConceptRepository conceptRepository;
-
-  @Autowired
-  private CollectionRepository collectionRepository;
+  @PersistenceContext
+  private EntityManager em;
 
   @Test
   public void shouldAddConceptToCollection() {
-    Scheme exampleScheme = new Scheme("exampleScheme");
-    schemeRepository.saveAndFlush(exampleScheme);
+    Scheme exampleScheme = em.merge(new Scheme("exampleScheme"));
 
     Concept concept = new Concept("exampleConcept");
     concept.setScheme(exampleScheme);
-    conceptRepository.saveAndFlush(concept);
+    concept = em.merge(concept);
 
     Collection collection = new Collection("exampleCollection");
     collection.setScheme(exampleScheme);
     collection.setMembers(Lists.newArrayList(concept));
-    collectionRepository.saveAndFlush(collection);
+    em.merge(collection);
+    em.flush();
 
-    assertEquals(1, collectionRepository.findOne("exampleCollection").getMembers().size());
+    assertEquals(1, em.find(Collection.class, "exampleCollection").getMembers().size());
   }
 
 }

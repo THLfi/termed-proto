@@ -46,6 +46,10 @@ public class ConceptReference implements Serializable {
     this.target = target;
   }
 
+  public ConceptReference(String typeId, Concept source, Concept target) {
+    this(new ConceptReferenceType(typeId), source, target);
+  }
+
   public ConceptReferenceType getType() {
     return type;
   }

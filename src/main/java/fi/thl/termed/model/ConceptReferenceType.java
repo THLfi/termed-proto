@@ -8,7 +8,7 @@ import javax.persistence.Table;
 @Indexed
 @Entity
 @Table(name = "concept_reference_type")
-public class ConceptReferenceType extends Resource {
+public class ConceptReferenceType extends UriResource {
 
   public ConceptReferenceType() {
     super();
@@ -16,6 +16,10 @@ public class ConceptReferenceType extends Resource {
 
   public ConceptReferenceType(String id) {
     super(id);
+  }
+
+  public ConceptReferenceType(ConceptReferenceType type) {
+    super(type);
   }
 
 }

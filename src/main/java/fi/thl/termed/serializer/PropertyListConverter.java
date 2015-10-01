@@ -4,9 +4,7 @@ import com.google.common.base.Converter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +13,6 @@ import fi.thl.termed.model.PropertyValue;
 
 public class PropertyListConverter
     extends Converter<List<PropertyValue>, Map<String, List<LangValue>>> {
-
-  public static final Type PROPERTY_LIST_TYPE = new TypeToken<List<PropertyValue>>() {
-  }.getType();
-  public static final Type PROPERTY_MAP_TYPE = new TypeToken<Map<String, List<LangValue>>>() {
-  }.getType();
 
   @Override
   protected Map<String, List<LangValue>> doForward(List<PropertyValue> properties) {

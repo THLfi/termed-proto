@@ -14,7 +14,6 @@ import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.ConceptReference;
 import fi.thl.termed.model.ConceptReferenceType;
-import fi.thl.termed.model.Resource;
 import fi.thl.termed.model.SchemeResource;
 import fi.thl.termed.model.SerializedConcept;
 import fi.thl.termed.util.ListUtils;
@@ -22,19 +21,18 @@ import fi.thl.termed.util.MapUtils;
 
 /**
  * Converts {@code Concept} into json serializable version where references to other concepts and
- * collections are truncated into {@code SchemeResource}. In reverse conversion, referenced values
- * are restored from database using on value IDs.
+ * collections are truncated into {@code SchemeResource}.
  */
 public class ConceptLoadingConverter extends Converter<Concept, SerializedConcept> {
 
-  private final EntityManager em;
+  private EntityManager em;
+
+  public ConceptLoadingConverter() {
+    this(null);
+  }
 
   public ConceptLoadingConverter(EntityManager em) {
     this.em = em;
-  }
-
-  public ConceptLoadingConverter() {
-    this.em = null;
   }
 
   @Override
@@ -45,28 +43,26 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
         concept.getReferences())));
     serializedConcept.setReferrers(toSerializableReferrers(ListUtils.nullToEmpty(
         concept.getReferrers())));
-    serializedConcept.setCollections(toSerializableCollections(ListUtils.nullToEmpty(
+    serializedConcept.setCollections(truncateCollection(ListUtils.nullToEmpty(
         concept.getCollections())));
 
     return serializedConcept;
   }
 
-  private Map<String, List<SchemeResource>> toSerializableReferences(
-      List<ConceptReference> references) {
+  private Map<String, List<SchemeResource>> toSerializableReferences(List<ConceptReference> refs) {
     Map<String, List<SchemeResource>> referenceMap = Maps.newHashMap();
 
-    for (ConceptReference reference : references) {
+    for (ConceptReference reference : refs) {
       MapUtils.put(referenceMap, reference.getTypeId(), truncateConcept(reference.getTarget()));
     }
 
     return referenceMap;
   }
 
-  private Map<String, List<SchemeResource>> toSerializableReferrers(
-      List<ConceptReference> referrers) {
+  private Map<String, List<SchemeResource>> toSerializableReferrers(List<ConceptReference> refs) {
     Map<String, List<SchemeResource>> referrerMap = Maps.newHashMap();
 
-    for (ConceptReference referrer : referrers) {
+    for (ConceptReference referrer : refs) {
       MapUtils.put(referrerMap, referrer.getTypeId(), truncateConcept(referrer.getSource()));
     }
 
@@ -77,7 +73,7 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
     return concept != null ? new SchemeResource(concept) : null;
   }
 
-  private List<SchemeResource> toSerializableCollections(List<Collection> collections) {
+  private List<SchemeResource> truncateCollection(List<Collection> collections) {
     List<SchemeResource> results = Lists.newArrayList();
 
     for (Collection collection : collections) {
@@ -92,13 +88,10 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
     Preconditions.checkNotNull(em, "Can't restore references without entity manager.");
 
     Concept concept = new Concept(new SchemeResource(serializedConcept));
-
     concept.setReferences(fromSerializableReferences(concept, MapUtils.nullToEmpty(
         serializedConcept.getReferences())));
-    concept.setReferrers(fromSerializableReferrers(concept, MapUtils.nullToEmpty(
-        serializedConcept.getReferrers())));
-    concept.setCollections(fromSerializableCollections(ListUtils.nullToEmpty(
-        serializedConcept.getCollections())));
+    // note that referrers and groups are not populated as
+    // they have no effect on persisting this concept
 
     return concept;
   }
@@ -110,49 +103,20 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
 
     for (Map.Entry<String, List<SchemeResource>> entry : referenceMap.entrySet()) {
       for (SchemeResource target : entry.getValue()) {
-        references.add(
-            new ConceptReference(loadReferenceType(entry.getKey()), source, loadConcept(target)));
+        references.add(new ConceptReference(loadReferenceType(entry.getKey()), source,
+                                            loadConcept(target)));
       }
     }
 
     return references;
   }
 
-  private List<ConceptReference> fromSerializableReferrers(
-      Concept target, Map<String, List<SchemeResource>> referrerMap) {
-
-    List<ConceptReference> referrers = Lists.newArrayList();
-
-    for (Map.Entry<String, List<SchemeResource>> entry : referrerMap.entrySet()) {
-      for (SchemeResource source : entry.getValue()) {
-        referrers.add(
-            new ConceptReference(loadReferenceType(entry.getKey()), loadConcept(source), target));
-      }
-    }
-
-    return referrers;
-  }
-
   private ConceptReferenceType loadReferenceType(String referenceTypeId) {
     return em.find(ConceptReferenceType.class, referenceTypeId);
   }
 
-  private Concept loadConcept(Resource resource) {
+  private Concept loadConcept(SchemeResource resource) {
     return em.find(Concept.class, resource.getId());
-  }
-
-  private List<Collection> fromSerializableCollections(List<SchemeResource> collections) {
-    List<Collection> results = Lists.newArrayList();
-
-    for (SchemeResource collection : collections) {
-      results.add(loadCollection(collection));
-    }
-
-    return results;
-  }
-
-  private Collection loadCollection(Resource resource) {
-    return em.find(Collection.class, resource.getId());
   }
 
 }

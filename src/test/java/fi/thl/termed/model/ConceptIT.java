@@ -1,10 +1,9 @@
-package fi.thl.termed.repository;
+package fi.thl.termed.model;
 
 import com.google.common.collect.Lists;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -26,16 +25,10 @@ import static org.junit.Assert.assertNotNull;
                                    "file:src/main/webapp/WEB-INF/spring-security.xml"})
 @TransactionConfiguration
 @Transactional
-public class ConceptRepositoryIT {
+public class ConceptIT {
 
   @PersistenceContext
   private EntityManager em;
-
-  @Autowired
-  private SchemeRepository schemeRepository;
-
-  @Autowired
-  private ConceptRepository conceptRepository;
 
   @Test
   public void shouldReferenceConcept() {
@@ -43,11 +36,11 @@ public class ConceptRepositoryIT {
     broaderType = em.merge(broaderType);
 
     Scheme exampleScheme = new Scheme("exampleScheme");
-    exampleScheme = schemeRepository.saveAndFlush(exampleScheme);
+    exampleScheme = em.merge(exampleScheme);
 
     Concept broader = new Concept("exampleBroaderConcept");
     broader.setScheme(exampleScheme);
-    broader = conceptRepository.saveAndFlush(broader);
+    broader = em.merge(broader);
 
     Concept narrower = new Concept("exampleNarrowerConcept");
     narrower.setScheme(exampleScheme);

@@ -3,7 +3,6 @@ package fi.thl.termed.controller;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -12,9 +11,9 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +33,11 @@ import java.util.UUID;
 
 import fi.thl.termed.model.Collection;
 import fi.thl.termed.model.Concept;
+import fi.thl.termed.model.ConceptReferenceType;
 import fi.thl.termed.model.PropertyValue;
 import fi.thl.termed.model.Scheme;
 import fi.thl.termed.model.SchemeResource;
-import fi.thl.termed.repository.CollectionRepository;
-import fi.thl.termed.repository.ConceptRepository;
-import fi.thl.termed.repository.SchemeRepository;
+import fi.thl.termed.service.CrudService;
 import fi.thl.termed.util.SKOS;
 
 import static com.google.common.base.Functions.forMap;
@@ -56,22 +54,33 @@ public class RdfImporter {
   @SuppressWarnings("all")
   private Logger log = LoggerFactory.getLogger(getClass());
 
-  private SchemeRepository schemeRepository;
-  private ConceptRepository conceptRepository;
-  private CollectionRepository collectionRepository;
+  private CrudService crudService;
 
-  private Map<Property, String> propertyMap = ImmutableMap.<Property, String>builder()
-      .put(RDFS.label, "prefLabel")
-      .put(SKOS.prefLabel, "prefLabel")
-      .put(SKOS.altLabel, "altLabel")
-      .put(SKOS.hiddenLabel, "hiddenLabel")
-      .put(SKOS.note, "note")
-      .put(SKOS.changeNote, "changeNote")
-      .put(SKOS.definition, "definition")
-      .put(SKOS.example, "example")
-      .build();
+  private Map<Property, String> propertyMap;
+  private Map<Property, String> conceptReferenceTypeMap;
+  private Set<String> acceptedLanguages;
 
-  private Set<String> acceptedLanguages = Sets.newHashSet("", "fi", "en", "sv");
+  @Autowired
+  public RdfImporter(CrudService crudService) {
+    this.crudService = crudService;
+
+    this.propertyMap = Maps.newHashMap();
+    for (fi.thl.termed.model.Property p : crudService
+        .query(fi.thl.termed.model.Property.class, "", 0, -1, null)) {
+      if (p.hasUri()) {
+        propertyMap.put(ResourceFactory.createProperty(p.getUri()), p.getId());
+      }
+    }
+
+    this.conceptReferenceTypeMap = Maps.newHashMap();
+    for (ConceptReferenceType p : crudService.query(ConceptReferenceType.class, "", 0, -1, null)) {
+      if (p.hasUri()) {
+        conceptReferenceTypeMap.put(ResourceFactory.createProperty(p.getUri()), p.getId());
+      }
+    }
+
+    this.acceptedLanguages = Sets.newHashSet("", "fi", "en", "sv");
+  }
 
   private Function<Statement, PropertyValue> statementsToPropertyValues =
       new Function<Statement, PropertyValue>() {
@@ -92,13 +101,12 @@ public class RdfImporter {
     }
   };
 
-  @Autowired
-  public RdfImporter(SchemeRepository schemeRepository, ConceptRepository conceptRepository,
-                     CollectionRepository collectionRepository) {
-    this.schemeRepository = schemeRepository;
-    this.conceptRepository = conceptRepository;
-    this.collectionRepository = collectionRepository;
-  }
+  private Predicate<Statement> isAcceptedObjectStatement = new Predicate<Statement>() {
+    @Override
+    public boolean apply(Statement s) {
+      return conceptReferenceTypeMap.containsKey(s.getPredicate()) && s.getObject().isURIResource();
+    }
+  };
 
   @RequestMapping(method = POST, value = "import", consumes = "text/turtle;charset=UTF-8")
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -112,15 +120,15 @@ public class RdfImporter {
     log.info("read {} statements", model.size());
 
     Map<String, Scheme> schemes = readSchemes(model, uriIdMap);
-    schemeRepository.save(schemes.values());
+    crudService.save(Scheme.class, schemes.values());
 
     Map<String, Concept> concepts = readConcepts(model, schemes, uriIdMap);
-    conceptRepository.save(concepts.values());
+    crudService.save(Concept.class, concepts.values());
     linkConcepts(model, concepts, uriIdMap);
-    conceptRepository.save(concepts.values());
+    crudService.save(Concept.class, concepts.values());
 
     Map<String, Collection> collections = readCollections(model, concepts, schemes, uriIdMap);
-    collectionRepository.save(collections.values());
+    crudService.save(Collection.class, collections.values());
 
     log.info("imported {} schemes", schemes.size());
     log.info("imported {} concepts", concepts.size());
@@ -178,10 +186,14 @@ public class RdfImporter {
   private void linkConcepts(Model model, Map<String, Concept> concepts,
                             Map<String, String> uriIdMap) {
     for (Resource r : instancesOf(model, SKOS.Concept)) {
-      Concept concept = concepts.get(getId(r.getURI(), uriIdMap));
-//      concept.setBroader(readObjects(model, r, SKOS.broader, concepts, uriIdMap));
-//      concept.setNarrower(readObjects(model, r, SKOS.narrower, concepts, uriIdMap));
-//      concept.setRelated(readObjects(model, r, SKOS.related, concepts, uriIdMap));
+      Concept source = concepts.get(getId(r.getURI(), uriIdMap));
+      for (Statement s : filter(model.listStatements(r, null, (RDFNode) null).toList(),
+                                isAcceptedObjectStatement)) {
+        ConceptReferenceType conceptReferenceType =
+            new ConceptReferenceType(conceptReferenceTypeMap.get(s.getPredicate()));
+        Concept target = concepts.get(getId(s.getObject().asResource().getURI(), uriIdMap));
+        source.addReferences(conceptReferenceType, target);
+      }
     }
   }
 

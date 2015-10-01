@@ -6,9 +6,9 @@ import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.SchemeResource;
 
 /**
- * Converts {@code Concept} to {@code SchemeResource} and back. Conversion is obviously "lossy".
+ * Converts {@code Concept} to {@code SchemeResource}.
  */
-public class TruncatedConceptConverter extends Converter<Concept, SchemeResource> {
+public class ConceptTruncatingConverter extends Converter<Concept, SchemeResource> {
 
   @Override
   protected SchemeResource doForward(Concept concept) {
@@ -17,7 +17,7 @@ public class TruncatedConceptConverter extends Converter<Concept, SchemeResource
 
   @Override
   protected Concept doBackward(SchemeResource schemeResource) {
-    return new Concept(schemeResource);
+    throw new UnsupportedOperationException();
   }
 
 }

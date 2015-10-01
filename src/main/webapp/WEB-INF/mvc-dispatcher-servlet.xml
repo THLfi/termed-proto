@@ -4,7 +4,7 @@
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/mvc
        	http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
         http://www.springframework.org/schema/beans
@@ -13,8 +13,8 @@
        	http://www.springframework.org/schema/context/spring-context-4.0.xsd
         http://www.springframework.org/schema/tx
         http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-        http://www.springframework.org/schema/data/jpa
-        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-4.0.xsd">
 
     <context:annotation-config/>
 
@@ -27,8 +27,6 @@
             <bean class="fi.thl.termed.util.GsonHttpMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
-
-    <jpa:repositories base-package="fi.thl.termed.repository"/>
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
@@ -64,5 +62,13 @@
         <property name="username" value="${jdbc.username}"/>
         <property name="password" value="${jdbc.password}"/>
     </bean>
+
+    <util:map id="collectionClassMap" value-type="java.lang.Class">
+        <entry key="schemes" value="fi.thl.termed.model.Scheme"/>
+        <entry key="concepts" value="fi.thl.termed.model.Concept"/>
+        <entry key="collections" value="fi.thl.termed.model.Collection"/>
+        <entry key="properties" value="fi.thl.termed.model.Property"/>
+        <entry key="conceptReferenceTypes" value="fi.thl.termed.model.ConceptReferenceType"/>
+    </util:map>
 
 </beans>

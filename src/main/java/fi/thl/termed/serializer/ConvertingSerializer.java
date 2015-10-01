@@ -1,7 +1,6 @@
 package fi.thl.termed.serializer;
 
 import com.google.common.base.Converter;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -19,16 +18,6 @@ import java.lang.reflect.Type;
 public class ConvertingSerializer<A, B> implements JsonSerializer<A>, JsonDeserializer<A> {
 
   /**
-   * Convenience method for creating and registering {@code ConvertingSerializer} to {@code
-   * GsonBuilder}
-   */
-  public static <A, B> GsonBuilder registerConverter(GsonBuilder builder,
-                                                     Type type, Type serializedType,
-                                                     Converter<A, B> converter) {
-    return builder.registerTypeAdapter(type, create(serializedType, converter));
-  }
-
-  /**
    * Creates new {@code ConvertingSerializer}
    */
   public static <A, B> ConvertingSerializer<A, B> create(Type serializedType,
@@ -39,7 +28,7 @@ public class ConvertingSerializer<A, B> implements JsonSerializer<A>, JsonDeseri
   private Type serializedType;
   private Converter<A, B> converter;
 
-  private ConvertingSerializer(Type serializedType, Converter<A, B> converter) {
+  public ConvertingSerializer(Type serializedType, Converter<A, B> converter) {
     this.serializedType = serializedType;
     this.converter = converter;
   }

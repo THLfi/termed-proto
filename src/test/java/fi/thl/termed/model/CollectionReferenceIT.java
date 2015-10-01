@@ -1,4 +1,4 @@
-package fi.thl.termed.repository;
+package fi.thl.termed.model;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +21,7 @@ import fi.thl.termed.model.Scheme;
                                    "file:src/main/webapp/WEB-INF/spring-security.xml"})
 @TransactionConfiguration
 @Transactional
-public class CollectionReferenceRepositoryIT {
+public class CollectionReferenceIT {
 
   @PersistenceContext
   private EntityManager em;

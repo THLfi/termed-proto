@@ -23,9 +23,9 @@ CREATE TABLE ${schema}.concept_references AS (
       FROM ${schema}.concept_part_of
 );
 
-ALTER TABLE concept_references ALTER COLUMN type_id SET NOT NULL;
-ALTER TABLE concept_references ALTER COLUMN source_id SET NOT NULL;
-ALTER TABLE concept_references ALTER COLUMN target_id SET NOT NULL;
+ALTER TABLE ${schema}.concept_references ALTER COLUMN type_id SET NOT NULL;
+ALTER TABLE ${schema}.concept_references ALTER COLUMN source_id SET NOT NULL;
+ALTER TABLE ${schema}.concept_references ALTER COLUMN target_id SET NOT NULL;
 
 ALTER TABLE ${schema}.concept_references ADD CONSTRAINT concept_references_type_id_fkey
     FOREIGN KEY (type_id) REFERENCES ${schema}.concept_reference_type(id);
@@ -37,24 +37,27 @@ ALTER TABLE ${schema}.concept_references ADD CONSTRAINT concept_references_targe
 ALTER TABLE ${schema}.concept_references ADD CONSTRAINT concept_references_pkey
     PRIMARY KEY (type_id, source_id, target_id);
 
-CREATE INDEX concept_references_type_id_idx ON ${schema}.concept_references(type_id);
-CREATE INDEX concept_references_source_id_idx ON ${schema}.concept_references(source_id);
-CREATE INDEX concept_references_target_id_idx ON ${schema}.concept_references(target_id);
+CREATE INDEX ${schema}.concept_references_type_id_idx ON
+    ${schema}.concept_references(type_id);
+CREATE INDEX ${schema}.concept_references_source_id_idx ON
+    ${schema}.concept_references(source_id);
+CREATE INDEX ${schema}.concept_references_target_id_idx ON
+    ${schema}.concept_references(target_id);
 
 -- drop migrated tables with indices
 
-DROP INDEX concept_broader_concept_id_idx;
-DROP INDEX concept_broader_broader_id_idx;
+DROP INDEX ${schema}.concept_broader_concept_id_idx;
+DROP INDEX ${schema}.concept_broader_broader_id_idx;
 DROP TABLE ${schema}.concept_broader;
 
-DROP INDEX concept_type_concept_id;
-DROP INDEX concept_type_type_id;
+DROP INDEX ${schema}.concept_type_concept_id;
+DROP INDEX ${schema}.concept_type_type_id;
 DROP TABLE ${schema}.concept_type;
 
-DROP INDEX concept_related_concept_id;
+DROP INDEX ${schema}.concept_related_concept_id;
 DROP TABLE ${schema}.concept_related;
 
-DROP INDEX concept_part_of_concept_id;
-DROP INDEX concept_part_of_part_of_id;
+DROP INDEX ${schema}.concept_part_of_concept_id;
+DROP INDEX ${schema}.concept_part_of_part_of_id;
 DROP TABLE ${schema}.concept_part_of;
 
