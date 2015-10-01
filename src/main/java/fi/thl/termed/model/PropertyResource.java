@@ -1,5 +1,6 @@
 package fi.thl.termed.model;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -55,6 +56,22 @@ public class PropertyResource extends UriResource {
       properties = Lists.newArrayList();
     }
     properties.add(new PropertyValue(propertyId, lang, value));
+  }
+
+  public String getPropertyValue(String propertyId, String lang) {
+    return Joiner.on(", ").join(getPropertyValues(propertyId, lang));
+  }
+
+  public List<String> getPropertyValues(String propertyId, String lang) {
+    List<String> values = Lists.newArrayList();
+
+    for (PropertyValue property : properties) {
+      if (propertyId.equals(property.getPropertyId()) && lang.equals(property.getLang())) {
+        values.add(property.getValue());
+      }
+    }
+
+    return values;
   }
 
   public MoreObjects.ToStringHelper toStringHelper() {

@@ -15,7 +15,7 @@ CREATE TABLE ${schema}.property_configuration (
     regex varchar(255)
 );
 
-CREATE INDEX ${schema}.property_configuration_configuration_id_idx ON
+CREATE INDEX property_configuration_configuration_id_idx ON
     ${schema}.property_configuration(configuration_id);
 
 CREATE TABLE ${schema}.concept_reference_type_configuration (
@@ -27,7 +27,7 @@ CREATE TABLE ${schema}.concept_reference_type_configuration (
     primary_hierarchy boolean
 );
 
-CREATE INDEX ${schema}.concept_reference_type_configuration_configuration_id_idx ON
+CREATE INDEX concept_reference_type_configuration_configuration_id_idx ON
     ${schema}.concept_reference_type_configuration(configuration_id);
 
 CREATE TABLE ${schema}.concept_reference_type_configuration_range (
@@ -37,8 +37,8 @@ CREATE TABLE ${schema}.concept_reference_type_configuration_range (
     PRIMARY KEY (concept_reference_type_configuration_id, scheme_id)
 );
 
-CREATE INDEX ${schema}.concept_reference_type_configuration_range_crtc_id_idx ON
+CREATE INDEX concept_reference_type_configuration_range_crtc_id_idx ON
     ${schema}.concept_reference_type_configuration_range(concept_reference_type_configuration_id);
-CREATE INDEX ${schema}.concept_reference_type_configuration_range_scheme_id_idx ON
+CREATE INDEX concept_reference_type_configuration_range_scheme_id_idx ON
     ${schema}.concept_reference_type_configuration_range(scheme_id);
 

@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.PropertyValue;
 
 public class JsTreeBuilder {
 
@@ -63,14 +62,15 @@ public class JsTreeBuilder {
                                          Set<Concept> opened, Concept selected) {
     JsTreeNode jsTreeNode = new JsTreeNode();
     jsTreeNode.setId(pathId(concept, getNeighbours));
-    jsTreeNode.setText(findProperty(concept, "prefLabel", "fi") + smallMuted(localName(concept)));
+    jsTreeNode
+        .setText(concept.getPropertyValue("prefLabel", "fi") + smallMuted(localName(concept)));
     jsTreeNode.setState(
         ImmutableMap.of("opened", opened.contains(concept), "selected", concept.equals(selected)));
     jsTreeNode.setIcon(false);
     String conceptUrl = "/schemes/" + concept.getScheme().getId() + "/concepts/" + concept.getId();
     jsTreeNode.setLinkElementAttributes(ImmutableMap.of("href", conceptUrl));
     jsTreeNode.setListElementAttributes(ImmutableMap.of("conceptId", concept.getId(), "index",
-                                                        findProperty(concept, "index", "fi")));
+                                                        concept.getPropertyValue("index", "fi")));
     List<Concept> neighbours = ListUtils.nullToEmpty(getNeighbours.apply(concept));
 
     if (neighbours.isEmpty()) {
@@ -102,15 +102,6 @@ public class JsTreeBuilder {
     return DigestUtils.sha1Hex(Joiner.on('.').join(Lists.transform(
         ListUtils.flatten(ConceptGraphUtils.collectPaths(concept, getNeighbours)),
         new GetResourceId())));
-  }
-
-  private static String findProperty(Concept concept, String propertyId, String lang) {
-    for (PropertyValue property : concept.getProperties()) {
-      if (propertyId.equals(property.getPropertyId()) && lang.equals(property.getLang())) {
-        return property.getValue();
-      }
-    }
-    return "";
   }
 
   private static class JsTreeNode {
