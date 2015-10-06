@@ -1,2 +1,2 @@
 #!/bin/sh
-mvn clean package -P prod && scp target/termed.war viikuna:
+mvn clean package -DpropertyFilePath=/var/lib/termed/app.properties && scp target/termed.war viikuna:
