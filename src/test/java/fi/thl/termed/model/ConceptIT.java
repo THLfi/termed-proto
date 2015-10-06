@@ -2,6 +2,7 @@ package fi.thl.termed.model;
 
 import com.google.common.collect.Lists;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,23 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.ConceptReference;
-import fi.thl.termed.model.ConceptReferenceType;
-import fi.thl.termed.model.Scheme;
-
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/applicationContext.xml",
-                                   "file:src/main/webapp/WEB-INF/mvc-dispatcher-servlet.xml",
-                                   "file:src/main/webapp/WEB-INF/spring-security.xml"})
+@ContextConfiguration(locations = {"classpath:spring/applicationContext.xml",
+                                   "classpath:spring/mvc-dispatcher-servlet.xml",
+                                   "classpath:spring/spring-security.xml"})
 @TransactionConfiguration
 @Transactional
 public class ConceptIT {
 
   @PersistenceContext
   private EntityManager em;
+
+  @BeforeClass
+  public static void setUpBeforeClass() {
+    System.setProperty("propertyFilePath", "");
+  }
 
   @Test
   public void shouldReferenceConcept() {

@@ -49,7 +49,7 @@
 
     <beans:bean id="testAuthenticationProvider"
                 class="fi.thl.termed.security.MemoryBasedUsernamePasswordAuthenticationProvider">
-        <beans:constructor-arg value="${termed.testUserPassList}"/>
+        <beans:constructor-arg value="${thl.test.authenticationProvider.userPassList}"/>
     </beans:bean>
 
 </beans:beans>

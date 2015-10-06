@@ -1,5 +1,4 @@
 app.*.properties
-!app.test.properties
 bin
 target
 index
