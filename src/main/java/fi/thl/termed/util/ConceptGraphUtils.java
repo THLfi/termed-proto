@@ -4,10 +4,12 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import fi.thl.termed.model.Concept;
+import fi.thl.termed.model.LazyConceptTree;
 
 public final class ConceptGraphUtils {
 
@@ -31,6 +33,13 @@ public final class ConceptGraphUtils {
     for (Concept neighbour : ListUtils.nullToEmpty(neighbourFunction.apply(concept))) {
       prettyPrintTree(indent + "\t", neighbour, neighbourFunction, builder);
     }
+  }
+
+
+  public static List<Concept> findRoots(Concept concept,
+                                        Function<Concept, List<Concept>> neighbourFunction) {
+    return findRoots(collectPaths(concept, neighbourFunction));
+
   }
 
   public static List<Concept> findRoots(List<List<Concept>> broaderPaths) {

@@ -1,6 +1,7 @@
 package fi.thl.termed.util;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.hibernate.search.bridge.FieldBridge;
 import org.hibernate.search.bridge.LuceneOptions;
 
@@ -18,8 +19,9 @@ public class ConceptReferenceListBridge implements FieldBridge {
     }
 
     for (ConceptReference conceptReference : (List<ConceptReference>) value) {
-      luceneOptions.addFieldToDocument(conceptReference.getTypeId() + ".id",
-                                       conceptReference.getTargetId(), doc);
+      doc.add(new Field(conceptReference.getTypeId() + ".id",
+                        conceptReference.getTargetId(),
+                        Field.Store.NO, Field.Index.NOT_ANALYZED));
     }
   }
 

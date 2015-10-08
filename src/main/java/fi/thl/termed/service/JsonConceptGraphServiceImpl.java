@@ -11,19 +11,21 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.serializer.Converters;
 import fi.thl.termed.util.ConceptGraphUtils;
-import fi.thl.termed.util.JsTreeBuilder;
 
 @Service
 @Transactional
 public class JsonConceptGraphServiceImpl implements JsonConceptGraphService {
 
   private CrudService crudService;
+  private ConceptTreeService conceptTreeService;
 
   private Gson fastGson;
 
   @Autowired
-  public JsonConceptGraphServiceImpl(CrudService crudService) {
+  public JsonConceptGraphServiceImpl(CrudService crudService,
+                                     ConceptTreeService conceptTreeService) {
     this.crudService = crudService;
+    this.conceptTreeService = conceptTreeService;
 
     GsonBuilder b = new GsonBuilder().setPrettyPrinting();
     Converters.registerDateConverter(b);
@@ -50,7 +52,8 @@ public class JsonConceptGraphServiceImpl implements JsonConceptGraphService {
   public JsonArray getConceptJsTrees(String id) {
     Concept concept = crudService.get(Concept.class, id);
     return concept == null ? new JsonArray() :
-           fastGson.toJsonTree(JsTreeBuilder.buildTreesFor(concept)).getAsJsonArray();
+           fastGson.toJsonTree(
+               conceptTreeService.getConceptNarrowerJsTree(concept)).getAsJsonArray();
   }
 
 }
