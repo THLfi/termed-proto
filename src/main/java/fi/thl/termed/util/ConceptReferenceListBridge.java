@@ -21,7 +21,7 @@ public class ConceptReferenceListBridge implements FieldBridge {
     for (ConceptReference conceptReference : (List<ConceptReference>) value) {
       doc.add(new Field(conceptReference.getTypeId() + ".id",
                         conceptReference.getTargetId(),
-                        Field.Store.NO, Field.Index.NOT_ANALYZED));
+                        Field.Store.YES, Field.Index.NOT_ANALYZED));
     }
   }
 

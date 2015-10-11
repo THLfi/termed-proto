@@ -1,5 +1,7 @@
 package fi.thl.termed.service;
 
+import org.apache.lucene.search.Query;
+
 import java.util.List;
 
 public interface CrudService {
@@ -11,6 +13,8 @@ public interface CrudService {
   <T> T get(Class<T> cls, String key);
 
   <T> List<T> query(Class<T> cls, String query, int first, int max, List<String> orderBy);
+
+  <T> List<T> query(Class<T> cls, Query query, int first, int max, List<String> orderBy);
 
   <T> void remove(Class<T> cls, String id);
 

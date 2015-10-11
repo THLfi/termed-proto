@@ -2,6 +2,7 @@ package fi.thl.termed.service;
 
 import com.google.common.collect.Maps;
 
+import org.apache.lucene.search.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +65,11 @@ public class CrudServiceImpl implements CrudService {
 
   @Override
   public <T> List<T> query(Class<T> cls, String query, int first, int max, List<String> orderBy) {
+    return getRepository(cls).query(query, first, max, orderBy);
+  }
+
+  @Override
+  public <T> List<T> query(Class<T> cls, Query query, int first, int max, List<String> orderBy) {
     return getRepository(cls).query(query, first, max, orderBy);
   }
 

@@ -2,6 +2,8 @@ package fi.thl.termed.repository;
 
 import com.google.common.collect.Lists;
 
+import org.apache.lucene.search.Query;
+
 import java.util.List;
 
 import fi.thl.termed.model.Concept;
@@ -57,6 +59,11 @@ public class ConceptRepository implements Repository<Concept> {
   @Override
   public Concept get(String id) {
     return delegate.get(id);
+  }
+
+  @Override
+  public List<Concept> query(Query query, int first, int max, List<String> orderBy) {
+    return delegate.query(query, first, max, orderBy);
   }
 
   @Override

@@ -75,10 +75,16 @@ public class HibernateSearchRepository<T> implements Repository<T> {
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
   public List<T> query(String query, int first, int max, List<String> orderBy) {
+    return query(parseQuery(query), first, max, orderBy);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public List<T> query(Query query, int first, int max, List<String> orderBy) {
     return getFullTextEntityManager()
-        .createFullTextQuery(parseQuery(query), cls)
+        .createFullTextQuery(query, cls)
         .setSort(buildSort(orderBy))
         .setFirstResult(first)
         .setMaxResults(max < 0 ? Integer.MAX_VALUE : max)

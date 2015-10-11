@@ -1,5 +1,7 @@
 package fi.thl.termed.repository;
 
+import org.apache.lucene.search.Query;
+
 import java.util.List;
 
 public interface Repository<T> {
@@ -11,6 +13,8 @@ public interface Repository<T> {
   T get(String id);
 
   List<T> query(String query, int first, int max, List<String> orderBy);
+
+  List<T> query(Query query, int first, int max, List<String> orderBy);
 
   void remove(String id);
 

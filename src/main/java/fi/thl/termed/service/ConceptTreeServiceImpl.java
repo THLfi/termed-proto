@@ -5,6 +5,8 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.TermQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +34,9 @@ public class ConceptTreeServiceImpl implements ConceptTreeService {
       new Function<Concept, List<Concept>>() {
         @Override
         public List<Concept> apply(Concept concept) {
-          return crudService.query(Concept.class, "broader.id:" + concept.getId(), 0, -1, null);
+          return crudService
+              .query(Concept.class,
+                     new TermQuery(new Term("broader.id", concept.getId())), 0, -1, null);
         }
       };
 
