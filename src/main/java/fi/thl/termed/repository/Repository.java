@@ -16,6 +16,10 @@ public interface Repository<T> {
 
   List<T> query(Query query, int first, int max, List<String> orderBy);
 
+  List<T> queryCached(String query, int first, int max, List<String> orderBy);
+
+  List<T> queryCached(Query query, int first, int max, List<String> orderBy);
+
   void remove(String id);
 
   int size();

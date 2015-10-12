@@ -72,6 +72,16 @@ public class ConceptRepository implements Repository<Concept> {
   }
 
   @Override
+  public List<Concept> queryCached(String query, int first, int max, List<String> orderBy) {
+    return delegate.queryCached(query, first, max, orderBy);
+  }
+
+  @Override
+  public List<Concept> queryCached(Query query, int first, int max, List<String> orderBy) {
+    return delegate.queryCached(query, first, max, orderBy);
+  }
+
+  @Override
   public void remove(String id) {
     delegate.remove(id);
   }

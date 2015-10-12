@@ -76,7 +76,7 @@ public class JsonCrudServiceImpl implements JsonCrudService {
                          Gson gson) {
     Class c = collectionClassMap.get(collection);
     return c == null ? new JsonArray() :
-           gson.toJsonTree(crudService.query(c, query, fst, max, orderBy)).getAsJsonArray();
+           gson.toJsonTree(crudService.queryCached(c, query, fst, max, orderBy)).getAsJsonArray();
   }
 
   @Override

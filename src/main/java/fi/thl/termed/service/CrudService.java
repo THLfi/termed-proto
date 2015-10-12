@@ -16,6 +16,10 @@ public interface CrudService {
 
   <T> List<T> query(Class<T> cls, Query query, int first, int max, List<String> orderBy);
 
+  <T> List<T> queryCached(Class<T> cls, String query, int first, int max, List<String> orderBy);
+
+  <T> List<T> queryCached(Class<T> cls, Query query, int first, int max, List<String> orderBy);
+
   <T> void remove(Class<T> cls, String id);
 
 }

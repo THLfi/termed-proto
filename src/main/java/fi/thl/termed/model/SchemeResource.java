@@ -13,7 +13,7 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class SchemeResource extends AuditedResource {
 
-  @IndexedEmbedded(includePaths = {"id"})
+  @IndexedEmbedded(includePaths = {"id", "uri", "properties"})
   @ManyToOne
   private Scheme scheme;
 

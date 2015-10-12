@@ -7,6 +7,7 @@ import com.google.common.base.Strings;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
 
 import javax.persistence.MappedSuperclass;
 
@@ -14,7 +15,7 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class UriResource extends Resource {
 
-  @Field(analyze = Analyze.NO)
+  @Field(analyze = Analyze.NO, store = Store.YES)
   private String uri;
 
   public UriResource() {

@@ -35,8 +35,8 @@ public class ConceptTreeServiceImpl implements ConceptTreeService {
         @Override
         public List<Concept> apply(Concept concept) {
           return crudService
-              .query(Concept.class,
-                     new TermQuery(new Term("broader.id", concept.getId())), 0, -1, null);
+              .queryCached(Concept.class,
+                           new TermQuery(new Term("broader.id", concept.getId())), 0, -1, null);
         }
       };
 
