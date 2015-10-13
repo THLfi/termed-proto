@@ -73,7 +73,9 @@ App.controller('SchemeListCtrl', function($scope, $location, SchemeList,
     });
   }
 
-  $scope.schemes = SchemeList.query();
+  $scope.schemes = SchemeList.query({
+    orderBy: 'prefLabel.fi.sortable'
+  });
 
   $scope.newScheme = function() {
     SchemeList.save({

@@ -5,6 +5,8 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +42,7 @@ public class ToJsTreeFunction implements Function<LazyConceptTree, JsTree> {
   public JsTree apply(LazyConceptTree concept) {
     JsTree jsTree = new JsTree();
 
-    jsTree.setId(Joiner.on('.').join(concept.getPath()));
+    jsTree.setId(DigestUtils.sha1Hex(Joiner.on('.').join(concept.getPath())));
     jsTree.setIcon(false);
     jsTree.setText(concept.getPropertyValue("prefLabel", "fi") +
                    smallMuted(localName(concept)));
