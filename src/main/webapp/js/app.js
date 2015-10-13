@@ -155,18 +155,6 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
     });
   }
 
-  $scope.loadNarrower = function(concept) {
-    ConceptList.query({
-      schemeId: $routeParams.schemeId,
-      query: "broader.id:" + concept.id,
-      max: -1,
-      orderBy: 'prefLabel.fi.sortable'
-    }, function(concepts) {
-      concept.narrower = concepts;
-      concept.expanded = true;
-    });
-  }
-
   $scope.newConcept = function() {
     var concept = new Concept({
       scheme: $scope.scheme,
@@ -241,7 +229,9 @@ App.controller('ConceptCtrl', function($scope, $routeParams, $location,
   $scope.newConcept = function() {
     var concept = new Concept({
       scheme: $scope.concept.scheme,
-      broader: [$scope.concept],
+      references: {
+        broader: [$scope.concept]
+      },
       properties: {
         prefLabel: [{
           lang: 'fi',
