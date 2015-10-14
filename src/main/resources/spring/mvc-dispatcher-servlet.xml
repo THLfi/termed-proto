@@ -61,7 +61,7 @@
                 </prop>
                 <prop key="hibernate.search.lucene_version">LUCENE_36</prop>
                 <prop key="hibernate.default_schema">${database.schema}</prop>
-                <prop key="hibernate.hbm2ddl.auto">verify</prop>
+                <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
             </props>
         </property>
     </bean>

@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 
 @Indexed
 @Entity
-public class Property extends UriResource {
+public class Property extends PropertyResource {
 
   public Property() {
     super();

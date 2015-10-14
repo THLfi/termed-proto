@@ -7,11 +7,9 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 @Indexed
 @Entity
-@Table(name = "scheme_configuration")
 public class SchemeConfiguration extends Resource {
 
   @OneToMany(mappedBy = "configuration", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -8,11 +8,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Indexed
 @Entity
-@Table(name = "concept_reference_type_configuration")
 public class ConceptReferenceTypeConfiguration extends SchemeConfigurationElement {
 
   @ManyToOne

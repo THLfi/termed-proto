@@ -4,11 +4,9 @@ import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Indexed
 @Entity
-@Table(name = "property_configuration")
 public class PropertyConfiguration extends SchemeConfigurationElement {
 
   @ManyToOne

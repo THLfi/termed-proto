@@ -10,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -20,19 +19,15 @@ import javax.persistence.PreUpdate;
 public class AuditedResource extends PropertyResource {
 
   @Field
-  @Column(name = "created_by")
   private String createdBy;
 
   @Field
-  @Column(name = "last_modified_by")
   private String lastModifiedBy;
 
   @Field
-  @Column(name = "created_date")
   private Date createdDate;
 
   @Field
-  @Column(name = "last_modified_date")
   private Date lastModifiedDate;
 
   public AuditedResource() {
