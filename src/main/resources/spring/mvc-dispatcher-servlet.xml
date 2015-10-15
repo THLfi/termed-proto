@@ -61,7 +61,9 @@
                 </prop>
                 <prop key="hibernate.search.lucene_version">LUCENE_36</prop>
                 <prop key="hibernate.default_schema">${database.schema}</prop>
-                <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+                <prop key="hibernate.ejb.naming_strategy">
+                    fi.thl.termed.util.UnderscoreHibernateNamingStrategy
+                </prop>
             </props>
         </property>
     </bean>
