@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.List;
 
 import fi.thl.termed.service.JsonCrudService;
-import fi.thl.termed.util.LuceneQueryUtils;
+import fi.thl.termed.util.LuceneQueryStringUtils;
 
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -47,7 +47,8 @@ public class JsonCrudController {
   }
 
   private String addSchemeIdToQuery(String schemeId, String query) {
-    return LuceneQueryUtils.and(LuceneQueryUtils.termQuery("scheme.id", schemeId), query);
+    return LuceneQueryStringUtils
+        .and(LuceneQueryStringUtils.termQuery("scheme.id", schemeId), query);
   }
 
   @RequestMapping(method = GET, value = "/{collection}/{id}")

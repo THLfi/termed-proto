@@ -3,6 +3,8 @@ package fi.thl.termed.controller;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.TermQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.service.CrudService;
 import fi.thl.termed.util.ExcelTableWriter;
-import fi.thl.termed.util.ListUtils;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -33,16 +34,13 @@ public class ExcelExporter {
 
   public static final String XLSX_CONTENT_TYPE =
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
+  private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
   @SuppressWarnings("all")
   private Logger log = LoggerFactory.getLogger(getClass());
-
-  private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
   @Autowired
   private CrudService crudService;
 
-  @RequestMapping(method = GET, value = "export/{schemeId}/excel")
+  @RequestMapping(method = GET, value = "export/{schemeId}/excel-legacy")
   @Transactional
   public void exportExcel(@PathVariable("schemeId") String schemeId, HttpServletResponse response)
       throws IOException {
@@ -53,17 +51,7 @@ public class ExcelExporter {
     List<Concept> rootConcepts =
         crudService.query(Concept.class,
                           "+scheme.id:" + schemeId + " -partOf.id:[* TO *] +type.id:[* TO *]",
-                          0, -1, Lists.newArrayList("index.sortable"));
-
-    Collections.sort(rootConcepts, new Comparator<Concept>() {
-      @Override
-      public int compare(Concept c1, Concept c2) {
-        String c1Label = c1.getPropertyValue("prefLabel", lang);
-        String c2Label = c2.getPropertyValue("prefLabel", lang);
-
-        return c1Label.compareTo(c2Label);
-      }
-    });
+                          0, -1, Lists.newArrayList("prefLabel.fi.sortable"));
 
     List<String[]> table = toTable(rootConcepts, lang);
 
@@ -86,6 +74,7 @@ public class ExcelExporter {
     List<String> headerRow = Lists.newArrayList();
 
     headerRow.add("id");
+    headerRow.add("index");
     headerRow.add("prefLabel");
     headerRow.add("type");
     headerRow.add("parentId");
@@ -117,6 +106,7 @@ public class ExcelExporter {
     List<String> row = Lists.newArrayList();
 
     row.add(concept.getId());
+    row.add(concept.getPropertyValue("index", lang));
     row.add(concept.getPropertyValue("prefLabel", lang));
     row.add(getTypePrefLabel(concept, lang));
     row.add(parentConcept != null ? parentConcept.getId() : "");
@@ -133,7 +123,11 @@ public class ExcelExporter {
 
     table.add(row.toArray(new String[row.size()]));
 
-    for (Concept part : ListUtils.nullToEmpty(concept.getReferrersByType("partOf"))) {
+    List<Concept> parts = crudService.query(Concept.class,
+                                            new TermQuery(new Term("partOf.id", concept.getId())),
+                                            0, -1, Lists.newArrayList("index.sortable"));
+
+    for (Concept part : parts) {
       toTable(part, concept, depth + 1, table, lang);
     }
   }

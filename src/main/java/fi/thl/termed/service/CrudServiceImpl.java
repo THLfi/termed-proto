@@ -64,8 +64,18 @@ public class CrudServiceImpl implements CrudService {
   }
 
   @Override
+  public <T> List<T> query(Class<T> cls, String query) {
+    return query(cls, query, 0, -1, null);
+  }
+
+  @Override
   public <T> List<T> query(Class<T> cls, String query, int first, int max, List<String> orderBy) {
     return getRepository(cls).query(query, first, max, orderBy);
+  }
+
+  @Override
+  public <T> List<T> query(Class<T> cls, Query query) {
+    return query(cls, query, 0, -1, null);
   }
 
   @Override
@@ -74,9 +84,19 @@ public class CrudServiceImpl implements CrudService {
   }
 
   @Override
+  public <T> List<T> queryCached(Class<T> cls, String query) {
+    return queryCached(cls, query, 0, -1, null);
+  }
+
+  @Override
   public <T> List<T> queryCached(Class<T> cls, String query, int first, int max,
                                  List<String> orderBy) {
     return getRepository(cls).queryCached(query, first, max, orderBy);
+  }
+
+  @Override
+  public <T> List<T> queryCached(Class<T> cls, Query query) {
+    return queryCached(cls, query, 0, -1, null);
   }
 
   @Override

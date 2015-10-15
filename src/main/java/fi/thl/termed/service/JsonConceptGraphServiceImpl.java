@@ -13,7 +13,7 @@ import fi.thl.termed.serializer.Converters;
 import fi.thl.termed.util.ConceptGraphUtils;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class JsonConceptGraphServiceImpl implements JsonConceptGraphService {
 
   private CrudService crudService;

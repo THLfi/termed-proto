@@ -24,7 +24,7 @@ import fi.thl.termed.util.ListUtils;
 import fi.thl.termed.util.ToJsTreeFunction;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ConceptTreeServiceImpl implements ConceptTreeService {
 
   @Autowired
@@ -35,8 +35,7 @@ public class ConceptTreeServiceImpl implements ConceptTreeService {
         @Override
         public List<Concept> apply(Concept concept) {
           return crudService
-              .queryCached(Concept.class,
-                           new TermQuery(new Term("broader.id", concept.getId())), 0, -1, null);
+              .queryCached(Concept.class, new TermQuery(new Term("broader.id", concept.getId())));
         }
       };
 

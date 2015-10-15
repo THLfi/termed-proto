@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -24,13 +26,10 @@ public class JsonCrudServiceImpl implements JsonCrudService {
 
   @PersistenceContext
   private EntityManager em;
-
   @javax.annotation.Resource
   private Map<String, Class> collectionClassMap;
-
   @Autowired
   private CrudService crudService;
-
   private Gson defaultGson;
 
   @PostConstruct
@@ -55,6 +54,22 @@ public class JsonCrudServiceImpl implements JsonCrudService {
   }
 
   @Override
+  public JsonArray save(String collection, JsonArray array) {
+    return save(collection, array, defaultGson);
+  }
+
+  @Override
+  public JsonArray save(String collection, JsonArray array, Gson gson) {
+    Class c = collectionClassMap.get(collection);
+    Class cArray = Array.newInstance(c, 0).getClass();
+
+//    return c == null ? new JsonArray() :
+//           gson.toJsonTree(crudService.save(c, Arrays.asList(gson.fromJson(array, cArray))))
+//               .getAsJsonArray();
+    return null;
+  }
+
+  @Override
   public JsonObject get(String collection, String id) {
     return get(collection, id, defaultGson);
   }
@@ -64,6 +79,18 @@ public class JsonCrudServiceImpl implements JsonCrudService {
     Class c = collectionClassMap.get(collection);
     return c == null ? new JsonObject() :
            gson.toJsonTree(crudService.get(c, id)).getAsJsonObject();
+  }
+
+  @Override
+  public JsonArray query(String collection, String query) {
+    return query(collection, query, defaultGson);
+  }
+
+  @Override
+  public JsonArray query(String collection, String query, Gson gson) {
+    Class c = collectionClassMap.get(collection);
+    return c == null ? new JsonArray() :
+           gson.toJsonTree(crudService.queryCached(c, query)).getAsJsonArray();
   }
 
   @Override

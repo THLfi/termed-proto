@@ -11,9 +11,9 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 
-public final class LuceneQueryUtils {
+public final class LuceneQueryStringUtils {
 
-  private LuceneQueryUtils() {
+  private LuceneQueryStringUtils() {
   }
 
   public static String termQuery(String field, String text) {
