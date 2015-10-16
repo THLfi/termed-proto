@@ -3,14 +3,13 @@ package fi.thl.termed.service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -60,13 +59,10 @@ public class JsonCrudServiceImpl implements JsonCrudService {
 
   @Override
   public JsonArray save(String collection, JsonArray array, Gson gson) {
-    Class c = collectionClassMap.get(collection);
-    Class cArray = Array.newInstance(c, 0).getClass();
-
-//    return c == null ? new JsonArray() :
-//           gson.toJsonTree(crudService.save(c, Arrays.asList(gson.fromJson(array, cArray))))
-//               .getAsJsonArray();
-    return null;
+    for (JsonElement element : array) {
+      save(collection, element.getAsJsonObject(), gson);
+    }
+    return new JsonArray();
   }
 
   @Override

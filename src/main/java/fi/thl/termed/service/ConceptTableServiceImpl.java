@@ -38,10 +38,12 @@ public class ConceptTableServiceImpl implements ConceptTableService {
   }
 
   @Override
-  public void saveTable(List<String[]> rows) {
+  public void saveTable(String schemeId, List<String[]> rows) {
     JsonArray array = new JsonArray();
 
     for (Map<String, String> row : TableUtils.toMapped(rows)) {
+      // make sure that we save to right scheme
+      row.put("scheme.id", schemeId);
       array.add(clean(JsonUtils.unflatten(row)));
     }
 

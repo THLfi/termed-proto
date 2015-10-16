@@ -15,17 +15,20 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fi.thl.termed.service.ConceptTableService;
+import fi.thl.termed.util.CsvTableReader;
 import fi.thl.termed.util.CsvTableWriter;
 import fi.thl.termed.util.ExcelTableWriter;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
 @RequestMapping(value = "/")
-public class TableExporter {
+public class TableController {
 
   public static final String CSV_CONTENT_TYPE = "text/csv;charset=utf-8";
   public static final String TEXT_CONTENT_TYPE = "text/plain;charset=utf-8";
@@ -36,6 +39,14 @@ public class TableExporter {
   private ConceptTableService tableService;
 
   private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+
+  @RequestMapping(method = POST, value = "import/{schemeId}/csv")
+  public void importCsv(@PathVariable("schemeId") String schemeId,
+                        HttpServletRequest request) throws IOException {
+    List<String[]> rows = new CsvTableReader(request.getReader()).read();
+    tableService.saveTable(schemeId, rows);
+  }
 
   @RequestMapping(method = GET, value = "export/{schemeId}/csv")
   public void exportCsv(@PathVariable("schemeId") String schemeId,
@@ -48,7 +59,7 @@ public class TableExporter {
                         HttpServletResponse response) throws IOException {
 
     List<String[]> table =
-        tableService.queryTable(schemeId, headers(cols), query, first, max, orderBy);
+        tableService.queryTable(schemeId, parseTableHeaders(cols), query, first, max, orderBy);
 
     if (download) {
       response.setHeader("Content-Disposition", "attachment; filename=topi-" + today() + ".csv");
@@ -70,7 +81,7 @@ public class TableExporter {
                           HttpServletResponse response) throws IOException {
 
     List<String[]> table =
-        tableService.queryTable(schemeId, headers(cols), query, first, max, orderBy);
+        tableService.queryTable(schemeId, parseTableHeaders(cols), query, first, max, orderBy);
 
     response.setContentType(XLSX_CONTENT_TYPE);
     response.setHeader("Content-Disposition", "attachment; filename=termed-" + today() + ".xlsx");
@@ -82,7 +93,7 @@ public class TableExporter {
     return df.format(Calendar.getInstance().getTime());
   }
 
-  private Map<String, String> headers(List<String> cols) {
+  private Map<String, String> parseTableHeaders(List<String> cols) {
     Map<String, String> keyNameMap = Maps.newLinkedHashMap();
 
     for (String col : splitEach(cols, ",")) {
