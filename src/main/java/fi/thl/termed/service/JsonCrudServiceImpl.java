@@ -59,10 +59,11 @@ public class JsonCrudServiceImpl implements JsonCrudService {
 
   @Override
   public JsonArray save(String collection, JsonArray array, Gson gson) {
+    JsonArray saved = new JsonArray();
     for (JsonElement element : array) {
-      save(collection, element.getAsJsonObject(), gson);
+      saved.add(save(collection, element.getAsJsonObject(), gson));
     }
-    return new JsonArray();
+    return saved;
   }
 
   @Override

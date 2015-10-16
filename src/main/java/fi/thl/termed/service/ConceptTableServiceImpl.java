@@ -17,7 +17,7 @@ import fi.thl.termed.util.LuceneQueryStringUtils;
 import fi.thl.termed.util.TableUtils;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class ConceptTableServiceImpl implements ConceptTableService {
 
   @Autowired

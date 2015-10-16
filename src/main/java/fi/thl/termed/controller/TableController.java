@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -42,6 +43,7 @@ public class TableController {
 
 
   @RequestMapping(method = POST, value = "import/{schemeId}/csv")
+  @ResponseBody
   public void importCsv(@PathVariable("schemeId") String schemeId,
                         HttpServletRequest request) throws IOException {
     List<String[]> rows = new CsvTableReader(request.getReader()).read();

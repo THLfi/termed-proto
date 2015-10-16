@@ -22,11 +22,11 @@
                        method="GET"/>
 
         <!-- restrict modifiers -->
-        <intercept-url pattern="/**" access="hasRole('admin')"
+        <intercept-url pattern="/**" access="hasRole('admin') || hasIpAddress('127.0.0.1')"
                        method="DELETE"/>
-        <intercept-url pattern="/**" access="hasRole('admin')"
+        <intercept-url pattern="/**" access="hasRole('admin') || hasIpAddress('127.0.0.1')"
                        method="POST"/>
-        <intercept-url pattern="/**" access="hasRole('admin')"
+        <intercept-url pattern="/**" access="hasRole('admin') || hasIpAddress('127.0.0.1')"
                        method="PUT"/>
     </http>
 
