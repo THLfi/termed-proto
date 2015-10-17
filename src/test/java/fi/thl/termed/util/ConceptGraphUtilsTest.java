@@ -1,17 +1,35 @@
 package fi.thl.termed.util;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
+import java.util.List;
 
 import fi.thl.termed.model.Concept;
 import fi.thl.termed.model.ConceptReferenceType;
 
+import static org.junit.Assert.assertEquals;
+
 public class ConceptGraphUtilsTest {
+
+  private Function<Concept, List<Concept>> narrowerFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          return c.getReferrersByType("broader");
+        }
+      };
+
+  private Function<Concept, List<Concept>> broaderFunction =
+      new Function<Concept, List<Concept>>() {
+        @Override
+        public List<Concept> apply(Concept c) {
+          return c.getReferencesByType("broader");
+        }
+      };
+
 
   @Test
   public void shouldPrintNarrowerTree() {
@@ -55,7 +73,7 @@ public class ConceptGraphUtilsTest {
                           + "\t\t - leaf4\n";
 
     assertEquals(exampleGraph, ConceptGraphUtils
-        .prettyPrintTree(root, ConceptReferenceFunctions.getNarrowerFunction));
+        .prettyPrintTree(root, narrowerFunction));
   }
 
   @Test
@@ -72,7 +90,7 @@ public class ConceptGraphUtilsTest {
     List<List<Concept>> expectedPaths = Lists.newArrayList();
     expectedPaths.add(Lists.newArrayList(root, branch, leaf));
 
-    assertEquals(expectedPaths, ConceptGraphUtils.collectBroaderPaths(leaf));
+    assertEquals(expectedPaths, ConceptGraphUtils.collectPaths(leaf, broaderFunction));
   }
 
   @Test
@@ -92,7 +110,7 @@ public class ConceptGraphUtilsTest {
     expectedPaths.add(Lists.newArrayList(root, branch1, leaf));
     expectedPaths.add(Lists.newArrayList(root, branch2, leaf));
 
-    assertEquals(expectedPaths, ConceptGraphUtils.collectBroaderPaths(leaf));
+    assertEquals(expectedPaths, ConceptGraphUtils.collectPaths(leaf, broaderFunction));
   }
 
 }

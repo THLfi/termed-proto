@@ -27,19 +27,21 @@ public class JsonConceptGraphController {
   @RequestMapping(method = GET, value = "concepts/{conceptId}/trees")
   @ResponseBody
   public JsonArray getConceptJsTrees(@PathVariable("conceptId") String conceptId) {
-    return jsonConceptGraphService.getConceptJsTrees(conceptId);
+    return jsonConceptGraphService.getConceptJsTrees(conceptId, "broader");
   }
 
-  @RequestMapping(method = GET, value = "concepts/{conceptId}/broader")
+  @RequestMapping(method = GET, value = "concepts/{conceptId}/{referenceTypeId}")
   @ResponseBody
-  public JsonArray getConceptBroaderPaths(@PathVariable("conceptId") String conceptId) {
-    return jsonConceptGraphService.getConceptBroaderPaths(conceptId);
+  public JsonArray getConceptPaths(@PathVariable("conceptId") String conceptId,
+                                   @PathVariable("referenceTypeId") String referenceTypeId) {
+    return jsonConceptGraphService.getConceptPaths(conceptId, referenceTypeId);
   }
 
-  @RequestMapping(method = GET, value = "concepts/{conceptId}/partOf")
+  @RequestMapping(method = GET, value = "schemes/{schemeId}/{referenceTypeId}/trees")
   @ResponseBody
-  public JsonArray getConceptPartOfPaths(@PathVariable("conceptId") String conceptId) {
-    return jsonConceptGraphService.getConceptPartOfPaths(conceptId);
+  public JsonArray getConceptTrees(@PathVariable("schemeId") String schemeId,
+                                   @PathVariable("referenceTypeId") String referenceTypeId) {
+    return jsonConceptGraphService.getConceptTrees(schemeId, referenceTypeId);
   }
 
 }

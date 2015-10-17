@@ -15,6 +15,8 @@ App.factory('SchemeList', function($resource) {
   return $resource('api/crud/concepts');
 }).factory('Concept', function($resource) {
   return $resource('api/crud/concepts/:id');
+}).factory('ConceptTrees', function($resource) {
+  return $resource('api/schemes/:schemeId/:referenceTypeId/trees');
 }).factory('ConceptBroaderPaths', function($resource) {
   return $resource('api/concepts/:id/broader');
 }).factory('ConceptPartOfPaths', function($resource) {
@@ -122,6 +124,20 @@ App.controller('SchemeEditCtrl', function($scope, $routeParams, $location,
       $scope.error = error;
     });
   }
+
+});
+
+App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
+        Scheme, ConceptTrees) {
+
+  $scope.scheme = Scheme.get({
+    schemeId: $routeParams.schemeId
+  });
+
+  $scope.rootConcepts = ConceptTrees.query({
+    schemeId: $routeParams.schemeId,
+    referenceTypeId: 'broader'
+  });
 
 });
 
@@ -354,6 +370,9 @@ App.config(function($routeProvider, $httpProvider) {
   }).when('/schemes/:schemeId/collections/:id/edit', {
     templateUrl: 'partials/collection-edit.html',
     controller: 'CollectionEditCtrl'
+  }).when('/schemes/:schemeId/tree', {
+    templateUrl: 'partials/concept-tree.html',
+    controller: 'ConceptTreeCtrl'
   }).when('/schemes/:schemeId/concepts', {
     templateUrl: 'partials/concept-list.html',
     controller: 'ConceptListCtrl',

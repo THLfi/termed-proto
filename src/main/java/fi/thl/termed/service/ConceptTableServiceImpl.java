@@ -21,12 +21,12 @@ import fi.thl.termed.util.TableUtils;
 public class ConceptTableServiceImpl implements ConceptTableService {
 
   @Autowired
-  private JsonCrudService crudService;
+  private JsonCrudService jsonCrudService;
 
   @Override
   public List<String[]> queryTable(String schemeId, Map<String, String> select, String query,
                                    int first, int max, List<String> orderBy) {
-    JsonArray concepts = crudService.query("concepts", LuceneQueryStringUtils
+    JsonArray concepts = jsonCrudService.query("concepts", LuceneQueryStringUtils
         .and(LuceneQueryStringUtils.termQuery("scheme.id", schemeId), query), first, max, orderBy);
 
     List<Map<String, String>> rows = Lists.newArrayList();
@@ -47,7 +47,7 @@ public class ConceptTableServiceImpl implements ConceptTableService {
       array.add(clean(JsonUtils.unflatten(row)));
     }
 
-    crudService.save("concepts", array);
+    jsonCrudService.save("concepts", array);
   }
 
   @SuppressWarnings("unchecked")

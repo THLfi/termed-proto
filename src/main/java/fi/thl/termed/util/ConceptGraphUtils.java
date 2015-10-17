@@ -4,12 +4,10 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.LazyConceptTree;
 
 public final class ConceptGraphUtils {
 
@@ -42,11 +40,11 @@ public final class ConceptGraphUtils {
 
   }
 
-  public static List<Concept> findRoots(List<List<Concept>> broaderPaths) {
+  public static List<Concept> findRoots(List<List<Concept>> paths) {
     Set<Concept> roots = Sets.newHashSet();
 
-    for (List<Concept> broaderPath : broaderPaths) {
-      roots.add(broaderPath.get(0));
+    for (List<Concept> path : paths) {
+      roots.add(path.get(0));
     }
 
     return Lists.newArrayList(roots);
@@ -92,14 +90,6 @@ public final class ConceptGraphUtils {
     List<List<Concept>> paths = Lists.newArrayList();
     collectPaths(concept, neighbourFunction, Sets.<Concept>newLinkedHashSet(), paths);
     return paths;
-  }
-
-  public static List<List<Concept>> collectBroaderPaths(Concept concept) {
-    return collectPaths(concept, ConceptReferenceFunctions.getBroaderFunction);
-  }
-
-  public static List<List<Concept>> collectPartOfPaths(Concept concept) {
-    return collectPaths(concept, ConceptReferenceFunctions.getPartOfFunction);
   }
 
   /**

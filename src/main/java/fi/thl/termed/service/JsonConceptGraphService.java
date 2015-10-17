@@ -4,10 +4,10 @@ import com.google.gson.JsonArray;
 
 public interface JsonConceptGraphService {
 
-  JsonArray getConceptBroaderPaths(String id);
+  JsonArray getConceptPaths(String conceptId, String referenceTypeId);
 
-  JsonArray getConceptPartOfPaths(String id);
+  JsonArray getConceptJsTrees(String conceptId, String referenceTypeId);
 
-  JsonArray getConceptJsTrees(String id);
+  JsonArray getConceptTrees(String schemeId, String referenceTypeId);
 
 }

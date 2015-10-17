@@ -11,18 +11,17 @@ import fi.thl.termed.util.ListUtils;
 
 public class LazyConceptTree extends SchemeResource {
 
-  private Concept concept;
-  private Set<String> path;
-  private Function<Concept, List<Concept>> childFunction;
+  private transient Concept concept;
+  private transient Function<Concept, List<Concept>> childFunction;
 
+  private Set<String> path;
   private List<LazyConceptTree> children;
 
   public LazyConceptTree(Concept concept, Function<Concept, List<Concept>> childFunction) {
     this(concept, Sets.newLinkedHashSet(Lists.newArrayList(concept.getId())), childFunction);
   }
 
-  public LazyConceptTree(Concept concept,
-                         Set<String> path,
+  public LazyConceptTree(Concept concept, Set<String> path,
                          Function<Concept, List<Concept>> childFunction) {
     super(concept);
     this.concept = concept;
@@ -41,11 +40,11 @@ public class LazyConceptTree extends SchemeResource {
     return children;
   }
 
-  // check path for loops and load children
-  private void loadChildren() {
+  public void loadChildren() {
     List<LazyConceptTree> children = Lists.newArrayList();
 
     for (Concept child : ListUtils.nullToEmpty(childFunction.apply(concept))) {
+      // check path to avoid loops
       if (!path.contains(child.getId())) {
         Set<String> childPath = Sets.newLinkedHashSet(path);
         childPath.add(child.getId());
@@ -55,6 +54,12 @@ public class LazyConceptTree extends SchemeResource {
     }
 
     this.children = children;
+  }
+
+  public void recursiveLoadChildren() {
+    for (LazyConceptTree child : getChildren()) {
+      child.recursiveLoadChildren();
+    }
   }
 
 }
