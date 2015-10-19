@@ -28,13 +28,14 @@
                              lang="fi"></thl-property-values>
     </h3>
     <dl ng-repeat="(id, values) in concept.properties">
-        <dt>{{properties[id]['fi']}}</dt>
+        <dt>{{properties[id]['fi'] | capitalize}}</dt>
         <dd>
             <div ng-repeat="value in values | orderBy:langPriority" ng-if="!lang">
                 <code class="text-muted">{{value.lang}}</code> {{value.value}}
             </div>
         </dd>
     </dl>
+    <hr>
     <ul class="no-bullet">
         <li ng-repeat="concept in concept.children" ng-include="'concept-tree-node.html'"></li>
     </ul>

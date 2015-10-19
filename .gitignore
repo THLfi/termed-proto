@@ -1,4 +1,4 @@
-app.*.properties
+application-*.properties
 bin
 target
 index
