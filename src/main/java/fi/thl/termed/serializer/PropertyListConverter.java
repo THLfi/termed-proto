@@ -8,8 +8,8 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 
-import fi.thl.termed.model.LangValue;
-import fi.thl.termed.model.PropertyValue;
+import fi.thl.termed.domain.LangValue;
+import fi.thl.termed.domain.PropertyValue;
 
 public class PropertyListConverter
     extends Converter<List<PropertyValue>, Map<String, List<LangValue>>> {

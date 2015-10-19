@@ -7,7 +7,7 @@ import org.hibernate.search.bridge.LuceneOptions;
 
 import java.util.List;
 
-import fi.thl.termed.model.ConceptReference;
+import fi.thl.termed.domain.ConceptReference;
 
 public class ConceptReferenceListBridge implements FieldBridge {
 

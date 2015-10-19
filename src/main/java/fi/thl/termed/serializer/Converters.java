@@ -12,12 +12,12 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
-import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.LangValue;
-import fi.thl.termed.model.PropertyValue;
-import fi.thl.termed.model.SchemeResource;
-import fi.thl.termed.model.SerializedConcept;
-import fi.thl.termed.model.SerializedConceptNarrowerTree;
+import fi.thl.termed.domain.Concept;
+import fi.thl.termed.domain.LangValue;
+import fi.thl.termed.domain.PropertyValue;
+import fi.thl.termed.domain.SchemeResource;
+import fi.thl.termed.domain.SerializedConcept;
+import fi.thl.termed.domain.SerializedConceptNarrowerTree;
 
 public final class Converters {
 

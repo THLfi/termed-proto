@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
-import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.SerializedConceptNarrowerTree;
+import fi.thl.termed.domain.Concept;
+import fi.thl.termed.domain.SerializedConceptNarrowerTree;
 
 /**
  * Used with JSON exporter to dump whole concept tree using narrower (i.e. inverse of broader)

@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import fi.thl.termed.model.PropertyValue;
+import fi.thl.termed.domain.PropertyValue;
 
 import static org.junit.Assert.assertEquals;
 

@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.JsTree;
-import fi.thl.termed.model.LazyConceptTree;
+import fi.thl.termed.domain.Concept;
+import fi.thl.termed.domain.JsTree;
+import fi.thl.termed.domain.LazyConceptTree;
 import fi.thl.termed.serializer.Converters;
 import fi.thl.termed.util.ConceptGraphUtils;
 import fi.thl.termed.util.GetResourceId;

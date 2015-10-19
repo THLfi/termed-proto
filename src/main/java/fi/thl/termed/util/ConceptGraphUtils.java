@@ -7,7 +7,7 @@ import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
 
-import fi.thl.termed.model.Concept;
+import fi.thl.termed.domain.Concept;
 
 public final class ConceptGraphUtils {
 

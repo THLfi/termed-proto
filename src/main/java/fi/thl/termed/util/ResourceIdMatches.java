@@ -3,7 +3,7 @@ package fi.thl.termed.util;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 
-import fi.thl.termed.model.Resource;
+import fi.thl.termed.domain.Resource;
 
 
 public class ResourceIdMatches implements Predicate<Resource> {

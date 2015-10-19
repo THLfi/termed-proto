@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import java.util.List;
 
-import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.ConceptReferenceType;
+import fi.thl.termed.domain.Concept;
+import fi.thl.termed.domain.ConceptReferenceType;
 
 import static org.junit.Assert.assertEquals;
 

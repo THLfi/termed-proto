@@ -1,0 +1,83 @@
+<ol class="breadcrumb">
+    <li><a ng-href="#/">Termieditori</a></li>
+    <li><a ng-href="#/schemes/{{scheme.id}}/concepts">
+        <thl-property-values values="scheme.properties.prefLabel" lang="fi"></thl-property-values>
+    </a></li>
+    <li class="active">muokkaus</li>
+</ol>
+
+<div class="row">
+    <div class="col-xs-8">
+        <button class="btn btn-sm btn-success" ng-click="save()">
+            <span class="glyphicon glyphicon-floppy-disk"></span>
+            Tallenna
+        </button>
+    </div>
+
+    <div class="col-xs-4 text-right">
+        <button class="btn btn-sm btn-danger" ng-click="remove()">
+            <span class="glyphicon glyphicon-trash"></span>
+            Poista
+        </button>
+    </div>
+</div>
+
+<div class="alert alert-danger" role="alert" ng-show="error">
+    <span class="glyphicon glyphicon-alert"></span> {{error}}
+</div>
+
+<h1 class="page-header">
+    <thl-property-values values="scheme.properties.prefLabel" lang="fi"></thl-property-values>
+    <small>
+        <thl-property-values values="scheme.properties.altLabel" lang="fi"></thl-property-values>
+    </small>
+</h1>
+
+<div class="row text-muted page-header-info">
+    <div class="col-sm-6">
+        <small>
+            Päivitetty {{scheme.lastModifiedDate | date:'d.M.yyyy HH:mm:ss'}} /
+            {{scheme.lastModifiedBy}}
+        </small>
+    </div>
+    <div class="col-sm-6 text-right">
+        <small>
+            Lisätty {{scheme.createdDate | date:'d.M.yyyy HH:mm:ss'}} /
+            {{scheme.createdBy}}
+        </small>
+    </div>
+</div>
+
+<form role="form">
+    <div class="form-group">
+        <label>URI</label>
+
+        <div class="row">
+            <div class="col-sm-11 col-xs-10">
+                <input type="text" class="form-control" ng-model="scheme.uri">
+            </div>
+            <div class="col-sm-1 col-xs-2 text-right">
+                <button class="btn btn-default" ng-click="scheme.uri = ''">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Ensisijainen termi</label>
+        <thl-property-values-edit values="scheme.properties.prefLabel"></thl-property-values-edit>
+
+    </div>
+    <div class="form-group">
+        <label>Vaihtoehtoiset termit</label>
+        <thl-property-values-edit values="scheme.properties.altLabel"></thl-property-values-edit>
+    </div>
+</form>
+
+<hr>
+
+<span class="label label-default" ng-click="showJson = !showJson">json</span>
+
+<div ng-show="showJson">
+    <pre>{{scheme | json}}</pre>
+</div>

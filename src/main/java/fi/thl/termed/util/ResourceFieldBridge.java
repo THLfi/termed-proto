@@ -4,7 +4,7 @@ import org.apache.lucene.document.Document;
 import org.hibernate.search.bridge.LuceneOptions;
 import org.hibernate.search.bridge.TwoWayFieldBridge;
 
-import fi.thl.termed.model.Resource;
+import fi.thl.termed.domain.Resource;
 
 public class ResourceFieldBridge implements TwoWayFieldBridge {
 

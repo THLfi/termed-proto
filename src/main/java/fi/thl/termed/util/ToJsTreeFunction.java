@@ -10,9 +10,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.util.List;
 import java.util.Set;
 
-import fi.thl.termed.model.JsTree;
-import fi.thl.termed.model.LazyConceptTree;
-import fi.thl.termed.model.UriResource;
+import fi.thl.termed.domain.JsTree;
+import fi.thl.termed.domain.LazyConceptTree;
+import fi.thl.termed.domain.UriResource;
 
 public class ToJsTreeFunction implements Function<LazyConceptTree, JsTree> {
 

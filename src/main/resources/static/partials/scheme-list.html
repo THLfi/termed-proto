@@ -1,0 +1,113 @@
+<ol class="breadcrumb">
+    <li class="active">Termieditori</li>
+</ol>
+
+<h1 class="page-header">
+    Termieditori
+</h1>
+
+<div class="row">
+    <div class="col-sm-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-8">
+                        <h3 class="panel-title">Käsitteet</h3>
+                    </div>
+                    <div class="col-xs-4 text-right text-muted">
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </div>
+                    <input class="form-control" ng-model="query"
+                           ng-change="searchConcepts(query)"
+                           ng-model-options="{debounce: 50}"
+                           placeholder="Etsi käsitettä"
+                           type="text">
+                </div>
+                <br>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Käsite</th>
+                        <th width="35%">Lähde</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="concept in concepts">
+                        <td>
+                            <a ng-href="#/schemes/{{concept.scheme.id}}/concepts/{{concept.id}}">
+                                <thl-property-values values="concept.properties.prefLabel"
+                                                     lang="fi"></thl-property-values>
+                            </a>
+                        </td>
+                        <td>
+                            <small>
+                                <a ng-href="#/schemes/{{concept.scheme.id}}/concepts"
+                                   class="text-muted">
+                                    <thl-property-values
+                                            values="concept.scheme.properties.prefLabel"
+                                            lang="fi"></thl-property-values>
+                                </a>
+                            </small>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-default btn-sm {{concepts.length == max || 'disabled'}}"
+                        ng-click="loadMoreResults()">
+                    Näytä lisää hakutuloksia
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Sanastot</h3>
+            </div>
+            <div class="panel-body">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </div>
+                    <input class="form-control" ng-model="schemeQuery" type="text"
+                           placeholder="Etsi sanastoa">
+                </div>
+                <br>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Sanasto</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="scheme in schemes | filter:schemeQuery">
+                        <td>
+                            <a ng-href="#/schemes/{{scheme.id}}/concepts">
+                                <thl-property-values values="scheme.properties.prefLabel"
+                                                     lang="fi"></thl-property-values>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-default btn-sm" ng-click="newScheme()"
+                        >
+                    <span class="glyphicon glyphicon-plus"></span>
+                    Lisää uusi sanasto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<span class="label label-default" ng-click="showJson = !showJson">json</span>
+
+<div ng-show="showJson">
+    <pre>{{schemes | json}}</pre>
+</div>

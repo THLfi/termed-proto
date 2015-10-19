@@ -13,10 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import fi.thl.termed.model.Concept;
-import fi.thl.termed.repository.ConceptRepository;
-import fi.thl.termed.repository.HibernateSearchRepository;
-import fi.thl.termed.repository.Repository;
+import fi.thl.termed.domain.Concept;
 
 @Service
 @Transactional

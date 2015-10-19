@@ -1,0 +1,50 @@
+<ol class="breadcrumb">
+    <li><a ng-href="#/">Termieditori</a></li>
+    <li><a ng-href="#/schemes/{{scheme.id}}/concepts">
+        <thl-property-values values="scheme.properties.prefLabel"
+                             lang="fi"></thl-property-values>
+    </a></li>
+    <li class="active">
+        Hierarkia
+    </li>
+</ol>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1 class="page-header">
+            <thl-property-values values="scheme.properties.prefLabel"
+                                 lang="fi"></thl-property-values>
+            <small>- Hierarkia</small>
+        </h1>
+        <ul class="list-unstyled">
+            <li ng-repeat="concept in rootConcepts" ng-include="'concept-tree-node.html'"></li>
+        </ul>
+    </div>
+</div>
+
+<script type="text/ng-template" id="concept-tree-node.html">
+    <h3>
+        <thl-property-values values="concept.properties.prefLabel"
+                             lang="fi"></thl-property-values>
+    </h3>
+    <dl ng-repeat="(id, values) in concept.properties">
+        <dt>{{properties[id]['fi']}}</dt>
+        <dd>
+            <div ng-repeat="value in values | orderBy:langPriority" ng-if="!lang">
+                <code class="text-muted">{{value.lang}}</code> {{value.value}}
+            </div>
+        </dd>
+    </dl>
+    <ul class="no-bullet">
+        <li ng-repeat="concept in concept.children" ng-include="'concept-tree-node.html'"></li>
+    </ul>
+</script>
+
+<hr>
+
+<span class="label label-default" ng-click="showJson = !showJson">json</span>
+
+<div ng-show="showJson">
+    <pre>{{rootConcepts | json}}</pre>
+</div>
+

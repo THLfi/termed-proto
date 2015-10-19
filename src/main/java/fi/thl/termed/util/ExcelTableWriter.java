@@ -1,5 +1,7 @@
 package fi.thl.termed.util;
 
+import com.google.common.base.Strings;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -48,7 +50,7 @@ public class ExcelTableWriter implements TableWriter {
     for (int i = 0; i < rowData.length; i++) {
       Cell cell = row.createCell(i);
       cell.setCellType(Cell.CELL_TYPE_STRING);
-      cell.setCellValue(rowData[i]);
+      cell.setCellValue(Strings.nullToEmpty(rowData[i]));
       cell.setCellStyle(cellStyle);
     }
     row.setHeight((short) 700);

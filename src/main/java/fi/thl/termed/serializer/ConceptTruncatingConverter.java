@@ -2,8 +2,8 @@ package fi.thl.termed.serializer;
 
 import com.google.common.base.Converter;
 
-import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.SchemeResource;
+import fi.thl.termed.domain.Concept;
+import fi.thl.termed.domain.SchemeResource;
 
 /**
  * Converts {@code Concept} to {@code SchemeResource}.

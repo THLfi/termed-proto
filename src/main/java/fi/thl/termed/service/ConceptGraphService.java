@@ -2,9 +2,8 @@ package fi.thl.termed.service;
 
 import java.util.List;
 
-import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.LazyConceptTree;
-import fi.thl.termed.model.Scheme;
+import fi.thl.termed.domain.Concept;
+import fi.thl.termed.domain.LazyConceptTree;
 
 public interface ConceptGraphService {
 

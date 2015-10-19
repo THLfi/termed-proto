@@ -73,7 +73,7 @@ public final class JsonUtils {
    * @return map containing flattened json element
    */
   public static Map<String, String> flatten(JsonElement element) {
-    Map<String, String> results = Maps.newHashMap();
+    Map<String, String> results = Maps.newLinkedHashMap();
     flatten(element, new ArrayDeque<String>(), results);
     return results;
   }

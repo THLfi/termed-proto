@@ -1,0 +1,61 @@
+<ol class="breadcrumb">
+    <li><a ng-href="#/">Termieditori</a></li>
+    <li><a ng-href="#/schemes/{{collection.scheme.id}}/concepts">
+        <thl-property-values values="collection.scheme.properties.prefLabel"
+                             lang="fi"></thl-property-values>
+    </a></li>
+    <li class="active">
+        <thl-property-values values="collection.properties.prefLabel"
+                             lang="fi"></thl-property-values>
+    </li>
+</ol>
+
+<div>
+    <a class="btn btn-sm btn-default"
+       ng-href="#/schemes/{{collection.scheme.id}}/collections/{{collection.id}}/edit">
+        <span class="glyphicon glyphicon-edit"></span>
+        Muokkaa
+    </a>
+</div>
+
+<h1 class="page-header">
+    <thl-property-values values="collection.properties.prefLabel" lang="fi"></thl-property-values>
+</h1>
+
+<div class="text-muted page-header-info">
+    <small>{{collection.uri || '-'}}</small>
+</div>
+
+<dl>
+    <dt>Ensisijainen termi</dt>
+    <dd>
+        <thl-property-values values="collection.properties.prefLabel"></thl-property-values>
+    </dd>
+    <dt ng-show="collection.properties.altLabel">Vaihtoehtoiset termit</dt>
+    <dd ng-show="collection.properties.altLabel">
+        <thl-property-values values="collection.properties.altLabel"></thl-property-values>
+    </dd>
+</dl>
+
+<dl>
+    <dt ng-show="collection.members && collection.members.length > 0">
+        Kokoelmaan kuuluvat käsitteet
+    </dt>
+    <dd ng-show="collection.members && collection.members.length > 0">
+        <span ng-repeat="r in collection.members | orderBy:prefLabelFi">
+            <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}">
+                <thl-property-values values="r.properties.prefLabel"
+                                     lang="fi"></thl-property-values>
+            </a><br>
+        </span>
+    </dd>
+</dl>
+
+<hr>
+
+<span class="label label-default" ng-click="showJson = !showJson">json</span>
+
+<div ng-show="showJson">
+    <pre>{{collection | json}}</pre>
+</div>
+

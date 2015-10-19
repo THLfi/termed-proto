@@ -10,12 +10,12 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
-import fi.thl.termed.model.Collection;
-import fi.thl.termed.model.Concept;
-import fi.thl.termed.model.ConceptReference;
-import fi.thl.termed.model.ConceptReferenceType;
-import fi.thl.termed.model.SchemeResource;
-import fi.thl.termed.model.SerializedConcept;
+import fi.thl.termed.domain.Collection;
+import fi.thl.termed.domain.Concept;
+import fi.thl.termed.domain.ConceptReference;
+import fi.thl.termed.domain.ConceptReferenceType;
+import fi.thl.termed.domain.SchemeResource;
+import fi.thl.termed.domain.SerializedConcept;
 import fi.thl.termed.util.ListUtils;
 import fi.thl.termed.util.MapUtils;
 
