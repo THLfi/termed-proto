@@ -33,12 +33,19 @@ public class ConceptGraphServiceImpl implements ConceptGraphService {
   }
 
   private Function<Concept, List<Concept>> referrersFunction(final String referenceTypeId) {
+    return referrersFunction(referenceTypeId, null);
+  }
+
+  private Function<Concept, List<Concept>> referrersFunction(final String referenceTypeId,
+                                                             final List<String> orderBy) {
     return new Function<Concept, List<Concept>>() {
       @Override
       public List<Concept> apply(Concept concept) {
         // for better performance, referrers are queried and loaded from from index
-        return crudService.queryCached(Concept.class, LuceneQueryUtils.term(referenceTypeId + ".id",
-                                                                            concept.getId()));
+        return crudService.queryCached(Concept.class,
+                                       LuceneQueryUtils.term(referenceTypeId + ".id",
+                                                             concept.getId()),
+                                       0, -1, orderBy);
       }
     };
   }
@@ -64,12 +71,14 @@ public class ConceptGraphServiceImpl implements ConceptGraphService {
   }
 
   @Override
-  public List<LazyConceptTree> roots(String schemeId, String referenceTypeId) {
+  public List<LazyConceptTree> roots(String schemeId,
+                                     String referenceTypeId,
+                                     List<String> orderBy) {
     Query query = new LuceneQueryBuilder()
         .mustOccur().term("scheme.id", schemeId)
         .mustNotOccur().anyValueOfField(referenceTypeId + ".id").build();
-    return Lists.transform(crudService.query(Concept.class, query),
-                           conceptToLazyTreeFunction(referrersFunction(referenceTypeId)));
+    return Lists.transform(crudService.query(Concept.class, query, 0, -1, orderBy),
+                           conceptToLazyTreeFunction(referrersFunction(referenceTypeId, orderBy)));
   }
 
   @Override

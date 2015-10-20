@@ -5,17 +5,33 @@
                              lang="fi"></thl-property-values>
     </a></li>
     <li class="active">
-        Hierarkia
+        Kaikki käsitteet
     </li>
 </ol>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="btn-group" role="group">
+            <button class="btn btn-sm btn-default" ng-click="asTree()">
+                <span class="glyphicon glyphicon-align-left"></span>
+                Esitä hierarkiana
+            </button>
+            <button class="btn btn-sm btn-default" ng-click="asList()">
+                <span class="glyphicon glyphicon-list"></span>
+                Esitä listana
+            </button>
+        </div>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-sm-12">
         <h1 class="page-header">
             <thl-property-values values="scheme.properties.prefLabel"
                                  lang="fi"></thl-property-values>
-            <small>- Hierarkia</small>
+            <small>- Kaikki käsitteet</small>
         </h1>
+
         <ul class="list-unstyled">
             <li ng-repeat="concept in rootConcepts" ng-include="'concept-tree-node.html'"></li>
         </ul>
@@ -27,21 +43,21 @@
         <thl-property-values values="concept.properties.prefLabel"
                              lang="fi"></thl-property-values>
     </h3>
-    <dl ng-repeat="(id, values) in concept.properties">
-        <dt>{{properties[id]['fi'] | capitalize}}</dt>
-        <dd>
-            <div ng-repeat="value in values | orderBy:langPriority" ng-if="!lang">
-                <code class="text-muted">{{value.lang}}</code> {{value.value}}
-            </div>
-        </dd>
-    </dl>
+    <div ng-repeat="(propertyKey, labels) in properties">
+        <dl ng-if="concept.properties[propertyKey].length > 0">
+            <dt>{{labels['fi'] | capitalize}}</dt>
+            <dd>
+                <div ng-repeat="value in concept.properties[propertyKey] | orderBy:langPriority">
+                    <code class="text-muted">{{value.lang}}</code> {{value.value}}
+                </div>
+            </dd>
+        </dl>
+    </div>
     <hr>
-    <ul class="no-bullet">
+    <ul class="no-bullet" ng-if="concept.children">
         <li ng-repeat="concept in concept.children" ng-include="'concept-tree-node.html'"></li>
     </ul>
 </script>
-
-<hr>
 
 <span class="label label-default" ng-click="showJson = !showJson">json</span>
 

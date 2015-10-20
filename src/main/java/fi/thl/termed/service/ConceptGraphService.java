@@ -7,7 +7,7 @@ import fi.thl.termed.domain.LazyConceptTree;
 
 public interface ConceptGraphService {
 
-  List<LazyConceptTree> roots(String schemeId, String referenceTypeId);
+  List<LazyConceptTree> roots(String schemeId, String referenceTypeId, List<String> orderBy);
 
   LazyConceptTree toTree(String conceptId, String referenceTypeId);
 

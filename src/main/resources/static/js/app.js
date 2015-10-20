@@ -129,13 +129,31 @@ App.controller('SchemeEditCtrl', function($scope, $routeParams, $location,
 });
 
 App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
-        Scheme, ConceptTrees, PropertyList) {
+        Scheme, ConceptList, ConceptTrees, PropertyList, PropertyUtils) {
 
   $scope.scheme = Scheme.get({
     schemeId: $routeParams.schemeId
   });
 
-  PropertyList.query(function(props) {
+  $scope.asList = function() {
+    $scope.rootConcepts = ConceptList.query({
+      schemeId: $routeParams.schemeId,
+      orderBy: 'prefLabel.fi.sortable'
+      max: -1,
+    });
+  }
+
+  $scope.asTree = function() {
+    $scope.rootConcepts = ConceptTrees.query({
+      schemeId: $routeParams.schemeId,
+      referenceTypeId: 'broader',
+      orderBy: 'prefLabel.fi.sortable'
+    });
+  }
+
+  PropertyList.query({
+    orderBy: 'index.sortable'
+  }, function(props) {
     $scope.properties = {};
 
     for (var i = 0; i < props.length; i++) {
@@ -148,10 +166,9 @@ App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
     }
   });
 
-  $scope.rootConcepts = ConceptTrees.query({
-    schemeId: $routeParams.schemeId,
-    referenceTypeId: 'broader'
-  });
+  $scope.langPriority = PropertyUtils.langPriority;
+
+  $scope.asTree();
 
 });
 

@@ -69,8 +69,13 @@ public class JsonConceptGraphServiceImpl implements JsonConceptGraphService {
 
   @Override
   public JsonArray getConceptTrees(String schemeId, String referenceTypeId) {
+    return getConceptTrees(schemeId, referenceTypeId, null);
+  }
+
+  @Override
+  public JsonArray getConceptTrees(String schemeId, String referenceTypeId, List<String> orderBy) {
     List<LazyConceptTree> trees = Lists.newArrayList();
-    for (LazyConceptTree tree : conceptGraphService.roots(schemeId, referenceTypeId)) {
+    for (LazyConceptTree tree : conceptGraphService.roots(schemeId, referenceTypeId, orderBy)) {
       tree.recursiveLoadChildren();
       trees.add(tree);
     }

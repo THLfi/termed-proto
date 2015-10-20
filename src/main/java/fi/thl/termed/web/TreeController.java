@@ -7,7 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import fi.thl.termed.service.JsonConceptGraphService;
 
@@ -40,8 +43,9 @@ public class TreeController {
 
   @RequestMapping(method = GET, value = "/schemes/{schemeId}/{referenceTypeId}/trees")
   public JsonArray getConceptTrees(@PathVariable("schemeId") String schemeId,
-                                   @PathVariable("referenceTypeId") String referenceTypeId) {
-    return jsonConceptGraphService.getConceptTrees(schemeId, referenceTypeId);
+                                   @PathVariable("referenceTypeId") String referenceTypeId,
+                                   @RequestParam(value = "orderBy", required = false, defaultValue = "") List<String> orderBy) {
+    return jsonConceptGraphService.getConceptTrees(schemeId, referenceTypeId, orderBy);
   }
 
 }
