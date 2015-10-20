@@ -30,18 +30,18 @@ public class TreeController {
     this.jsonConceptGraphService = jsonConceptGraphService;
   }
 
-  @RequestMapping(method = GET, value = "/concepts/{conceptId}/trees")
+  @RequestMapping(method = GET, value = "/trees/concepts/{conceptId}")
   public JsonArray getConceptJsTrees(@PathVariable("conceptId") String conceptId) {
     return jsonConceptGraphService.getConceptJsTrees(conceptId, "broader");
   }
 
-  @RequestMapping(method = GET, value = "/concepts/{conceptId}/{referenceTypeId}")
+  @RequestMapping(method = GET, value = "/paths/concepts/{conceptId}/{referenceTypeId}")
   public JsonArray getConceptPaths(@PathVariable("conceptId") String conceptId,
                                    @PathVariable("referenceTypeId") String referenceTypeId) {
     return jsonConceptGraphService.getConceptPaths(conceptId, referenceTypeId);
   }
 
-  @RequestMapping(method = GET, value = "/schemes/{schemeId}/{referenceTypeId}/trees")
+  @RequestMapping(method = GET, value = "/trees/schemes/{schemeId}/{referenceTypeId}")
   public JsonArray getConceptTrees(@PathVariable("schemeId") String schemeId,
                                    @PathVariable("referenceTypeId") String referenceTypeId,
                                    @RequestParam(value = "orderBy", required = false, defaultValue = "") List<String> orderBy) {

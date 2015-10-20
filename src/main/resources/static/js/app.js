@@ -15,11 +15,11 @@ App.factory('SchemeList', function($resource) {
 }).factory('Concept', function($resource) {
   return $resource('api/crud/concepts/:id');
 }).factory('ConceptTrees', function($resource) {
-  return $resource('api/schemes/:schemeId/:referenceTypeId/trees');
+  return $resource('api/trees/schemes/:schemeId/:referenceTypeId');
 }).factory('ConceptBroaderPaths', function($resource) {
-  return $resource('api/concepts/:id/broader');
+  return $resource('api/paths/concepts/:id/broader');
 }).factory('ConceptPartOfPaths', function($resource) {
-  return $resource('api/concepts/:id/partOf');
+  return $resource('api/paths/concepts/:id/partOf');
 }).factory('PropertyList', function($resource) {
   return $resource('api/crud/properties');
 });
