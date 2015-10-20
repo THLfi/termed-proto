@@ -135,21 +135,25 @@ App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
     schemeId: $routeParams.schemeId
   });
 
-  $scope.asList = function() {
-    $scope.rootConcepts = ConceptList.query({
-      schemeId: $routeParams.schemeId,
-      orderBy: 'prefLabel.fi.sortable'
-      max: -1,
-    });
-  }
+  $scope.display = {
+    type: "tree"
+  };
 
-  $scope.asTree = function() {
-    $scope.rootConcepts = ConceptTrees.query({
-      schemeId: $routeParams.schemeId,
-      referenceTypeId: 'broader',
-      orderBy: 'prefLabel.fi.sortable'
-    });
-  }
+  $scope.loadResults = function() {
+    if ($scope.display.type === "tree") {
+      $scope.rootConcepts = ConceptTrees.query({
+        schemeId: $routeParams.schemeId,
+        referenceTypeId: 'broader',
+        orderBy: 'prefLabel.fi.sortable'
+      });
+    } else {
+      $scope.rootConcepts = ConceptList.query({
+        schemeId: $routeParams.schemeId,
+        orderBy: 'prefLabel.fi.sortable',
+        max: -1
+      });
+    }
+  };
 
   PropertyList.query({
     orderBy: 'index.sortable'
@@ -168,7 +172,7 @@ App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
 
   $scope.langPriority = PropertyUtils.langPriority;
 
-  $scope.asTree();
+  $scope.loadResults();
 
 });
 

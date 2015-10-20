@@ -11,26 +11,24 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <div class="btn-group" role="group">
-            <button class="btn btn-sm btn-default" ng-click="asTree()">
-                <span class="glyphicon glyphicon-align-left"></span>
-                Esitä hierarkiana
-            </button>
-            <button class="btn btn-sm btn-default" ng-click="asList()">
-                <span class="glyphicon glyphicon-list"></span>
-                Esitä listana
-            </button>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-sm-12">
         <h1 class="page-header">
             <thl-property-values values="scheme.properties.prefLabel"
                                  lang="fi"></thl-property-values>
             <small>- Kaikki käsitteet</small>
         </h1>
+
+        <div class="pull-right">
+            <label class="radio-inline text-muted">
+                <input type="radio" ng-model="display.type" value="tree"
+                       ng-change="loadResults()">
+                Esitä yläkäsitepuuna
+            </label>
+            <label class="radio-inline text-muted">
+                <input type="radio" ng-model="display.type" value="list"
+                       ng-change="loadResults()">
+                Esitä listana
+            </label>
+        </div>
 
         <ul class="list-unstyled">
             <li ng-repeat="concept in rootConcepts" ng-include="'concept-tree-node.html'"></li>
