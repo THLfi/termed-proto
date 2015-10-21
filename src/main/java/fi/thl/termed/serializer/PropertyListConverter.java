@@ -44,7 +44,9 @@ public class PropertyListConverter
     for (Map.Entry<String, Map<String, List<String>>> property : propertyMap.entrySet()) {
       for (Map.Entry<String, List<String>> langValues : property.getValue().entrySet()) {
         for (String value : ListUtils.nullToEmpty(langValues.getValue())) {
-          properties.add(new PropertyValue(property.getKey(), langValues.getKey(), value));
+          if (!Strings.isNullOrEmpty(value)) {
+            properties.add(new PropertyValue(property.getKey(), langValues.getKey(), value));
+          }
         }
       }
     }
