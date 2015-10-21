@@ -22,11 +22,15 @@ public class ConceptRepository implements Repository<Concept> {
 
   @Override
   public Concept save(Concept data) {
-    return delegate.save(saveConceptReferences(data));
+    return delegate.save(saveConcept(data));
   }
 
   // workaround for saving references as they don't cascade easily with concept
-  private Concept saveConceptReferences(Concept concept) {
+  private Concept saveConcept(Concept concept) {
+    if (concept.getReferences() == null) {
+      return concept;
+    }
+
     List<ConceptReference> references = Lists.newArrayList(concept.getReferences());
 
     // first save concept w/o refs
