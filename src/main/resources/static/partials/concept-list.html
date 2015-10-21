@@ -1,8 +1,7 @@
 <ol class="breadcrumb">
     <li><a ng-href="#/">Termieditori</a></li>
     <li class="active">
-        <thl-property-values values="scheme.properties.prefLabel"
-                             lang="fi"></thl-property-values>
+        {{scheme.properties.prefLabel[lang][0]}}
     </li>
 </ol>
 
@@ -44,8 +43,7 @@
 </div>
 
 <h1 class="page-header">
-    <thl-property-values values="scheme.properties.prefLabel"
-                         lang="fi"></thl-property-values>
+    {{scheme.properties.prefLabel[lang][0]}}
 </h1>
 
 <div class="text-muted" style="margin:-18px 0 18px">
@@ -170,8 +168,7 @@
     <tr ng-repeat="concept in concepts">
         <td>
             <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}">
-                <thl-property-values values="concept.properties.prefLabel"
-                                     lang="fi"></thl-property-values>
+                {{concept.properties.prefLabel[lang][0] || '-'}}
             </a>
         </td>
     </tr>

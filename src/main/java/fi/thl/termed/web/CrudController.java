@@ -39,9 +39,11 @@ public class CrudController {
       @RequestParam(value = "query", required = false, defaultValue = "") String query,
       @RequestParam(value = "first", required = false, defaultValue = "0") Integer first,
       @RequestParam(value = "max", required = false, defaultValue = "50") Integer max,
-      @RequestParam(value = "orderBy", required = false, defaultValue = "") List<String> orderBy) {
-    return service.query(collection, addSchemeIdToQuery(schemeId, query), first,
-                         max < 0 ? Integer.MAX_VALUE : max, orderBy);
+      @RequestParam(value = "orderBy", required = false, defaultValue = "") List<String> orderBy,
+      @RequestParam(value = "cached", required = false, defaultValue = "true") boolean cached) {
+    String schemaQuery = addSchemeIdToQuery(schemeId, query);
+    return cached ? service.queryCached(collection, schemaQuery, first, max, orderBy)
+                  : service.query(collection, schemaQuery, first, max, orderBy);
   }
 
   private String addSchemeIdToQuery(String schemeId, String query) {

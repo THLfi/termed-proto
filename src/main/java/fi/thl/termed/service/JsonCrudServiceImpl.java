@@ -79,18 +79,6 @@ public class JsonCrudServiceImpl implements JsonCrudService {
   }
 
   @Override
-  public JsonArray query(String collection, String query) {
-    return query(collection, query, defaultGson);
-  }
-
-  @Override
-  public JsonArray query(String collection, String query, Gson gson) {
-    Class c = collectionClassMap.get(collection);
-    return c == null ? new JsonArray() :
-           gson.toJsonTree(crudService.queryCached(c, query)).getAsJsonArray();
-  }
-
-  @Override
   public JsonArray query(String collection, String query, int fst, int max, List<String> orderBy) {
     return query(collection, query, fst, max, orderBy, defaultGson);
   }
@@ -98,6 +86,21 @@ public class JsonCrudServiceImpl implements JsonCrudService {
   @Override
   public JsonArray query(String collection, String query, int fst, int max, List<String> orderBy,
                          Gson gson) {
+    Class c = collectionClassMap.get(collection);
+    return c == null ? new JsonArray() :
+           gson.toJsonTree(crudService.query(c, query, fst, max, orderBy)).getAsJsonArray();
+  }
+
+  @Override
+  public JsonArray queryCached(String collection, String query, int fst, int max,
+                               List<String> orderBy) {
+    return queryCached(collection, query, fst, max, orderBy, defaultGson);
+  }
+
+  @Override
+  public JsonArray queryCached(String collection, String query, int fst, int max,
+                               List<String> orderBy,
+                               Gson gson) {
     Class c = collectionClassMap.get(collection);
     return c == null ? new JsonArray() :
            gson.toJsonTree(crudService.queryCached(c, query, fst, max, orderBy)).getAsJsonArray();

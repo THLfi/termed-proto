@@ -41,17 +41,14 @@
                     <tr ng-repeat="concept in concepts">
                         <td>
                             <a ng-href="#/schemes/{{concept.scheme.id}}/concepts/{{concept.id}}">
-                                <thl-property-values values="concept.properties.prefLabel"
-                                                     lang="fi"></thl-property-values>
+                                {{concept.properties.prefLabel[lang][0] || '-'}}
                             </a>
                         </td>
                         <td>
                             <small>
                                 <a ng-href="#/schemes/{{concept.scheme.id}}/concepts"
                                    class="text-muted">
-                                    <thl-property-values
-                                            values="concept.scheme.properties.prefLabel"
-                                            lang="fi"></thl-property-values>
+                                    {{concept.scheme.properties.prefLabel[lang][0]}}
                                 </a>
                             </small>
                         </td>
@@ -89,15 +86,13 @@
                     <tr ng-repeat="scheme in schemes | filter:schemeQuery">
                         <td>
                             <a ng-href="#/schemes/{{scheme.id}}/concepts">
-                                <thl-property-values values="scheme.properties.prefLabel"
-                                                     lang="fi"></thl-property-values>
+                                {{scheme.properties.prefLabel[lang][0]}}
                             </a>
                         </td>
                     </tr>
                     </tbody>
                 </table>
-                <button class="btn btn-default btn-sm" ng-click="newScheme()"
-                        >
+                <button class="btn btn-default btn-sm" ng-click="newScheme()">
                     <span class="glyphicon glyphicon-plus"></span>
                     Lisää uusi sanasto
                 </button>

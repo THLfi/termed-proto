@@ -26,7 +26,7 @@ public class ConceptTableServiceImpl implements ConceptTableService {
   @Override
   public List<String[]> queryTable(String schemeId, Map<String, String> select, String query,
                                    int first, int max, List<String> orderBy) {
-    JsonArray concepts = jsonCrudService.query("concepts", LuceneQueryStringUtils
+    JsonArray concepts = jsonCrudService.queryCached("concepts", LuceneQueryStringUtils
         .and(LuceneQueryStringUtils.termQuery("scheme.id", schemeId), query), first, max, orderBy);
 
     List<Map<String, String>> rows = Lists.newArrayList();

@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import fi.thl.termed.domain.Concept;
-import fi.thl.termed.domain.LangValue;
 import fi.thl.termed.domain.PropertyValue;
 import fi.thl.termed.domain.SchemeResource;
 import fi.thl.termed.domain.SerializedConcept;
@@ -51,7 +50,7 @@ public final class Converters {
   public static GsonBuilder registerPropertyListConverter(GsonBuilder builder) {
     Type propertyListType = new TypeToken<List<PropertyValue>>() {
     }.getType();
-    Type propertyMapType = new TypeToken<Map<String, List<LangValue>>>() {
+    Type propertyMapType = new TypeToken<Map<String, Map<String, List<String>>>>() {
     }.getType();
 
     return registerConverter(builder,

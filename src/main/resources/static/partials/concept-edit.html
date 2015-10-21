@@ -1,14 +1,11 @@
 <ol class="breadcrumb">
     <li><a ng-href="#/">Termieditori</a></li>
     <li><a ng-href="#/schemes/{{concept.scheme.id}}/concepts">
-        <thl-property-values values="concept.scheme.properties.prefLabel"
-                             lang="fi"></thl-property-values>
+        {{concept.scheme.properties.prefLabel[lang][0]}}
     </a></li>
     <li>
         <a ng-href="#/schemes/{{concept.scheme.id}}/concepts/{{concept.id}}">
-            <thl-property-values values="concept.properties.prefLabel"
-                                 lang="fi"></thl-property-values>
-
+            {{concept.properties.prefLabel[lang][0]}}
         </a>
     </li>
     <li class="active">muokkaus</li>
@@ -35,10 +32,7 @@
 </div>
 
 <h1 class="page-header">
-    <thl-property-values values="concept.properties.prefLabel" lang="fi"></thl-property-values>
-    <small>
-        <thl-property-values values="concept.properties.altLabel" lang="fi"></thl-property-values>
-    </small>
+    {{concept.properties.prefLabel[lang][0]}}
 </h1>
 
 <div class="row text-muted page-header-info">
@@ -60,32 +54,17 @@
     <div class="form-group">
         <label>URI</label>
 
-        <div class="row">
-            <div class="col-sm-11 col-xs-10">
-                <input type="text" class="form-control" ng-model="concept.uri">
-            </div>
-            <div class="col-sm-1 col-xs-2 text-right">
-                <button class="btn btn-default" ng-click="concept.uri = ''">
-                    <span class="glyphicon glyphicon-remove"></span>
-                </button>
-            </div>
-        </div>
+        <input type="text" class="form-control" ng-model="concept.uri">
     </div>
 
-    <div class="form-group">
-        <label>Ensisijainen termi</label>
-        <thl-property-values-edit values="concept.properties.prefLabel"></thl-property-values-edit>
+    <thl-resource-properties-edit
+            resource-properties="concept.properties"></thl-resource-properties-edit>
 
-    </div>
-    <div class="form-group">
-        <label>Vaihtoehtoiset termit</label>
-        <thl-property-values-edit values="concept.properties.altLabel"></thl-property-values-edit>
-    </div>
     <div class="form-group">
         <label>Yläkäsitteet</label>
 
         <div class="row">
-            <div class="col-sm-11 col-xs-10">
+            <div class="col-sm-12">
                 <div thl-select-concept class="form-control" scheme-id="concept.scheme.id"
                      ng-model="concept.references.broader" multiple="true"></div>
             </div>
@@ -95,7 +74,7 @@
         <label>Assosiatiiviset käsitteet</label>
 
         <div class="row">
-            <div class="col-sm-11 col-xs-10">
+            <div class="col-sm-12">
                 <div thl-select-concept class="form-control" scheme-id="concept.scheme.id"
                      ng-model="concept.references.related" multiple="true"></div>
             </div>
@@ -105,7 +84,7 @@
         <label>Tyypit</label>
 
         <div class="row">
-            <div class="col-sm-11 col-xs-10">
+            <div class="col-sm-12">
                 <div thl-select-concept class="form-control" scheme-id="concept.scheme.id"
                      ng-model="concept.references.type" multiple="true"></div>
             </div>
@@ -115,73 +94,11 @@
         <label>Osa kokonaisuutta</label>
 
         <div class="row">
-            <div class="col-sm-11 col-xs-10">
+            <div class="col-sm-12">
                 <div thl-select-concept class="form-control" scheme-id="concept.scheme.id"
                      ng-model="concept.references.partOf" multiple="true"></div>
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label>Piilotetut termit</label>
-        <thl-property-values-edit
-                values="concept.properties.hiddenLabel"></thl-property-values-edit>
-    </div>
-    <div class="form-group">
-        <label>Korvatut termit</label>
-        <thl-property-values-edit
-                values="concept.properties.deprecatedLabel"></thl-property-values-edit>
-    </div>
-    <div class="form-group">
-        <label>Määritelmä</label>
-        <thl-property-values-edit values="concept.properties.definition"
-                                  text-area="true"></thl-property-values-edit>
-    </div>
-    <div class="form-group">
-        <label>Huomautus</label>
-        <thl-property-values-edit values="concept.properties.note"
-                                  text-area="true"></thl-property-values-edit>
-    </div>
-    <div class="form-group">
-        <label>Käyttöala</label>
-        <thl-property-values-edit values="concept.properties.scopeNote"></thl-property-values-edit>
-    </div>
-    <div class="form-group">
-        <label>Esimerkki</label>
-        <thl-property-values-edit values="concept.properties.example"
-                                  text-area="true"></thl-property-values-edit>
-    </div>
-    <div class="form-group">
-        <label>Kommentti</label>
-        <thl-property-values-edit values="concept.properties.comment"
-                                  text-area="true"></thl-property-values-edit>
-    </div>
-    <div class="form-group">
-        <label>Lähde</label>
-        <thl-property-values-edit values="concept.properties.source"></thl-property-values-edit>
-    </div>
-
-    <br>
-
-    <div class="form-group">
-        <label>Muutokset</label>
-        <thl-property-values-edit values="concept.properties.changeNote"></thl-property-values-edit>
-    </div>
-    <div class="form-group">
-        <label>Koodisto</label>
-        <thl-property-values-edit values="concept.properties.classification" text-area="true">
-        </thl-property-values-edit>
-    </div>
-    <div class="form-group">
-        <label>Toistuva</label>
-        <thl-property-values-edit values="concept.properties.repeatable"></thl-property-values-edit>
-    </div>
-    <div class="form-group">
-        <label>Pakollinen</label>
-        <thl-property-values-edit values="concept.properties.required"></thl-property-values-edit>
-    </div>
-    <div class="form-group">
-        <label>Järjestysnumero</label>
-        <thl-property-values-edit values="concept.properties.index"></thl-property-values-edit>
     </div>
 </form>
 

@@ -1,14 +1,11 @@
 <ol class="breadcrumb">
     <li><a ng-href="#/">Termieditori</a></li>
     <li><a ng-href="#/schemes/{{collection.scheme.id}}/concepts">
-        <thl-property-values values="collection.scheme.properties.prefLabel"
-                             lang="fi"></thl-property-values>
+        {{collection.scheme.properties.prefLabel[lang][0]}}
     </a></li>
     <li>
         <a ng-href="#/schemes/{{collection.scheme.id}}/collections/{{collection.id}}">
-            <thl-property-values values="collection.properties.prefLabel"
-                                 lang="fi"></thl-property-values>
-
+            {{collection.properties.prefLabel[lang][0]}}
         </a>
     </li>
     <li class="active">muokkaus</li>
@@ -35,11 +32,7 @@
 </div>
 
 <h1 class="page-header">
-    <thl-property-values values="collection.properties.prefLabel" lang="fi"></thl-property-values>
-    <small>
-        <thl-property-values values="collection.properties.altLabel"
-                             lang="fi"></thl-property-values>
-    </small>
+    {{collection.properties.prefLabel[lang][0]}}
 </h1>
 
 <div class="row text-muted page-header-info">
@@ -61,28 +54,11 @@
     <div class="form-group">
         <label>URI</label>
 
-        <div class="row">
-            <div class="col-sm-11 col-xs-10">
-                <input type="text" class="form-control" ng-model="collection.uri">
-            </div>
-            <div class="col-sm-1 col-xs-2 text-right">
-                <button class="btn btn-default" ng-click="collection.uri = ''">
-                    <span class="glyphicon glyphicon-remove"></span>
-                </button>
-            </div>
-        </div>
+        <input type="text" class="form-control" ng-model="collection.uri">
     </div>
-    <div class="form-group">
-        <label>Ensisijainen termi</label>
-        <thl-property-values-edit
-                values="collection.properties.prefLabel"></thl-property-values-edit>
 
-    </div>
-    <div class="form-group">
-        <label>Vaihtoehtoiset termit</label>
-        <thl-property-values-edit
-                values="collection.properties.altLabel"></thl-property-values-edit>
-    </div>
+    <thl-properties-edit resource-properties="collection.properties"></thl-properties-edit>
+
     <div class="form-group">
         <label>Kokoelmaan kuuluvat käsitteet</label>
 

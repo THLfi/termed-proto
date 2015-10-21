@@ -43,45 +43,97 @@ App.directive('thlConceptTree', function($location) {
   };
 });
 
-App.directive('thlPropertyValues', function() {
+App.directive('thlConceptReferences', function($rootScope,
+        ConceptReferenceTypeList) {
   return {
     restrict: 'E',
     scope: {
-      values: '=',
-      lang: '@'
+      concept: '='
     },
-    templateUrl: 'partials/property-values.html',
-    controller: function($scope, PropertyUtils) {
-      $scope.langPriority = PropertyUtils.langPriority;
+    templateUrl: 'partials/concept-references.html',
+    controller: function($scope) {
+      $scope.lang = $rootScope.lang;
+
+      $scope.refTypes = ConceptReferenceTypeList.query({
+        orderBy: 'index.sortable'
+      });
     }
   };
 });
 
-App.directive('thlPropertyValuesEdit', function() {
+App.directive('thlResourceProperties', function($rootScope, PropertyList) {
   return {
     restrict: 'E',
     scope: {
-      values: '=',
-      textArea: '='
+      resourceProperties: '='
     },
-    templateUrl: 'partials/property-values-edit.html',
-    controller: function($scope, PropertyUtils) {
-      $scope.addPropertyValue = function(values) {
-        values.push({
-          lang: 'fi',
-          value: ''
+    templateUrl: 'partials/resource-properties.html',
+    controller: function($scope) {
+      $scope.languages = $rootScope.languages;
+      $scope.lang = $rootScope.lang;
+
+      $scope.properties = PropertyList.query({
+        orderBy: 'index.sortable'
+      });
+    }
+  };
+});
+
+App.directive('thlResourcePropertiesEdit', function($rootScope, PropertyList) {
+  return {
+    restrict: 'E',
+    scope: {
+      resourceProperties: '='
+    },
+    templateUrl: 'partials/resource-properties-edit.html',
+    controller: function($scope) {
+      $scope.languages = $rootScope.languages;
+      $scope.lang = $rootScope.lang;
+
+      $scope.properties = PropertyList.query({
+        orderBy: 'index.sortable'
+      }, function() {
+        ensureProperties();
+      });
+
+      $scope.$watch('resourceProperties', function() {
+        ensureProperties();
+      }, true);
+
+      function ensureProperties() {
+        $scope.properties.forEach(function(prop) {
+          $scope.languages.forEach(function(lang) {
+            ensureProperty($scope.resourceProperties, prop.id, lang);
+          });
         });
       }
-      $scope.removePropertyValue = function(values, value) {
-        values.splice(values.indexOf(value), 1);
-        if (values.length == 0) {
-          values.push({
-            lang: 'fi',
-            value: ''
-          });
+
+      function ensureProperty(resourceProperties, propertyId, lang) {
+        // not yet loaded
+        if (!resourceProperties) { return; }
+
+        if (!resourceProperties[propertyId]) {
+          resourceProperties[propertyId] = {};
+        }
+        if (!resourceProperties[propertyId][lang]) {
+          resourceProperties[propertyId][lang] = [""];
+        }
+
+        var values = resourceProperties[propertyId][lang];
+
+        // remove all empty values (not including the last one)
+        for (var i = 0; i < values.length - 1; i++) {
+          if (values[i] == "") {
+            values.splice(i, 1);
+            i--;
+          }
+        }
+
+        // ensure that last value is empty
+        if (values.length == 0 || values[values.length - 1] != "") {
+          values.push("");
         }
       }
-      $scope.langPriority = PropertyUtils.langPriority;
     }
   };
 });
@@ -107,18 +159,10 @@ App.directive('thlSelectConcept', function($q, $timeout, Concept, ConceptList) {
           });
         },
         formatResult: function(result) {
-          return result.properties.prefLabel.filter(function(value) {
-            return value.lang == 'fi'
-          }).map(function(value) {
-            return value.value;
-          }).join(', ');
+          return result.properties.prefLabel.fi[0];
         },
         formatSelection: function(result) {
-          return result.properties.prefLabel.filter(function(value) {
-            return value.lang == 'fi'
-          }).map(function(value) {
-            return value.value;
-          }).join(', ');
+          return result.properties.prefLabel.fi[0];
         }
       });
 

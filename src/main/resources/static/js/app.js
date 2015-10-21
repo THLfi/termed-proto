@@ -22,34 +22,8 @@ App.factory('SchemeList', function($resource) {
   return $resource('api/paths/concepts/:id/partOf');
 }).factory('PropertyList', function($resource) {
   return $resource('api/crud/properties');
-});
-
-App.factory('PropertyUtils', function() {
-  return {
-    langPriority: function(value) {
-      if (value.lang == 'fi') return 0;
-      if (value.lang == 'sv') return 1;
-      if (value.lang == 'en') return 2;
-      return value.lang;
-    },
-    prefLabelFi: function(value) {
-      return value.properties.prefLabel.filter(function(value) {
-        return value.lang == 'fi';
-      }).map(function(value) {
-        return value.value;
-      }).join(', ');
-    },
-    ensurePropertiesFiValue: function(properties, propertyIds) {
-      for (var i = 0; i < propertyIds.length; i++) {
-        if (!properties[propertyIds[i]]) {
-          properties[propertyIds[i]] = [{
-            lang: 'fi',
-            value: ''
-          }];
-        }
-      }
-    }
-  }
+}).factory('ConceptReferenceTypeList', function($resource) {
+  return $resource('api/crud/conceptReferenceTypes');
 });
 
 App.controller('SchemeListCtrl', function($scope, $location, SchemeList,
@@ -83,10 +57,9 @@ App.controller('SchemeListCtrl', function($scope, $location, SchemeList,
   $scope.newScheme = function() {
     SchemeList.save({
       properties: {
-        prefLabel: [{
-          lang: 'fi',
-          value: 'Uusi sanasto'
-        }]
+        prefLabel: {
+          fi: ['Uusi sanasto']
+        }
       }
     }, function(scheme) {
       $location.path('/schemes/' + scheme.id + '/edit');
@@ -98,14 +71,10 @@ App.controller('SchemeListCtrl', function($scope, $location, SchemeList,
 });
 
 App.controller('SchemeEditCtrl', function($scope, $routeParams, $location,
-        Scheme, SchemeList, PropertyUtils) {
+        Scheme, SchemeList) {
 
-  Scheme.get({
+  $scope.scheme = Scheme.get({
     schemeId: $routeParams.schemeId
-  }, function(scheme) {
-    PropertyUtils.ensurePropertiesFiValue(scheme.properties, ['prefLabel',
-        'altLabel']);
-    $scope.scheme = scheme;
   });
 
   $scope.save = function() {
@@ -128,15 +97,15 @@ App.controller('SchemeEditCtrl', function($scope, $routeParams, $location,
 
 });
 
-App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
-        Scheme, ConceptList, ConceptTrees, PropertyList, PropertyUtils) {
+App.controller('ConceptListAllCtrl', function($scope, $location, $routeParams,
+        Scheme, ConceptList, ConceptTrees, PropertyList) {
 
   $scope.scheme = Scheme.get({
     schemeId: $routeParams.schemeId
   });
 
   $scope.display = {
-    type: "tree"
+    type: "list"
   };
 
   $scope.loadResults = function() {
@@ -146,38 +115,26 @@ App.controller('ConceptTreeCtrl', function($scope, $location, $routeParams,
         referenceTypeId: 'broader',
         orderBy: 'prefLabel.fi.sortable'
       });
-    } else {
+    } else if ($scope.display.type === "list") {
       $scope.rootConcepts = ConceptList.query({
         schemeId: $routeParams.schemeId,
         orderBy: 'prefLabel.fi.sortable',
-        max: -1
+        max: -1,
+        cached: false
       });
     }
   };
 
-  PropertyList.query({
+  $scope.properties = PropertyList.query({
     orderBy: 'index.sortable'
-  }, function(props) {
-    $scope.properties = {};
-
-    for (var i = 0; i < props.length; i++) {
-      var prefLabel = props[i].properties.prefLabel;
-      var langValue = {};
-      for (var j = 0; j < prefLabel.length; j++) {
-        langValue[prefLabel[j].lang] = prefLabel[j].value;
-      }
-      $scope.properties[props[i].id] = langValue;
-    }
   });
-
-  $scope.langPriority = PropertyUtils.langPriority;
 
   $scope.loadResults();
 
 });
 
 App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
-        Scheme, Concept, ConceptList, Collection) {
+        Scheme, Concept, ConceptList, CollectionList) {
 
   $scope.query = ($location.search()).q || "";
   $scope.max = 50;
@@ -207,18 +164,13 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
   }
 
   $scope.newConcept = function() {
-    var concept = new Concept({
+    ConceptList.save({
       scheme: $scope.scheme,
       properties: {
-        prefLabel: [{
-          lang: 'fi',
-          value: 'Uusi käsite'
-        }]
+        prefLabel: {
+          fi: ['Uusi käsite']
+        }
       }
-    });
-
-    concept.$save({
-      schemeId: $routeParams.schemeId
     }, function(concept) {
       $location.path('/schemes/' + $routeParams.schemeId + '/concepts/'
               + concept.id + '/edit');
@@ -228,18 +180,13 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
   }
 
   $scope.newCollection = function() {
-    var collection = new Collection({
+    CollectionList.save({
       scheme: $scope.scheme,
       properties: {
-        prefLabel: [{
-          lang: 'fi',
-          value: 'Uusi käsitekokoelma'
-        }]
+        prefLabel: {
+          fi: ['Uusi käsitekokoelma']
+        }
       }
-    });
-
-    collection.$save({
-      schemeId: $routeParams.schemeId
     }, function(collection) {
       $location.path('/schemes/' + $routeParams.schemeId + '/collections/'
               + collection.id + '/edit');
@@ -253,8 +200,7 @@ App.controller('ConceptListCtrl', function($scope, $location, $routeParams,
 });
 
 App.controller('ConceptCtrl', function($scope, $routeParams, $location,
-        Concept, ConceptBroaderPaths, ConceptPartOfPaths, ConceptList,
-        PropertyUtils) {
+        Concept, ConceptBroaderPaths, ConceptPartOfPaths, ConceptList) {
 
   Concept.get({
     schemeId: $routeParams.schemeId,
@@ -276,25 +222,17 @@ App.controller('ConceptCtrl', function($scope, $routeParams, $location,
     }
   });
 
-  $scope.langPriority = PropertyUtils.langPriority;
-  $scope.prefLabelFi = PropertyUtils.prefLabelFi;
-
   $scope.newConcept = function() {
-    var concept = new Concept({
+    ConceptList.save({
       scheme: $scope.concept.scheme,
       references: {
         broader: [$scope.concept]
       },
       properties: {
-        prefLabel: [{
-          lang: 'fi',
-          value: 'Uusi käsite'
-        }]
+        prefLabel: {
+          fi: ['Uusi käsite']
+        }
       }
-    });
-
-    concept.$save({
-      schemeId: $routeParams.schemeId
     }, function(concept) {
       $location.path('/schemes/' + $routeParams.schemeId + '/concepts/'
               + concept.id + '/edit');
@@ -305,24 +243,15 @@ App.controller('ConceptCtrl', function($scope, $routeParams, $location,
 
 });
 
-App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
-        Concept, ConceptList, PropertyUtils) {
+App.controller('ConceptEditCtrl', function($scope, $q, $routeParams, $location,
+        Concept) {
 
-  Concept.get({
-    schemeId: $routeParams.schemeId,
+  $scope.concept = Concept.get({
     id: $routeParams.id
-  }, function(concept) {
-    PropertyUtils.ensurePropertiesFiValue(concept.properties, ['prefLabel',
-        'altLabel', 'definition', 'note', 'scopeNote', 'changeNote', 'example',
-        'hiddenLabel', 'deprecatedLabel', 'comment', 'source', 'index',
-        'required', 'repeatable', 'classification']);
-    $scope.concept = concept;
   });
 
   $scope.save = function() {
-    $scope.concept.$save({
-      schemeId: $routeParams.schemeId
-    }, function(concept) {
+    $scope.concept.$save(function(concept) {
       $location.path('/schemes/' + $routeParams.schemeId + '/concepts/'
               + concept.id);
     }, function(error) {
@@ -332,7 +261,6 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
 
   $scope.remove = function() {
     $scope.concept.$delete({
-      schemeId: $routeParams.schemeId,
       id: $routeParams.id
     }, function() {
       $location.path('/schemes/' + $routeParams.schemeId + '/concepts');
@@ -343,37 +271,25 @@ App.controller('ConceptEditCtrl', function($scope, $routeParams, $location,
 
 });
 
-App.controller('CollectionCtrl', function($scope, $routeParams, Collection,
-        ConceptList, PropertyUtils) {
+App.controller('CollectionCtrl', function($scope, $routeParams, Collection) {
 
   Collection.get({
-    schemeId: $routeParams.schemeId,
     id: $routeParams.id
   }, function(collection) {
     $scope.collection = collection;
   });
-
-  $scope.langPriority = PropertyUtils.langPriority;
-  $scope.prefLabelFi = PropertyUtils.prefLabelFi;
 
 });
 
 App.controller('CollectionEditCtrl', function($scope, $routeParams, $location,
-        Collection, CollectionList, PropertyUtils) {
+        Collection, CollectionList, PropertyList) {
 
-  Collection.get({
-    schemeId: $routeParams.schemeId,
+  $scope.collection = Collection.get({
     id: $routeParams.id
-  }, function(collection) {
-    PropertyUtils.ensurePropertiesFiValue(collection.properties, ['prefLabel',
-        'altLabel']);
-    $scope.collection = collection;
   });
 
   $scope.save = function() {
-    $scope.collection.$save({
-      schemeId: $routeParams.schemeId
-    }, function(collection) {
+    $scope.collection.$save(function(collection) {
       $location.path('/schemes/' + $routeParams.schemeId + '/collections/'
               + collection.id);
     }, function(error) {
@@ -383,7 +299,6 @@ App.controller('CollectionEditCtrl', function($scope, $routeParams, $location,
 
   $scope.remove = function() {
     $scope.collection.$delete({
-      schemeId: $routeParams.schemeId,
       id: $routeParams.id
     }, function() {
       $location.path('/schemes/' + $routeParams.schemeId + '/concepts');
@@ -407,9 +322,9 @@ App.config(function($routeProvider, $httpProvider) {
   }).when('/schemes/:schemeId/collections/:id/edit', {
     templateUrl: 'partials/collection-edit.html',
     controller: 'CollectionEditCtrl'
-  }).when('/schemes/:schemeId/tree', {
-    templateUrl: 'partials/concept-tree.html',
-    controller: 'ConceptTreeCtrl'
+  }).when('/schemes/:schemeId/all/concepts', {
+    templateUrl: 'partials/concept-list-all.html',
+    controller: 'ConceptListAllCtrl'
   }).when('/schemes/:schemeId/concepts', {
     templateUrl: 'partials/concept-list.html',
     controller: 'ConceptListCtrl',
@@ -430,4 +345,9 @@ App.config(function($routeProvider, $httpProvider) {
   // disable caches for IE
   $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
   $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+});
+
+App.run(function($rootScope) {
+  $rootScope.languages = ['fi', 'sv', 'en'];
+  $rootScope.lang = 'fi';
 });

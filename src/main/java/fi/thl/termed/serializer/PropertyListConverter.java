@@ -8,26 +8,29 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 
-import fi.thl.termed.domain.LangValue;
 import fi.thl.termed.domain.PropertyValue;
+import fi.thl.termed.util.ListUtils;
 
 public class PropertyListConverter
-    extends Converter<List<PropertyValue>, Map<String, List<LangValue>>> {
+    extends Converter<List<PropertyValue>, Map<String, Map<String, List<String>>>> {
 
   @Override
-  protected Map<String, List<LangValue>> doForward(List<PropertyValue> properties) {
-    Map<String, List<LangValue>> propertyMap = Maps.newHashMap();
+  protected Map<String, Map<String, List<String>>> doForward(List<PropertyValue> properties) {
+    Map<String, Map<String, List<String>>> propertyMap = Maps.newLinkedHashMap();
 
     for (PropertyValue property : properties) {
-      String propertyId = property.getPropertyId();
-      String propertyLang = Strings.nullToEmpty(property.getLang());
-      String propertyValue = Strings.nullToEmpty(property.getValue());
+      String id = property.getPropertyId();
+      String lang = Strings.nullToEmpty(property.getLang());
+      String value = Strings.nullToEmpty(property.getValue());
 
-      if (!propertyValue.isEmpty()) {
-        if (!propertyMap.containsKey(propertyId)) {
-          propertyMap.put(propertyId, Lists.<LangValue>newArrayList());
+      if (!value.isEmpty()) {
+        if (!propertyMap.containsKey(id)) {
+          propertyMap.put(id, Maps.<String, List<String>>newLinkedHashMap());
         }
-        propertyMap.get(propertyId).add(new LangValue(propertyLang, propertyValue));
+        if (!propertyMap.get(id).containsKey(lang)) {
+          propertyMap.get(id).put(lang, Lists.<String>newArrayList());
+        }
+        propertyMap.get(id).get(lang).add(value);
       }
     }
 
@@ -35,13 +38,14 @@ public class PropertyListConverter
   }
 
   @Override
-  protected List<PropertyValue> doBackward(Map<String, List<LangValue>> propertyMap) {
+  protected List<PropertyValue> doBackward(Map<String, Map<String, List<String>>> propertyMap) {
     List<PropertyValue> properties = Lists.newArrayList();
 
-    for (Map.Entry<String, List<LangValue>> entry : propertyMap.entrySet()) {
-      for (LangValue langValue : entry.getValue()) {
-        String propertyId = entry.getKey();
-        properties.add(new PropertyValue(propertyId, langValue.getLang(), langValue.getValue()));
+    for (Map.Entry<String, Map<String, List<String>>> property : propertyMap.entrySet()) {
+      for (Map.Entry<String, List<String>> langValues : property.getValue().entrySet()) {
+        for (String value : ListUtils.nullToEmpty(langValues.getValue())) {
+          properties.add(new PropertyValue(property.getKey(), langValues.getKey(), value));
+        }
       }
     }
 

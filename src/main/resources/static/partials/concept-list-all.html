@@ -1,0 +1,59 @@
+<ol class="breadcrumb">
+    <li><a ng-href="#/">Termieditori</a></li>
+    <li><a ng-href="#/schemes/{{scheme.id}}/concepts">
+        {{scheme.properties.prefLabel[lang][0]}}
+    </a></li>
+    <li class="active">
+        Kaikki käsitteet
+    </li>
+</ol>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1 class="page-header">
+            {{scheme.properties.prefLabel[lang][0]}}
+            <small>- Kaikki käsitteet</small>
+        </h1>
+
+        <div class="pull-right">
+            <label class="radio-inline text-muted">
+                <input type="radio" ng-model="display.type" value="list"
+                       ng-change="loadResults()">
+                Esitä listana
+            </label>
+            <label class="radio-inline text-muted">
+                <input type="radio" ng-model="display.type" value="tree"
+                       ng-change="loadResults()">
+                Esitä yläkäsitepuuna
+            </label>
+        </div>
+
+        <div ng-repeat="concept in rootConcepts" ng-include="'concept-tree-node.html'"
+             ng-init="depth=0"></div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="concept-tree-node.html">
+    <div style="padding-left: {{depth*3}}em;">
+        <h3>
+            <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}">
+                {{concept.properties.prefLabel[lang][0] || '-'}}
+            </a>
+        </h3>
+
+        <thl-resource-properties resource-properties="concept.properties"></thl-resource-properties>
+        <thl-concept-references concept="concept"></thl-concept-references>
+    </div>
+    <hr>
+    <div ng-if="concept.children">
+        <div ng-repeat="concept in concept.children" ng-include="'concept-tree-node.html'"
+             ng-init="depth=depth+1"></div>
+    </div>
+</script>
+
+<span class="label label-default" ng-click="showJson = !showJson">json</span>
+
+<div ng-show="showJson">
+    <pre>{{rootConcepts | json}}</pre>
+</div>
+

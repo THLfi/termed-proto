@@ -1,0 +1,12 @@
+<div ng-repeat="property in properties">
+    <dl ng-if="resourceProperties[property.id]">
+        <dt>{{property.properties.prefLabel[lang][0] | capitalize}}</dt>
+        <dd>
+            <div ng-repeat="(lang, values) in resourceProperties[property.id]">
+                <div ng-repeat="value in values">
+                    <code class="text-muted">{{lang}}</code> {{value}}
+                </div>
+            </div>
+        </dd>
+    </dl>
+</div>

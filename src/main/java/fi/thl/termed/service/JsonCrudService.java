@@ -20,14 +20,15 @@ public interface JsonCrudService {
 
   JsonObject get(String collection, String id, Gson gson);
 
-  JsonArray query(String collection, String query);
-
-  JsonArray query(String collection, String query, Gson gson);
-
   JsonArray query(String collection, String query, int first, int max, List<String> orderBy);
 
   JsonArray query(String collection, String query, int first, int max, List<String> orderBy,
                   Gson gson);
+
+  JsonArray queryCached(String collection, String query, int first, int max, List<String> orderBy);
+
+  JsonArray queryCached(String collection, String query, int first, int max, List<String> orderBy,
+                        Gson gson);
 
   void remove(String collection, String id);
 

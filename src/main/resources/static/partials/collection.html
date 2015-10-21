@@ -1,12 +1,10 @@
 <ol class="breadcrumb">
     <li><a ng-href="#/">Termieditori</a></li>
     <li><a ng-href="#/schemes/{{collection.scheme.id}}/concepts">
-        <thl-property-values values="collection.scheme.properties.prefLabel"
-                             lang="fi"></thl-property-values>
+        {{collection.scheme.properties.prefLabel[lang][0]}}
     </a></li>
     <li class="active">
-        <thl-property-values values="collection.properties.prefLabel"
-                             lang="fi"></thl-property-values>
+        {{collection.properties.prefLabel[lang][0]}}
     </li>
 </ol>
 
@@ -19,35 +17,25 @@
 </div>
 
 <h1 class="page-header">
-    <thl-property-values values="collection.properties.prefLabel" lang="fi"></thl-property-values>
+    {{collection.properties.prefLabel[lang][0]}}
 </h1>
 
 <div class="text-muted page-header-info">
     <small>{{collection.uri || '-'}}</small>
 </div>
 
-<dl>
-    <dt>Ensisijainen termi</dt>
-    <dd>
-        <thl-property-values values="collection.properties.prefLabel"></thl-property-values>
-    </dd>
-    <dt ng-show="collection.properties.altLabel">Vaihtoehtoiset termit</dt>
-    <dd ng-show="collection.properties.altLabel">
-        <thl-property-values values="collection.properties.altLabel"></thl-property-values>
-    </dd>
-</dl>
+<thl-resource-properties resource-properties="collection.properties"></thl-resource-properties>
 
-<dl>
-    <dt ng-show="collection.members && collection.members.length > 0">
+<dl ng-show="collection.members && collection.members.length > 0">
+    <dt>
         Kokoelmaan kuuluvat käsitteet
     </dt>
-    <dd ng-show="collection.members && collection.members.length > 0">
-        <span ng-repeat="r in collection.members | orderBy:prefLabelFi">
+    <dd>
+        <div ng-repeat="r in collection.members | orderBy:'properties.prefLabel.fi[0]'">
             <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}">
-                <thl-property-values values="r.properties.prefLabel"
-                                     lang="fi"></thl-property-values>
-            </a><br>
-        </span>
+                {{r.properties.prefLabel[lang][0]}}
+            </a>
+        </div>
     </dd>
 </dl>
 
