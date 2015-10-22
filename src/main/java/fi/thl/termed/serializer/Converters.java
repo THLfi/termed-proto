@@ -16,7 +16,6 @@ import fi.thl.termed.domain.Concept;
 import fi.thl.termed.domain.PropertyValue;
 import fi.thl.termed.domain.SchemeResource;
 import fi.thl.termed.domain.SerializedConcept;
-import fi.thl.termed.domain.SerializedConceptNarrowerTree;
 
 public final class Converters {
 
@@ -77,16 +76,6 @@ public final class Converters {
                              Concept.class,
                              SchemeResource.class,
                              new ConceptTruncatingConverter());
-  }
-
-  /**
-   * Create and register Concept converter that serializes narrower tree
-   */
-  public static GsonBuilder registerConceptNarrowerTreeConverter(GsonBuilder builder) {
-    return registerConverter(builder,
-                             Concept.class,
-                             SerializedConceptNarrowerTree.class,
-                             new ConceptNarrowerTreeConverter());
   }
 
 }
