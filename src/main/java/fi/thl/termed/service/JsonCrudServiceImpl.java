@@ -1,15 +1,19 @@
 package fi.thl.termed.service;
 
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.reflections.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +21,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import fi.thl.termed.repository.CrudRepository;
 import fi.thl.termed.serializer.Converters;
 
 @Service
@@ -25,11 +30,21 @@ public class JsonCrudServiceImpl implements JsonCrudService {
 
   @PersistenceContext
   private EntityManager em;
-  @javax.annotation.Resource
-  private Map<String, Class> collectionClassMap;
-  @Autowired
-  private CrudService crudService;
   private Gson defaultGson;
+
+  private CrudService crudService;
+  private Map<String, Class> collectionClassMap;
+
+  @Autowired
+  public JsonCrudServiceImpl(CrudService crudService, List<CrudRepository> crudRepositoryList) {
+    this.crudService = crudService;
+    this.collectionClassMap = Maps.newHashMap();
+
+    for (CrudRepository repository : crudRepositoryList) {
+      String name = getRepositoryName(repository);
+      this.collectionClassMap.put(name, repository.getType());
+    }
+  }
 
   @PostConstruct
   public void init() {
@@ -38,6 +53,17 @@ public class JsonCrudServiceImpl implements JsonCrudService {
     Converters.registerPropertyListConverter(b);
     Converters.registerConceptConverter(b, em);
     this.defaultGson = b.create();
+  }
+
+  @SuppressWarnings("unchecked")
+  private String getRepositoryName(CrudRepository repository) {
+    for (Annotation annotation : ReflectionUtils.getAllAnnotations(repository.getClass())) {
+      if (annotation instanceof Repository) {
+        return ((Repository) annotation).value();
+      }
+    }
+
+    return repository.getType().getSimpleName().toLowerCase();
   }
 
   @Override

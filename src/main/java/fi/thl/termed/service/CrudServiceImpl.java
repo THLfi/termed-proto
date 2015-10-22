@@ -3,45 +3,32 @@ package fi.thl.termed.service;
 import com.google.common.collect.Maps;
 
 import org.apache.lucene.search.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import fi.thl.termed.domain.Concept;
+import fi.thl.termed.repository.CrudRepository;
 
 @Service
 @Transactional
 public class CrudServiceImpl implements CrudService {
 
-  @PersistenceContext
-  private EntityManager em;
+  private Map<Class, CrudRepository> repositories;
 
-  @javax.annotation.Resource
-  private Map<String, Class> collectionClassMap;
+  @Autowired
+  public CrudServiceImpl(List<CrudRepository> crudRepositoryList) {
+    this.repositories = Maps.newHashMap();
 
-  private Map<Class, Repository> repositories = Maps.newHashMap();
-
-  @PostConstruct
-  public void init() {
-    for (Class cls : collectionClassMap.values()) {
-      repositories.put(cls, buildRepository(cls));
+    for (CrudRepository repository : crudRepositoryList) {
+      this.repositories.put(repository.getType(), repository);
     }
   }
 
-  private <T> Repository buildRepository(Class<T> cls) {
-    return cls.equals(Concept.class) ?
-           new ConceptRepository(new HibernateSearchRepository<Concept>(em, Concept.class)) :
-           new HibernateSearchRepository<T>(em, cls);
-  }
-
   @SuppressWarnings("unchecked")
-  private <T> Repository<T> getRepository(Class<T> cls) {
+  private <T> CrudRepository<T> getRepository(Class<T> cls) {
     return repositories.get(cls);
   }
 

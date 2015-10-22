@@ -1,10 +1,11 @@
-package fi.thl.termed.service;
+package fi.thl.termed.repository;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
@@ -20,9 +21,12 @@ import org.hibernate.search.jpa.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import fi.thl.termed.domain.AuditedResource;
 import fi.thl.termed.util.JsonUtils;
@@ -30,29 +34,35 @@ import fi.thl.termed.util.ListUtils;
 import fi.thl.termed.util.LuceneConstants;
 import fi.thl.termed.util.LuceneUtils;
 
-public class HibernateSearchRepository<T> implements Repository<T> {
+public class HibernateSearchRepository<T> implements CrudRepository<T> {
 
   private static final int INDEXER_BATCH_SIZE_TO_LOAD_OBJECTS = 100;
 
   private Logger log = LoggerFactory.getLogger(getClass());
 
+  @PersistenceContext
   private EntityManager em;
-  private QueryParser queryParser;
 
-  private Class<T> cls;
+  private Class<T> type;
+  private Gson gson;
 
-  private Gson gson = new Gson();
+  @SuppressWarnings("unchecked")
+  public HibernateSearchRepository() {
+    this.type = (Class<T>) ((ParameterizedType) getClass()
+        .getGenericSuperclass()).getActualTypeArguments()[0];
+    this.gson = new Gson();
+  }
 
-  public HibernateSearchRepository(EntityManager em, Class<T> cls) {
-    this.em = em;
-    this.cls = cls;
-    this.queryParser =
-        new QueryParser(Version.LUCENE_36, LuceneConstants.ALL,
-                        getFullTextEntityManager().getSearchFactory().getAnalyzer(cls));
-
+  @PostConstruct
+  public void init() {
     if (isEmpty()) {
       reindex();
     }
+  }
+
+  @Override
+  public Class<T> getType() {
+    return type;
   }
 
   protected EntityManager getEntityManager() {
@@ -63,18 +73,26 @@ public class HibernateSearchRepository<T> implements Repository<T> {
     return Search.getFullTextEntityManager(em);
   }
 
+  private Analyzer getAnalyzer() {
+    return getFullTextEntityManager().getSearchFactory().getAnalyzer(type);
+  }
+
+  private QueryParser newQueryParser() {
+    return new QueryParser(Version.LUCENE_36, LuceneConstants.ALL, getAnalyzer());
+  }
+
   public boolean isEmpty() {
     return size() == 0;
   }
 
   public int size() {
-    return getFullTextEntityManager().createFullTextQuery(new MatchAllDocsQuery(), cls)
+    return getFullTextEntityManager().createFullTextQuery(new MatchAllDocsQuery(), type)
         .getResultSize();
   }
 
   public void reindex() {
     try {
-      getFullTextEntityManager().createIndexer(cls)
+      getFullTextEntityManager().createIndexer(type)
           .batchSizeToLoadObjects(INDEXER_BATCH_SIZE_TO_LOAD_OBJECTS)
           .startAndWait();
     } catch (InterruptedException e) {
@@ -90,7 +108,7 @@ public class HibernateSearchRepository<T> implements Repository<T> {
   @SuppressWarnings("unchecked")
   public List<T> queryCached(Query query, int first, int max, List<String> orderBy) {
     return loadResults(getFullTextEntityManager()
-                           .createFullTextQuery(query, cls)
+                           .createFullTextQuery(query, type)
                            .setProjection(FullTextQuery.DOCUMENT)
                            .setSort(buildSort(orderBy))
                            .setFirstResult(first)
@@ -108,7 +126,7 @@ public class HibernateSearchRepository<T> implements Repository<T> {
 
   private T loadResults(Document doc) {
     JsonObject o = JsonUtils.unflatten(LuceneUtils.toMap(doc)).getAsJsonObject();
-    return gson.fromJson(o, cls);
+    return gson.fromJson(o, type);
   }
 
   @Override
@@ -120,7 +138,7 @@ public class HibernateSearchRepository<T> implements Repository<T> {
   @SuppressWarnings("unchecked")
   public List<T> query(Query query, int first, int max, List<String> orderBy) {
     return getFullTextEntityManager()
-        .createFullTextQuery(query, cls)
+        .createFullTextQuery(query, type)
         .setSort(buildSort(orderBy))
         .setFirstResult(first)
         .setMaxResults(max < 0 ? Integer.MAX_VALUE : max)
@@ -129,7 +147,7 @@ public class HibernateSearchRepository<T> implements Repository<T> {
 
   private Query parseQuery(String query) {
     try {
-      return Strings.isNullOrEmpty(query) ? new MatchAllDocsQuery() : queryParser.parse(query);
+      return Strings.isNullOrEmpty(query) ? new MatchAllDocsQuery() : newQueryParser().parse(query);
     } catch (ParseException e) {
       log.warn("{}", e.getMessage());
       return new TermQuery(new Term(LuceneConstants.ALL, query));
@@ -170,7 +188,7 @@ public class HibernateSearchRepository<T> implements Repository<T> {
 
   @Override
   public T get(String id) {
-    return em.find(cls, id);
+    return em.find(type, id);
   }
 
   @Override

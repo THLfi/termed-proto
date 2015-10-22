@@ -1,10 +1,12 @@
-package fi.thl.termed.service;
+package fi.thl.termed.repository;
 
 import org.apache.lucene.search.Query;
 
 import java.util.List;
 
-public interface Repository<T> {
+public interface CrudRepository<T> {
+
+  Class<T> getType();
 
   T save(T data);
 
