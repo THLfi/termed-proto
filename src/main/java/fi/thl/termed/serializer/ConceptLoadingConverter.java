@@ -13,7 +13,7 @@ import javax.persistence.EntityManager;
 import fi.thl.termed.domain.Collection;
 import fi.thl.termed.domain.Concept;
 import fi.thl.termed.domain.ConceptReference;
-import fi.thl.termed.domain.ConceptReferenceType;
+import fi.thl.termed.domain.ReferenceType;
 import fi.thl.termed.domain.SchemeResource;
 import fi.thl.termed.domain.SerializedConcept;
 import fi.thl.termed.util.ListUtils;
@@ -111,8 +111,8 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
     return references;
   }
 
-  private ConceptReferenceType loadReferenceType(String referenceTypeId) {
-    return em.find(ConceptReferenceType.class, referenceTypeId);
+  private ReferenceType loadReferenceType(String referenceTypeId) {
+    return em.find(ReferenceType.class, referenceTypeId);
   }
 
   private Concept loadConcept(SchemeResource resource) {

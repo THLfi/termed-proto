@@ -25,7 +25,7 @@ public class ConceptReference implements Serializable {
   @FieldBridge(impl = ResourceFieldBridge.class)
   @Id
   @ManyToOne
-  private ConceptReferenceType type;
+  private ReferenceType type;
 
   @FieldBridge(impl = ResourceFieldBridge.class)
   @Id
@@ -40,17 +40,17 @@ public class ConceptReference implements Serializable {
   public ConceptReference() {
   }
 
-  public ConceptReference(ConceptReferenceType type, Concept source, Concept target) {
+  public ConceptReference(ReferenceType type, Concept source, Concept target) {
     this.type = type;
     this.source = source;
     this.target = target;
   }
 
   public ConceptReference(String typeId, Concept source, Concept target) {
-    this(new ConceptReferenceType(typeId), source, target);
+    this(new ReferenceType(typeId), source, target);
   }
 
-  public ConceptReferenceType getType() {
+  public ReferenceType getType() {
     return type;
   }
 
@@ -58,7 +58,7 @@ public class ConceptReference implements Serializable {
     return type != null ? type.getId() : null;
   }
 
-  public void setType(ConceptReferenceType type) {
+  public void setType(ReferenceType type) {
     this.type = type;
   }
 

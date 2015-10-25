@@ -44,7 +44,7 @@ App.directive('thlConceptTree', function($location) {
 });
 
 App.directive('thlConceptReferences', function($rootScope,
-        ConceptReferenceTypeList) {
+        ReferenceTypeList) {
   return {
     restrict: 'E',
     scope: {
@@ -54,7 +54,7 @@ App.directive('thlConceptReferences', function($rootScope,
     controller: function($scope) {
       $scope.lang = $rootScope.lang;
 
-      $scope.refTypes = ConceptReferenceTypeList.query({
+      $scope.refTypes = ReferenceTypeList.query({
         orderBy: 'index.sortable'
       });
     }

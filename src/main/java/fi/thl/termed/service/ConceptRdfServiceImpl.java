@@ -29,7 +29,7 @@ import java.util.UUID;
 import fi.thl.termed.domain.Collection;
 import fi.thl.termed.domain.Concept;
 import fi.thl.termed.domain.ConceptReference;
-import fi.thl.termed.domain.ConceptReferenceType;
+import fi.thl.termed.domain.ReferenceType;
 import fi.thl.termed.domain.PropertyResource;
 import fi.thl.termed.domain.PropertyValue;
 import fi.thl.termed.domain.Scheme;
@@ -73,7 +73,7 @@ public class ConceptRdfServiceImpl implements ConceptRdfService {
     }
 
     this.conceptReferenceTypeMap = Maps.newHashMap();
-    for (ConceptReferenceType p : crudService.queryCached(ConceptReferenceType.class,
+    for (ReferenceType p : crudService.queryCached(ReferenceType.class,
                                                           LuceneQueryUtils.all())) {
       if (p.hasUri()) {
         conceptReferenceTypeMap.put(ResourceFactory.createProperty(p.getUri()), p.getId());
@@ -167,7 +167,7 @@ public class ConceptRdfServiceImpl implements ConceptRdfService {
     return property.hasUri() ? property.getUri() : DEFAULT_NS + "properties/" + property.getId();
   }
 
-  private static String uri(ConceptReferenceType referenceType) {
+  private static String uri(ReferenceType referenceType) {
     return referenceType.hasUri() ? referenceType.getUri() :
            DEFAULT_NS + "conceptReferenceTypes/" + referenceType.getId();
   }
@@ -278,10 +278,10 @@ public class ConceptRdfServiceImpl implements ConceptRdfService {
       Concept source = concepts.get(getId(r.getURI(), uriIdMap));
       for (Statement s : filter(model.listStatements(r, null, (RDFNode) null).toList(),
                                 isAcceptedObjectStatement)) {
-        ConceptReferenceType conceptReferenceType =
-            new ConceptReferenceType(conceptReferenceTypeMap.get(s.getPredicate()));
+        ReferenceType referenceType =
+            new ReferenceType(conceptReferenceTypeMap.get(s.getPredicate()));
         Concept target = concepts.get(getId(s.getObject().asResource().getURI(), uriIdMap));
-        source.addReferences(conceptReferenceType, target);
+        source.addReferences(referenceType, target);
       }
     }
   }

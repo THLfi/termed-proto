@@ -22,8 +22,8 @@ App.factory('SchemeList', function($resource) {
   return $resource('api/paths/concepts/:id/partOf');
 }).factory('PropertyList', function($resource) {
   return $resource('api/crud/properties');
-}).factory('ConceptReferenceTypeList', function($resource) {
-  return $resource('api/crud/conceptReferenceTypes');
+}).factory('ReferenceTypeList', function($resource) {
+  return $resource('api/crud/referenceTypes');
 });
 
 App.controller('SchemeListCtrl', function($scope, $location, SchemeList,

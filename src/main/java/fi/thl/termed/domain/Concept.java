@@ -74,7 +74,7 @@ public class Concept extends SchemeResource implements Serializable {
     this.references = references;
   }
 
-  public void addReferences(ConceptReferenceType type, Concept... targets) {
+  public void addReferences(ReferenceType type, Concept... targets) {
     if (references == null) {
       references = Lists.newArrayList();
     }
@@ -104,7 +104,7 @@ public class Concept extends SchemeResource implements Serializable {
     this.referrers = referrers;
   }
 
-  public void addReferrers(ConceptReferenceType type, Concept... sources) {
+  public void addReferrers(ReferenceType type, Concept... sources) {
     if (referrers == null) {
       referrers = Lists.newArrayList();
     }

@@ -20,9 +20,7 @@ import fi.thl.termed.util.ResourceIdMatches;
 public class Collection extends SchemeResource {
 
   @ManyToMany
-  @JoinTable(
-      name = "collection_concept",
-      joinColumns = {@JoinColumn(name = "collection_id")},
+  @JoinTable(joinColumns = {@JoinColumn(name = "collection_id")},
       inverseJoinColumns = {@JoinColumn(name = "concept_id")})
   private List<Concept> members;
 

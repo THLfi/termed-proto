@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.util.List;
 
 import fi.thl.termed.domain.Concept;
-import fi.thl.termed.domain.ConceptReferenceType;
+import fi.thl.termed.domain.ReferenceType;
 
 import static org.junit.Assert.assertEquals;
 
@@ -33,7 +33,7 @@ public class ConceptGraphUtilsTest {
 
   @Test
   public void shouldPrintNarrowerTree() {
-    ConceptReferenceType broader = new ConceptReferenceType("broader");
+    ReferenceType broader = new ReferenceType("broader");
 
     Concept root = new Concept("root");
     Concept branch1 = new Concept("branch1");
@@ -78,7 +78,7 @@ public class ConceptGraphUtilsTest {
 
   @Test
   public void shouldFindSimpleParentPath() {
-    ConceptReferenceType broader = new ConceptReferenceType("broader");
+    ReferenceType broader = new ReferenceType("broader");
 
     Concept root = new Concept("root");
     Concept branch = new Concept("branch");
@@ -95,7 +95,7 @@ public class ConceptGraphUtilsTest {
 
   @Test
   public void shouldFindDiamondParentPaths() {
-    ConceptReferenceType broader = new ConceptReferenceType("broader");
+    ReferenceType broader = new ReferenceType("broader");
 
     Concept root = new Concept("root");
     Concept branch1 = new Concept("branch1");

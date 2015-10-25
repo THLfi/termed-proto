@@ -10,7 +10,7 @@ import javax.persistence.MappedSuperclass;
 public class SchemeConfigurationElement extends Resource {
 
   @ManyToOne
-  private SchemeConfiguration configuration;
+  private Scheme scheme;
 
   private Boolean required;
 
@@ -19,12 +19,12 @@ public class SchemeConfigurationElement extends Resource {
   public SchemeConfigurationElement() {
   }
 
-  public SchemeConfiguration getConfiguration() {
-    return configuration;
+  public Scheme getScheme() {
+    return scheme;
   }
 
-  public void setConfiguration(SchemeConfiguration configuration) {
-    this.configuration = configuration;
+  public void setScheme(Scheme scheme) {
+    this.scheme = scheme;
   }
 
   public Boolean getRequired() {

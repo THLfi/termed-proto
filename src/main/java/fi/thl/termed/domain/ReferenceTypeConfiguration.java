@@ -10,25 +10,25 @@ import javax.persistence.ManyToOne;
 
 @Indexed
 @Entity
-public class ConceptReferenceTypeConfiguration extends SchemeConfigurationElement {
+public class ReferenceTypeConfiguration extends SchemeConfigurationElement {
 
   @ManyToOne
-  private ConceptReferenceType conceptReferenceType;
+  private ReferenceType referenceType;
 
   @ManyToMany
   private List<Scheme> range;
 
   private Boolean primaryHierarchy;
 
-  public ConceptReferenceTypeConfiguration() {
+  public ReferenceTypeConfiguration() {
   }
 
-  public ConceptReferenceType getConceptReferenceType() {
-    return conceptReferenceType;
+  public ReferenceType getReferenceType() {
+    return referenceType;
   }
 
-  public void setConceptReferenceType(ConceptReferenceType conceptReferenceType) {
-    this.conceptReferenceType = conceptReferenceType;
+  public void setReferenceType(ReferenceType referenceType) {
+    this.referenceType = referenceType;
   }
 
   public List<Scheme> getRange() {
