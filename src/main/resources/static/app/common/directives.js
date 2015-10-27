@@ -5,7 +5,7 @@ angular.module('termed.directives', [])
 .directive('tooltip', function($rootScope) {
   return {
     restrict: 'A',
-    link: function(scope, elem, attrs)
+    link: function(scope, elem, attrs) {
 
       $rootScope.$on('$translateChangeEnd', function() {
         elem.tooltip('destroy');
