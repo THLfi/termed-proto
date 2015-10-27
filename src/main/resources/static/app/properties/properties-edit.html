@@ -1,5 +1,5 @@
 <div class="form-group" ng-repeat="property in properties">
-    <label>{{property.properties.prefLabel[lang][0] | capitalize}}</label>
+    <label>{{property.properties.prefLabel | localizeValue | capitalize}}</label>
 
     <div ng-repeat="lang in languages">
         <div ng-repeat="value in resourceProperties[property.id][lang] track by $index">

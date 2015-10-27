@@ -12,6 +12,7 @@
 </head>
 <body>
 
+<div ng-include="'app/header.html'"></div>
 <div class="container" ng-view></div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -20,13 +21,21 @@
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-resource.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-sanitize.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular-translate/2.8.1/angular-translate.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2_locale_fi.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.0.8/jstree.min.js"></script>
 
-<script src="js/app.js"></script>
-<script src="js/directives.js"></script>
-<script src="js/filters.js"></script>
+<script src="app/app.js"></script>
+<script src="app/common/filters.js"></script>
+<script src="app/common/resources.js"></script>
+<script src="app/common/translations.js"></script>
+<script src="app/properties/properties.js"></script>
+<script src="app/schemes/schemes.js"></script>
+<script src="app/concepts/concepts.js"></script>
+<script src="app/concepts/references/references.js"></script>
+<script src="app/collections/collections.js"></script>
 
 </body>
 </html>

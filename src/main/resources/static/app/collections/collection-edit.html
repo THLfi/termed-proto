@@ -1,11 +1,11 @@
 <ol class="breadcrumb">
     <li><a ng-href="#/">Termieditori</a></li>
     <li><a ng-href="#/schemes/{{collection.scheme.id}}/concepts">
-        {{collection.scheme.properties.prefLabel[lang][0]}}
+        {{collection.scheme.properties.prefLabel | localizeValue}}
     </a></li>
     <li>
         <a ng-href="#/schemes/{{collection.scheme.id}}/collections/{{collection.id}}">
-            {{collection.properties.prefLabel[lang][0]}}
+            {{collection.properties.prefLabel | localizeValue}}
         </a>
     </li>
     <li class="active">muokkaus</li>
@@ -32,7 +32,7 @@
 </div>
 
 <h1 class="page-header">
-    {{collection.properties.prefLabel[lang][0]}}
+    {{collection.properties.prefLabel | localizeValue}}
 </h1>
 
 <div class="row text-muted page-header-info">

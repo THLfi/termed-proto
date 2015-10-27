@@ -1,22 +1,22 @@
 <div ng-repeat="refType in refTypes">
     <dl ng-if="concept.references[refType.id]">
-        <dt>{{refType.properties.prefLabel[lang][0] | capitalize}}</dt>
+        <dt>{{refType.properties.prefLabel | localizeValue | capitalize}}</dt>
         <dd>
             <div ng-repeat="r in concept.references[refType.id]">
                 <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}">
                     &rarr;
-                    {{r.properties.prefLabel[lang][0] || '-'}}
+                    {{r.properties.prefLabel | localizeValue}}
                 </a>
             </div>
         </dd>
     </dl>
     <dl ng-if="concept.referrers[refType.id] && refType.properties.antonym">
-        <dt>{{refType.properties.antonym[lang][0] || '-' | capitalize}}</dt>
+        <dt>{{refType.properties.antonym | localizeValue | capitalize}}</dt>
         <dd>
             <div ng-repeat="r in concept.referrers[refType.id]">
                 <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}">
                     &rarr;
-                    {{r.properties.prefLabel[lang][0] || '-'}}
+                    {{r.properties.prefLabel | localizeValue}}
                 </a>
             </div>
         </dd>

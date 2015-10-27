@@ -1,30 +1,30 @@
 <ol class="breadcrumb">
-    <li><a ng-href="#/">Termieditori</a></li>
+    <li><a ng-href="#/">{{'termed' | translate}}</a></li>
     <li><a ng-href="#/schemes/{{scheme.id}}/concepts">
-        {{scheme.properties.prefLabel[lang][0]}}
+        {{scheme.properties.prefLabel | localizeValue}}
     </a></li>
     <li class="active">
-        Kaikki käsitteet
+        {{'allConcepts' | translate | capitalize}}
     </li>
 </ol>
 
 <div class="row">
     <div class="col-sm-12">
         <h1 class="page-header">
-            {{scheme.properties.prefLabel[lang][0]}}
-            <small>- Kaikki käsitteet</small>
+            {{scheme.properties.prefLabel | localizeValue}}
+            <small>- {{'allConcepts' | translate | capitalize}}</small>
         </h1>
 
         <div class="pull-right">
             <label class="radio-inline text-muted">
                 <input type="radio" ng-model="display.type" value="list"
                        ng-change="loadResults()">
-                Esitä listana
+                {{'displayAsList' | translate | capitalize}}
             </label>
             <label class="radio-inline text-muted">
                 <input type="radio" ng-model="display.type" value="tree"
                        ng-change="loadResults()">
-                Esitä yläkäsitepuuna
+                {{'displayAsTree' | translate | capitalize}}
             </label>
         </div>
 
@@ -37,7 +37,7 @@
     <div style="padding-left: {{depth*3}}em;">
         <h3>
             <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}">
-                {{concept.properties.prefLabel[lang][0] || '-'}}
+                {{concept.properties.prefLabel | localizeValue}}
             </a>
         </h3>
 

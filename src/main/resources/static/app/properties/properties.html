@@ -1,6 +1,6 @@
 <div ng-repeat="property in properties">
     <dl ng-if="resourceProperties[property.id]">
-        <dt>{{property.properties.prefLabel[lang][0] | capitalize}}</dt>
+        <dt>{{property.properties.prefLabel | localizeValue | capitalize}}</dt>
         <dd>
             <div ng-repeat="(lang, values) in resourceProperties[property.id]">
                 <div ng-repeat="value in values">

@@ -1,10 +1,10 @@
 <ol class="breadcrumb">
-    <li><a ng-href="#/">Termieditori</a></li>
+    <li><a ng-href="#/">{{'termed' | translate}}</a></li>
     <li><a ng-href="#/schemes/{{concept.scheme.id}}/concepts">
-        {{concept.scheme.properties.prefLabel[lang][0]}}
+        {{concept.scheme.properties.prefLabel | localizeValue}}
     </a></li>
     <li class="active">
-        {{concept.properties.prefLabel[lang][0]}}
+        {{concept.properties.prefLabel | localizeValue}}
     </li>
 </ol>
 
@@ -12,7 +12,7 @@
     <div class="col-sm-4">
         <div class="panel panel-default">
             <div class="panel-heading" style="padding-top: 5px; padding-bottom: 5px">
-                Hierarkia
+                {{'hierarchy' | translate | capitalize}}
             </div>
             <div style="overflow:hidden" class="panel-body">
                 <thl-concept-tree concept="concept"></thl-concept-tree>
@@ -24,16 +24,16 @@
             <a class="btn btn-sm btn-default"
                ng-href="#/schemes/{{concept.scheme.id}}/concepts/{{concept.id}}/edit">
                 <span class="glyphicon glyphicon-edit"></span>
-                Muokkaa
+                {{'edit' | translate | capitalize}}
             </a>
             <button class="btn btn-sm btn-default" ng-click="newConcept()">
                 <span class="glyphicon glyphicon-plus"></span>
-                Lisää alakäsite
+                {{'addChildConcept' | translate | capitalize}}
             </button>
         </div>
 
         <h1 class="page-header">
-            {{concept.properties.prefLabel[lang][0] || '-'}}
+            {{concept.properties.prefLabel | localizeValue}}
         </h1>
 
         <div class="text-muted page-header-info">
@@ -41,7 +41,7 @@
         </div>
 
         <dl ng-show="concept.references.broader && concept.references.broader.length > 0">
-            <dt>Yläkäsitehierarkiat</dt>
+            <dt>{{'parentHierarchies' | translate | capitalize}}</dt>
             <dd>
                 <span ng-show="concept.references.broader">
                     <span ng-repeat="path in broaderPaths">
@@ -49,12 +49,12 @@
                             <span ng-if="!$last">
                                 <a ng-href="#/schemes/{{b.scheme.id}}/concepts/{{b.id}}"
                                    ng-if="!$last">
-                                    {{b.properties.prefLabel[lang][0]}}
+                                    {{b.properties.prefLabel | localizeValue}}
                                 </a>
                                 <span class="text-muted">&gt;</span>
                             </span>
                             <span ng-if="$last">
-                                {{b.properties.prefLabel[lang][0]}}
+                                {{b.properties.prefLabel | localizeValue}}
                             </span>
                         </span><br>
                     </span>
@@ -67,11 +67,11 @@
         <thl-concept-references concept="concept"></thl-concept-references>
 
         <dl ng-show="concept.collections && concept.collections.length > 0">
-            <dt>Kuuluu kokoelmiin</dt>
+            <dt>{{'memberOfCollections' | translate | capitalize}}</dt>
             <dd ng-show="concept.collections && concept.collections.length > 0">
                 <span ng-repeat="c in concept.collections">
                     <a ng-href="#/schemes/{{c.scheme.id}}/collections/{{c.id}}">
-                        {{c.properties.prefLabel[lang][0]}}
+                        {{c.properties.prefLabel | localizeValue}}
                     </a><br>
                 </span>
             </dd>

@@ -1,7 +1,7 @@
 <ol class="breadcrumb">
-    <li><a ng-href="#/">Termieditori</a></li>
+    <li><a ng-href="#/">{{'termed' | translate}}</a></li>
     <li class="active">
-        {{scheme.properties.prefLabel[lang][0]}}
+        {{scheme.properties.prefLabel | localizeValue}}
     </li>
 </ol>
 
@@ -9,17 +9,17 @@
     <div class="col-sm-6">
         <a class="btn btn-sm btn-default" ng-href="#/schemes/{{scheme.id}}/edit">
             <span class="glyphicon glyphicon-edit"></span>
-            Muokkaa
+            {{'edit' | translate | capitalize}}
         </a>
 
         <div class="btn-group" role="group">
             <button class="btn btn-sm btn-default" ng-click="newConcept()">
                 <span class="glyphicon glyphicon-plus"></span>
-                Lisää käsite
+                {{'addConcept' | translate | capitalize}}
             </button>
             <button class="btn btn-sm btn-default" ng-click="newCollection()">
                 <span class="glyphicon glyphicon-plus"></span>
-                Lisää kokoelma
+                {{'addCollection' | translate | capitalize}}
             </button>
         </div>
     </div>
@@ -28,12 +28,15 @@
         <div class="dropdown">
             <button class="btn btn-sm btn-default dropdown-toggle" type="button" id="export-menu"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                <span class="glyphicon glyphicon-download-alt"></span> Lataa
+                <span class="glyphicon glyphicon-download-alt"></span>
+                {{'download' | translate | capitalize}}
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="export-menu">
-                <li><a ng-href="api/crud/concepts?schemeId={{scheme.id}}">JSON - Lista</a></li>
-                <li><a ng-href="api/trees/schemes/{{scheme.id}}/broader">JSON - Puu</a></li>
+                <li><a ng-href="api/crud/concepts?schemeId={{scheme.id}}">
+                    JSON - {{'list' | translate | capitalize}}</a></li>
+                <li><a ng-href="api/trees/schemes/{{scheme.id}}/broader">
+                    JSON - {{'tree' | translate | capitalize}}</a></li>
                 <li><a ng-href="api/rdf/export/{{scheme.id}}">RDF</a></li>
                 <li><a ng-href="api/csv/export/{{scheme.id}}">CSV</a></li>
                 <li><a ng-href="api/excel/export/{{scheme.id}}">Excel</a></li>
@@ -43,7 +46,7 @@
 </div>
 
 <h1 class="page-header">
-    {{scheme.properties.prefLabel[lang][0]}}
+    {{scheme.properties.prefLabel | localizeValue}}
 </h1>
 
 <div class="text-muted" style="margin:-18px 0 18px">
@@ -56,13 +59,13 @@
     </div>
     <input class="form-control" ng-model="query"
            ng-change="searchConcepts(query)" ng-model-options="{debounce: 50}"
-           placeholder="Etsi käsitettä"
+           placeholder="{{'searchConcepts' | translate | capitalize}}"
            type="text">
 
     <div class="input-group-btn">
         <button type="button" class="btn btn-default {{!showExampleQueries || 'active'}}"
                 ng-click="showExampleQueries=!showExampleQueries">
-            Hakuohje
+            {{'searchHelp' | translate | capitalize}}
         </button>
     </div>
 </div>
@@ -74,8 +77,8 @@
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th>Esimerkki</th>
-                <th>Selite</th>
+                <th>{{'example' | translate | capitalize}}</th>
+                <th>{{'description' | translate | capitalize}}</th>
             </tr>
             </thead>
             <tbody>
@@ -161,14 +164,14 @@
 <table class="table">
     <thead>
     <tr>
-        <th>Käsite</th>
+        <th>{{'concept' | translate | capitalize}}</th>
     </tr>
     </thead>
     <tbody>
     <tr ng-repeat="concept in concepts">
         <td>
             <a ng-href="#/schemes/{{scheme.id}}/concepts/{{concept.id}}">
-                {{concept.properties.prefLabel[lang][0] || '-'}}
+                {{concept.properties.prefLabel | localizeValue}}
             </a>
         </td>
     </tr>
@@ -177,7 +180,7 @@
 
 <button class="btn btn-default btn-sm {{concepts.length == max || 'disabled'}}"
         ng-click="loadMoreResults()">
-    Näytä lisää hakutuloksia
+    {{'showMoreResults' | translate | capitalize}}
 </button>
 
 <hr>

@@ -1,10 +1,10 @@
 <ol class="breadcrumb">
     <li><a ng-href="#/">Termieditori</a></li>
     <li><a ng-href="#/schemes/{{collection.scheme.id}}/concepts">
-        {{collection.scheme.properties.prefLabel[lang][0]}}
+        {{collection.scheme.properties.prefLabel | localizeValue}}
     </a></li>
     <li class="active">
-        {{collection.properties.prefLabel[lang][0]}}
+        {{collection.properties.prefLabel | localizeValue}}
     </li>
 </ol>
 
@@ -17,7 +17,7 @@
 </div>
 
 <h1 class="page-header">
-    {{collection.properties.prefLabel[lang][0]}}
+    {{collection.properties.prefLabel | localizeValue}}
 </h1>
 
 <div class="text-muted page-header-info">
@@ -33,7 +33,7 @@
     <dd>
         <div ng-repeat="r in collection.members | orderBy:'properties.prefLabel.fi[0]'">
             <a ng-href="#/schemes/{{r.scheme.id}}/concepts/{{r.id}}">
-                {{r.properties.prefLabel[lang][0]}}
+                {{r.properties.prefLabel | localizeValue}}
             </a>
         </div>
     </dd>
