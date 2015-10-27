@@ -38,7 +38,8 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     edit: 'muokkaa',
     download: 'lataa',
     updated: 'muokkattu',
-    added: 'lisätty'
+    added: 'lisätty',
+    warnSlowAllConceptsView: 'Huom. näkymän avautuminen voi sanaston koosta riippuen kestää useita minuutteja.'
   })
 
   .translations('en', {
@@ -70,7 +71,8 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
     edit: 'edit',
     download: 'download',
     updated: 'updated',
-    added: 'added'
+    added: 'added',
+    warnSlowAllConceptsView: 'Note that opening all concepts view might take several minutes.'
   });
 
 });

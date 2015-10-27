@@ -82,6 +82,9 @@ angular.module('termed.resources.properties', ['pascalprecht.translate', 'termed
 
 .filter('localizeValue', function($translate) {
   return function(propertyValues) {
+    if (!propertyValues) {
+      return;
+    }
 
     function hasValue(lang) {
       return propertyValues[lang] && propertyValues[lang].length > 0;

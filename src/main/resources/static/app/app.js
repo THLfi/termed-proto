@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('termed', ['ngRoute', 'pascalprecht.translate', 'termed.filters', 'termed.translations', 'termed.schemes', 'termed.concepts', 'termed.collections'])
+angular.module('termed', ['ngRoute', 'pascalprecht.translate', 'termed.filters', 'termed.directives', 'termed.translations', 'termed.schemes', 'termed.concepts', 'termed.collections'])
 
 .config(function($routeProvider) {
   $routeProvider.otherwise({

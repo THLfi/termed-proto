@@ -25,7 +25,14 @@
     </div>
 
     <div class="col-sm-6 text-right">
-        <div class="dropdown">
+        <a class="btn btn-sm btn-default" ng-href="#/schemes/{{scheme.id}}/all/concepts"
+           tooltip data-toggle="tooltip" data-placement="bottom"
+           title="{{'warnSlowAllConceptsView' | translate}}">
+            <span class="glyphicon glyphicon-list"></span>
+            {{'allConcepts' | translate | capitalize}}
+        </a>
+
+        <div class="btn-group">
             <button class="btn btn-sm btn-default dropdown-toggle" type="button" id="export-menu"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                 <span class="glyphicon glyphicon-download-alt"></span>
