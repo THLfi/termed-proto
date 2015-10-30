@@ -3,48 +3,48 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>fi.thl</groupId>
-  <artifactId>termed-server-client</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>war</packaging>
+	<groupId>fi.thl</groupId>
+	<artifactId>termed-server-client</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>war</packaging>
 
-  <name>Termed Server and Client in One Package</name>
+	<name>Termed Server and Client in One Package</name>
 
 	<properties>
-	    <start-class>fi.thl.termed.Application</start-class>
+		<start-class>fi.thl.termed.Application</start-class>
 	</properties>
 
-  <parent>
-    <groupId>fi.thl</groupId>
-    <artifactId>termed</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <relativePath>../</relativePath>
-  </parent>
+	<parent>
+		<groupId>fi.thl</groupId>
+		<artifactId>termed</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<relativePath>../</relativePath>
+	</parent>
 
-  <dependencies>
-
-		<dependency>
-      <groupId>fi.thl</groupId>
-      <artifactId>termed-server</artifactId>
-			<version>1.0-SNAPSHOT</version>
-    </dependency>
+	<dependencies>
 
 		<dependency>
-      <groupId>fi.thl</groupId>
-      <artifactId>termed-client</artifactId>
+			<groupId>fi.thl</groupId>
+			<artifactId>termed-server</artifactId>
 			<version>1.0-SNAPSHOT</version>
-    </dependency>
+		</dependency>
 
-  </dependencies>
+		<dependency>
+			<groupId>fi.thl</groupId>
+			<artifactId>termed-client</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 
-  <build>
-    <finalName>termed</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+	</dependencies>
+
+	<build>
+		<finalName>termed</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
