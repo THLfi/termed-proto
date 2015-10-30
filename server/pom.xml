@@ -6,7 +6,7 @@
   <groupId>fi.thl</groupId>
   <artifactId>termed-server</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 
   <name>Termed Server</name>
 
@@ -16,11 +16,6 @@
     <version>1.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-
-  <properties>
-    <hibernate.version>4.2.19.Final</hibernate.version>
-    <hibernate.search.version>4.4.0.Final</hibernate.search.version>
-  </properties>
 
   <dependencies>
     <!-- Spring Boot -->
@@ -136,7 +131,6 @@
   </dependencies>
 
   <build>
-    <finalName>termed</finalName>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
