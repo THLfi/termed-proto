@@ -1,4 +1,4 @@
-'use strict';
+(function (angular) { 'use strict';
 
 angular.module('termed.collections', ['ngRoute', 'termed.resources', 'termed.resources.properties'])
 
@@ -34,7 +34,7 @@ angular.module('termed.collections', ['ngRoute', 'termed.resources', 'termed.res
     }, function(error) {
       $scope.error = error;
     });
-  }
+  };
 
   $scope.remove = function() {
     $scope.collection.$delete({
@@ -44,5 +44,7 @@ angular.module('termed.collections', ['ngRoute', 'termed.resources', 'termed.res
     }, function(error) {
       $scope.error = error;
     });
-  }
+  };
 });
+
+})(window.angular);

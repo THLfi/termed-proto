@@ -1,4 +1,4 @@
-'use strict';
+(function (angular) { 'use strict';
 
 angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
 
@@ -76,3 +76,5 @@ angular.module('termed.translations', ['pascalprecht.translate', 'ngSanitize'])
   });
 
 });
+
+})(window.angular);

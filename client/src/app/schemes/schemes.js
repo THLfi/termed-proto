@@ -1,4 +1,4 @@
-'use strict';
+(function (angular) { 'use strict';
 
 angular.module('termed.schemes', ['ngRoute', 'termed.resources', 'termed.resources.properties'])
 
@@ -14,7 +14,7 @@ angular.module('termed.schemes', ['ngRoute', 'termed.resources', 'termed.resourc
   .when('/schemes/:schemeId/edit', {
     templateUrl: 'app/schemes/scheme-edit.html',
     controller: 'SchemeEditCtrl'
-  })
+  });
 })
 
 .controller('SchemeListCtrl', function($scope, $location, $translate, SchemeList, ConceptList) {
@@ -27,7 +27,7 @@ angular.module('termed.schemes', ['ngRoute', 'termed.resources', 'termed.resourc
   $scope.loadMoreResults = function() {
     $scope.max += 50;
     $scope.searchConcepts(($location.search()).q || "");
-  }
+  };
 
   $scope.searchConcepts = function(query) {
     ConceptList.query({
@@ -40,7 +40,7 @@ angular.module('termed.schemes', ['ngRoute', 'termed.resources', 'termed.resourc
         q: $scope.query
       }).replace();
     });
-  }
+  };
 
   $scope.schemes = SchemeList.query({
     orderBy: 'prefLabel.fi.sortable'
@@ -56,7 +56,7 @@ angular.module('termed.schemes', ['ngRoute', 'termed.resources', 'termed.resourc
     }, function(scheme) {
       $location.path('/schemes/' + scheme.id + '/edit');
     });
-  }
+  };
 
   $scope.searchConcepts(($location.search()).q || "");
 
@@ -76,7 +76,7 @@ angular.module('termed.schemes', ['ngRoute', 'termed.resources', 'termed.resourc
     }, function(error) {
       $scope.error = error;
     });
-  }
+  };
 
   $scope.remove = function() {
     $scope.scheme.$delete({
@@ -86,6 +86,8 @@ angular.module('termed.schemes', ['ngRoute', 'termed.resources', 'termed.resourc
     }, function(error) {
       $scope.error = error;
     });
-  }
+  };
 
 });
+
+})(window.angular);

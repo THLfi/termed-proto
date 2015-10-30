@@ -1,0 +1,7 @@
+/src/lib
+/node_modules
+/node
+/dist
+/etc
+/target
+npm-debug.log

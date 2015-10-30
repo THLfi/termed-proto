@@ -1,4 +1,4 @@
-'use strict';
+(function (angular) { 'use strict';
 
 angular.module('termed.directives', [])
 
@@ -22,3 +22,5 @@ angular.module('termed.directives', [])
     }
   };
 });
+
+})(window.angular);

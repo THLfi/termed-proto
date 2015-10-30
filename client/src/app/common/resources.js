@@ -1,4 +1,4 @@
-'use strict';
+(function (angular) { 'use strict';
 
 angular.module('termed.resources', ['ngResource'])
 
@@ -45,3 +45,5 @@ angular.module('termed.resources', ['ngResource'])
 .factory('ReferenceTypeList', function($resource) {
   return $resource('api/crud/referenceTypes');
 });
+
+})(window.angular);

@@ -1,3 +1,5 @@
+(function (angular) { 'use strict';
+
 angular.module('termed.concepts.references', ['pascalprecht.translate', 'termed.resources'])
 
 .directive('thlConceptReferences', function($translate, ReferenceTypeList) {
@@ -106,7 +108,7 @@ angular.module('termed.concepts.references', ['pascalprecht.translate', 'termed.
               d.resolve(result);
             });
             return d.promise;
-          }
+          };
 
           var promises = [];
           for (var i = 0; i < ngModel.length; i++) {
@@ -115,7 +117,7 @@ angular.module('termed.concepts.references', ['pascalprecht.translate', 'termed.
 
           // wait for all Resource.gets
           $q.all(promises).then(function(data) {
-            elem.select2('data', data)
+            elem.select2('data', data);
           });
         } else {
           Concept.get({
@@ -127,5 +129,7 @@ angular.module('termed.concepts.references', ['pascalprecht.translate', 'termed.
         }
       });
     }
-  }
+  };
 });
+
+})(window.angular);

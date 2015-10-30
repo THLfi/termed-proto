@@ -1,4 +1,4 @@
-'use strict';
+(function (angular) { 'use strict';
 
 angular.module('termed.resources.properties', ['pascalprecht.translate', 'termed.resources'])
 
@@ -65,14 +65,14 @@ angular.module('termed.resources.properties', ['pascalprecht.translate', 'termed
 
         // remove all empty values (not including the last one)
         for (var i = 0; i < values.length - 1; i++) {
-          if (values[i] == "") {
+          if (values[i] === "") {
             values.splice(i, 1);
             i--;
           }
         }
 
         // ensure that last value is empty
-        if (values.length == 0 || values[values.length - 1] != "") {
+        if (values.length === 0 || values[values.length - 1] !== "") {
           values.push("");
         }
       }
@@ -92,7 +92,7 @@ angular.module('termed.resources.properties', ['pascalprecht.translate', 'termed
 
     function getValue(lang) {
       return propertyValues[lang].filter(function(input) {
-        return !!input
+        return !!input;
       }).join(', ');
     }
 
@@ -102,12 +102,14 @@ angular.module('termed.resources.properties', ['pascalprecht.translate', 'termed
       return getValue(lang);
     }
 
-    for ( var lang in propertyValues) {
-      if (hasValue(lang)) {
-        return getValue(lang);
+    for ( var propertyLang in propertyValues) {
+      if (hasValue(propertyLang)) {
+        return getValue(propertyLang);
       }
     }
 
     return '-';
   };
 });
+
+})(window.angular);

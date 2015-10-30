@@ -1,3 +1,5 @@
+(function (angular) { 'use strict';
+
 angular.module('termed.filters', ['pascalprecht.translate'])
 
 .filter('capitalize', function() {
@@ -5,3 +7,5 @@ angular.module('termed.filters', ['pascalprecht.translate'])
     return input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();
   };
 });
+
+})(window.angular);

@@ -1,4 +1,4 @@
-'use strict';
+(function (angular) { 'use strict';
 
 angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concepts.references', 'termed.resources.properties'])
 
@@ -41,7 +41,7 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
   $scope.loadMoreResults = function() {
     $scope.max += 50;
     $scope.searchConcepts(($location.search()).q || "");
-  }
+  };
 
   $scope.searchConcepts = function(query) {
     $scope.query = query;
@@ -56,7 +56,7 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
         q: query
       }).replace();
     });
-  }
+  };
 
   $scope.newConcept = function() {
     ConceptList.save({
@@ -71,7 +71,7 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
     }, function(error) {
       $scope.error = error;
     });
-  }
+  };
 
   $scope.newCollection = function() {
     CollectionList.save({
@@ -86,7 +86,7 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
     }, function(error) {
       $scope.error = error;
     });
-  }
+  };
 
   $scope.searchConcepts(($location.search()).q || "");
 
@@ -113,7 +113,7 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
         $scope.instancesPartOfPaths.push(ConceptPartOfPaths.query({
           schemeId: $routeParams.schemeId,
           id: concept.referrers.type[i].id
-        }))
+        }));
       }
     }
   });
@@ -134,7 +134,7 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
     }, function(error) {
       $scope.error = error;
     });
-  }
+  };
 
 })
 
@@ -152,7 +152,7 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
     }, function(error) {
       $scope.error = error;
     });
-  }
+  };
 
   $scope.remove = function() {
     $scope.concept.$delete({
@@ -162,7 +162,7 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
     }, function(error) {
       $scope.error = error;
     });
-  }
+  };
 
 })
 
@@ -213,7 +213,7 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
               },
               data: {
                 url: function(node) {
-                  var id = node.id == '#' ? c.id : node.li_attr.conceptId
+                  var id = node.id == '#' ? c.id : node.li_attr.conceptId;
                   return 'api/trees/concepts/' + id;
                 },
                 data: function(node) {
@@ -222,13 +222,14 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
               }
             },
             sort: function(a, b) {
-              var a = this.get_node(a);
-              var b = this.get_node(b);
+              var aNode = this.get_node(a);
+              var bNode = this.get_node(b);
 
-              if (a.li_attr.index !== "" && b.li_attr.index !== "") {
-                return a.li_attr.index > b.li_attr.index ? 1 : -1;
-              } else
-                return a.text > b.text ? 1 : -1;
+              if (aNode.li_attr.index !== "" && bNode.li_attr.index !== "") {
+                return aNode.li_attr.index > bNode.li_attr.index ? 1 : -1;
+              } else {
+                return aNode.text > bNode.text ? 1 : -1;
+              }
             },
             plugins: ["sort"]
           });
@@ -242,3 +243,5 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
     }
   };
 });
+
+})(window.angular);

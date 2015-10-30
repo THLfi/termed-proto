@@ -1,7 +1,3 @@
-application-*.properties
-bin
-target
-index
 .classpath
 .project
 .settings

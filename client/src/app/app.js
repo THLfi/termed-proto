@@ -1,4 +1,4 @@
-'use strict';
+(function (angular) { 'use strict';
 
 angular.module('termed', ['ngRoute', 'pascalprecht.translate', 'termed.filters', 'termed.directives', 'termed.translations', 'termed.schemes', 'termed.concepts', 'termed.collections'])
 
@@ -15,11 +15,13 @@ angular.module('termed', ['ngRoute', 'pascalprecht.translate', 'termed.filters',
 
   // disable caches for IE
   $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
-  $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+  $httpProvider.defaults.headers.get.Pragma = 'no-cache';
 })
 
 .controller('HeaderCtrl', function($scope, $translate) {
   $scope.changeLang = function(langKey) {
     $translate.use(langKey);
   };
-})
+});
+
+})(window.angular);
