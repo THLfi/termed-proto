@@ -203,7 +203,7 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
     scope: {
       'concept': '='
     },
-    link: function(scope, elem, attrs) {
+    link: function(scope, elem) {
       scope.$watch('concept', function(c) {
         if (c) {
           elem.jstree({
@@ -213,7 +213,7 @@ angular.module('termed.concepts', ['ngRoute', 'termed.resources', 'termed.concep
               },
               data: {
                 url: function(node) {
-                  var id = node.id == '#' ? c.id : node.li_attr.conceptId;
+                  var id = node.id === '#' ? c.id : node.li_attr.conceptId;
                   return 'api/trees/concepts/' + id;
                 },
                 data: function(node) {

@@ -22,7 +22,7 @@ angular.module('termed.collections', ['ngRoute', 'termed.resources', 'termed.res
   });
 })
 
-.controller('CollectionEditCtrl', function($scope, $routeParams, $location, Collection, CollectionList, PropertyList) {
+.controller('CollectionEditCtrl', function($scope, $routeParams, $location, Collection) {
 
   $scope.collection = Collection.get({
     id: $routeParams.id

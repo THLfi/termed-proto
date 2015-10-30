@@ -64,7 +64,7 @@ angular.module('termed.concepts.references', ['pascalprecht.translate', 'termed.
         }
       });
 
-      elem.on('change', function(event) {
+      elem.on('change', function() {
         scope.$apply(function() {
           if (!elem.select2('data')) {
             scope.ngModel = "";

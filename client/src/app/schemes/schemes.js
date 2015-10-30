@@ -62,7 +62,7 @@ angular.module('termed.schemes', ['ngRoute', 'termed.resources', 'termed.resourc
 
 })
 
-.controller('SchemeEditCtrl', function($scope, $routeParams, $location, $translate, Scheme, SchemeList) {
+.controller('SchemeEditCtrl', function($scope, $routeParams, $location, $translate, Scheme) {
 
   $scope.lang = $translate.use();
 
@@ -71,7 +71,7 @@ angular.module('termed.schemes', ['ngRoute', 'termed.resources', 'termed.resourc
   });
 
   $scope.save = function() {
-    $scope.scheme.$save(function(scheme) {
+    $scope.scheme.$save(function() {
       $location.path('/schemes/' + $routeParams.schemeId + '/concepts');
     }, function(error) {
       $scope.error = error;
