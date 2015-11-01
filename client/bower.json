@@ -12,13 +12,16 @@
     "angular-translate": "~2.8.1",
     "select2-bootstrap-css": "~1.4.6"
   },
-  "overrides":{
-    "bootstrap" : {
+  "overrides": {
+    "bootstrap": {
       "main": [
         "dist/css/bootstrap.css",
         "dist/js/bootstrap.js"
       ]
     }
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "angular-mocks": "~1.4.7"
+  }
 }

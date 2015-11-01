@@ -7,26 +7,18 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-wiredep');
+  grunt.loadNpmTasks('grunt-karma');
 
-  grunt.registerTask('default', ['jshint', 'wiredep', 'copy']);
-  grunt.registerTask('build', ['uglify', 'copy']);
+  grunt.registerTask('default', ['jshint', 'karma', 'wiredep', 'copy']);
 
   grunt.initConfig({
 
     pkg: grunt.file.readJSON('package.json'),
     bower: grunt.file.readJSON('.bowerrc'),
 
-    config: {
-      src: 'src',
-      index: '<%= config.src %>/index.html',
-      app: '<%= config.src %>/app',
-      appJs: '<%= config.app %>/**/*.js',
-      dist: 'dist',
-    },
-
     wiredep: {
       task: {
-        src: ['<%= config.index %>']
+        src: ['src/index.html']
       }
     },
 
@@ -34,15 +26,31 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%= config.src %>',
+          cwd: 'src',
           src: '**',
-          dest: '<%= config.dist %>'
+          dest: 'dist'
         }]
       }
     },
 
     jshint: {
-      files: ['gruntfile.js', '<%= config.appJs %>']
+      files: ['gruntfile.js', 'src/app/**/*.js']
+    },
+
+    karma: {
+      unit: {
+        options: {
+          frameworks: ['jasmine'],
+          singleRun: true,
+          browsers: ['PhantomJS'],
+          files: [
+            'src/lib/angular/angular.js',
+            'src/lib/angular-mocks/angular-mocks.js',
+            'test/**/*.js'
+          ]
+        }
+      }
     }
+
   });
 };
