@@ -1,0 +1,300 @@
+[
+  {
+    "id": "prefLabel",
+    "uri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "preferred label"
+        ],
+        "fi": [
+          "ensisijainen termi"
+        ]
+      },
+      "index": {
+        "": [
+          "00"
+        ]
+      }
+    }
+  },
+  {
+    "id": "altLabel",
+    "uri": "http://www.w3.org/2004/02/skos/core#altLabel",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "alternative label"
+        ],
+        "fi": [
+          "vaihtoehtoinen termi"
+        ]
+      },
+      "index": {
+        "": [
+          "01"
+        ]
+      }
+    }
+  },
+  {
+    "id": "hiddenLabel",
+    "uri": "http://www.w3.org/2004/02/skos/core#hiddenLabel",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "hidden label"
+        ],
+        "fi": [
+          "piilotettu termi"
+        ]
+      },
+      "index": {
+        "": [
+          "02"
+        ]
+      }
+    }
+  },
+  {
+    "id": "deprecatedLabel",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "deprecated label"
+        ],
+        "fi": [
+          "korvattu termi"
+        ]
+      },
+      "index": {
+        "": [
+          "03"
+        ]
+      }
+    }
+  },
+  {
+    "id": "comment",
+    "uri": "http://www.w3.org/2000/01/rdf-schema#comment",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "comment"
+        ],
+        "fi": [
+          "kommentti"
+        ]
+      },
+      "index": {
+        "": [
+          "04"
+        ]
+      }
+    }
+  },
+  {
+    "id": "definition",
+    "uri": "http://www.w3.org/2004/02/skos/core#definition",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "definition"
+        ],
+        "fi": [
+          "määritelmä"
+        ]
+      },
+      "index": {
+        "": [
+          "05"
+        ]
+      }
+    }
+  },
+  {
+    "id": "example",
+    "uri": "http://www.w3.org/2004/02/skos/core#example",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "example"
+        ],
+        "fi": [
+          "esimerkki"
+        ]
+      },
+      "index": {
+        "": [
+          "06"
+        ]
+      }
+    }
+  },
+  {
+    "id": "note",
+    "uri": "http://www.w3.org/2004/02/skos/core#note",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "note"
+        ],
+        "fi": [
+          "huomautus"
+        ]
+      },
+      "index": {
+        "": [
+          "07"
+        ]
+      }
+    }
+  },
+  {
+    "id": "scopeNote",
+    "uri": "http://www.w3.org/2004/02/skos/core#scopeNote",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "scope note"
+        ],
+        "fi": [
+          "käyttöala"
+        ]
+      },
+      "index": {
+        "": [
+          "08"
+        ]
+      }
+    }
+  },
+  {
+    "id": "changeNote",
+    "uri": "http://www.w3.org/2004/02/skos/core#changeNote",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "change note"
+        ],
+        "fi": [
+          "muutokset"
+        ]
+      },
+      "index": {
+        "": [
+          "09"
+        ]
+      }
+    }
+  },
+  {
+    "id": "antonym",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "antonym"
+        ],
+        "fi": [
+          "antonyymi"
+        ]
+      },
+      "index": {
+        "": [
+          "10"
+        ]
+      }
+    }
+  },
+  {
+    "id": "classification",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "classification"
+        ],
+        "fi": [
+          "luokitus"
+        ]
+      },
+      "index": {
+        "": [
+          "11"
+        ]
+      }
+    }
+  },
+  {
+    "id": "repeatable",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "repeatable"
+        ],
+        "fi": [
+          "toistuva"
+        ]
+      },
+      "index": {
+        "": [
+          "12"
+        ]
+      }
+    }
+  },
+  {
+    "id": "required",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "required"
+        ],
+        "fi": [
+          "pakollinen"
+        ]
+      },
+      "index": {
+        "": [
+          "13"
+        ]
+      }
+    }
+  },
+  {
+    "id": "source",
+    "uri": "http://purl.org/dc/elements/1.1/source",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "source"
+        ],
+        "fi": [
+          "lähde"
+        ]
+      },
+      "index": {
+        "": [
+          "14"
+        ]
+      }
+    }
+  },
+  {
+    "id": "index",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "index"
+        ],
+        "fi": [
+          "järjestysnumero"
+        ]
+      },
+      "index": {
+        "": [
+          "15"
+        ]
+      }
+    }
+  }
+]
