@@ -7,40 +7,34 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-ng-constant');
   grunt.loadNpmTasks('grunt-wiredep');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-connect-proxy');
 
-  grunt.registerTask('default', ['ngconstant:prod', 'jshint', 'karma:unit', 'wiredep', 'copy']);
-  grunt.registerTask('dev', ['ngconstant:dev', 'connect:server', 'karma:watch']);
+  grunt.registerTask('default', ['jshint', 'karma:unit', 'wiredep', 'copy']);
+  grunt.registerTask('dev', ['configureProxies:server', 'connect', 'karma:watch']);
 
   grunt.initConfig({
 
     pkg: grunt.file.readJSON('package.json'),
     bower: grunt.file.readJSON('.bowerrc'),
 
-    ngconstant: {
-      options: {
-        wrap: "(function(angular) { 'use strict';\n\n{%= __ngModule %}\n\n})(window.angular);",
-        name: 'termed.config',
-        dest: 'src/app/config.js'
-      },
-      dev: {
-        constants: {
-          apiUrl: 'http://localhost:9999'
-        }
-      },
-      prod: {
-        constants: {
-          apiUrl: ''
-        }
-      }
-    },
-
     connect: {
       server: {
-        port: 9999,
-        base: 'src'
+        options: {
+          base: 'src',
+          middleware: function (connect, options, defaultMiddleware) {
+            var proxy = require('grunt-connect-proxy/lib/utils').proxyRequest;
+            return [proxy].concat(defaultMiddleware);
+          }
+        },
+        proxies: [
+          {
+            context: '/api',
+            host: 'localhost',
+            port: '8080'
+          }
+        ]
       }
     },
 
@@ -66,29 +60,25 @@ module.exports = function(grunt) {
     },
 
     karma: {
+      options: {
+        frameworks: ['jasmine'],
+        browsers: ['PhantomJS'],
+        files: [
+          'src/lib/angular/angular.js',
+          'src/lib/angular-mocks/angular-mocks.js',
+          'test/**/*.js'
+        ]
+      },
       unit: {
         options: {
-          frameworks: ['jasmine'],
           singleRun: true,
-          browsers: ['PhantomJS'],
-          files: [
-            'src/lib/angular/angular.js',
-            'src/lib/angular-mocks/angular-mocks.js',
-            'test/**/*.js'
-          ]
+          autoWatch: false
         }
       },
       watch: {
         options: {
-          frameworks: ['jasmine'],
           singleRun: false,
-          autoWatch: true,
-          browsers: ['Chrome'],
-          files: [
-            'src/lib/angular/angular.js',
-            'src/lib/angular-mocks/angular-mocks.js',
-            'test/**/*.js'
-          ]
+          autoWatch: true
         }
       }
     }
