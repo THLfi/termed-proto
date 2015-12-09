@@ -26,7 +26,7 @@ public class Concept extends SchemeResource implements Serializable {
   @Field
   @FieldBridge(impl = ConceptReferenceListBridge.class)
   @IndexedEmbedded
-  @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "source", cascade = CascadeType.ALL)
   private List<ConceptReference> references;
 
   @OneToMany(mappedBy = "target")

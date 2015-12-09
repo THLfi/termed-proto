@@ -2,6 +2,7 @@ package fi.thl.termed.serializer;
 
 import com.google.common.base.Converter;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -103,8 +104,10 @@ public class ConceptLoadingConverter extends Converter<Concept, SerializedConcep
 
     for (Map.Entry<String, List<SchemeResource>> entry : referenceMap.entrySet()) {
       for (SchemeResource target : entry.getValue()) {
-        references.add(new ConceptReference(loadReferenceType(entry.getKey()), source,
-                                            loadConcept(target)));
+        if (!Strings.isNullOrEmpty(target.getId())) {
+          references.add(new ConceptReference(loadReferenceType(entry.getKey()), source,
+                                              loadConcept(target)));
+        }
       }
     }
 

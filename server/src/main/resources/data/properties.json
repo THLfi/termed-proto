@@ -296,5 +296,59 @@
         ]
       }
     }
+  },
+  {
+    "id": "productCode",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "product code"
+        ],
+        "fi": [
+          "tuotekoodi"
+        ]
+      },
+      "index": {
+        "": [
+          "16"
+        ]
+      }
+    }
+  },
+  {
+    "id": "abbreviation",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "abbreviation"
+        ],
+        "fi": [
+          "lyhenne"
+        ]
+      },
+      "index": {
+        "": [
+          "17"
+        ]
+      }
+    }
+  },
+  {
+    "id": "shortName",
+    "properties": {
+      "prefLabel": {
+        "en": [
+          "short name"
+        ],
+        "fi": [
+          "lyhyt nimi"
+        ]
+      },
+      "index": {
+        "": [
+          "18"
+        ]
+      }
+    }
   }
 ]

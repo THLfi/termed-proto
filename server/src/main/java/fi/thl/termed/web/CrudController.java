@@ -1,6 +1,7 @@
 package fi.thl.termed.web;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,9 +60,10 @@ public class CrudController {
 
   @RequestMapping(method = POST, value = "/{collection}",
       consumes = "application/json;charset=UTF-8")
-  public JsonObject save(@PathVariable("collection") String collection,
-                         @RequestBody JsonObject data) {
-    return service.save(collection, data);
+  public JsonElement save(@PathVariable("collection") String collection,
+                          @RequestBody JsonElement data) {
+    return data.isJsonArray() ? service.save(collection, data.getAsJsonArray())
+                              : service.save(collection, data.getAsJsonObject());
   }
 
   @RequestMapping(method = DELETE, value = "/{collection}/{id}")
